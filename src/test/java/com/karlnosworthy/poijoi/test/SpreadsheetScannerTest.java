@@ -1,9 +1,10 @@
 package com.karlnosworthy.poijoi.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +21,9 @@ public class SpreadsheetScannerTest {
 	
 	@Test
 	public void testColumnHeaders() throws Exception {
-		File testFile = new File("src/test/resources/test1.xls");
+		
+		File testFile = new File(getClass().getClassLoader().getResource("test1.xls").getFile());
+		
 		SpreadsheetScanner scanner = new SpreadsheetScanner(testFile);
 		Set<String> columnNames = scanner.getColumnNames("Sheet1");
 		assertEquals(4,columnNames.size());
