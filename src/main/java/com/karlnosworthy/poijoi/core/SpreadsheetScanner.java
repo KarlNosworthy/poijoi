@@ -79,106 +79,110 @@ public class SpreadsheetScanner {
 			int totalNumberOfSheets = workbook.getNumberOfSheets();
 			for (int sheetIndex = 0; sheetIndex < totalNumberOfSheets; sheetIndex++) {
 				HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
-				
-				String tableName = sheet.getSheetName();
-				tableNames.add(tableName);
-				
 				// Find columns...
 				HSSFRow headerRow = sheet.getRow(0);
-				HSSFRow typedRow = sheet.getRow(1);
-			
-				List<String> columnNames = new ArrayList<String>();
+				//If we don't have any columns then there's nothing we can do
+				if (headerRow != null) {
+					String tableName = sheet.getSheetName();
+					tableNames.add(tableName);
+					
+					HSSFRow typedRow = sheet.getRow(1);
 				
-				HashMap<String,ColumnType> columnNamesAndTypes = new HashMap<String,ColumnType>();
-				
-				for (int cellIndex = headerRow.getFirstCellNum(); cellIndex < headerRow.getLastCellNum(); cellIndex++) {
-					HSSFCell headerRowCell = headerRow.getCell(cellIndex);
-					String cellName = headerRowCell.getStringCellValue();
+					List<String> columnNames = new ArrayList<String>();
 					
-					columnNames.add(cellName);
+					HashMap<String,ColumnType> columnNamesAndTypes = new HashMap<String,ColumnType>();
 					
-					HSSFCell typedRowCell = null;
-					if (typedRow != null) {
-						typedRowCell = typedRow.getCell(cellIndex);
-					}
-					
-					ColumnType columnType = ColumnType.STRING;
-					
-					int cellType = Cell.CELL_TYPE_BLANK;
-					if (typedRowCell != null) {
-						cellType = typedRowCell.getCellType();
-					}
-					
-					switch (cellType) {
-						case Cell.CELL_TYPE_BLANK:
-							if (cellName.endsWith(".id")) {
-								columnType = ColumnType.INTEGER_NUMBER;
-							} else {
-								columnType = ColumnType.STRING;
-							}
-							break;
-						case Cell.CELL_TYPE_BOOLEAN:
-						case Cell.CELL_TYPE_ERROR:
-						case Cell.CELL_TYPE_STRING:
-							columnType = ColumnType.STRING;
-							break;
-						case Cell.CELL_TYPE_FORMULA:
-						case Cell.CELL_TYPE_NUMERIC:
-							if (HSSFDateUtil.isCellDateFormatted(typedRowCell)) {
-								columnType = ColumnType.DATE;
-							} else {
-								columnType = ColumnType.INTEGER_NUMBER;
-							}
-							break;
-					}
-					
-					columnNamesAndTypes.put(headerRowCell.getStringCellValue(),
-							columnType);
-				}
-				
-				this.tableDefinitions.put(tableName, columnNamesAndTypes);
-				
-				rowData = new ArrayList<HashMap<String,String>>();
-				
-				HashMap<String,String> columnData = new HashMap<String,String>();
-				if (sheet.getLastRowNum() > 1) {
-					for (int rowIndex = 1; rowIndex < sheet.getLastRowNum(); rowIndex++) {
-						HSSFRow dataRow = sheet.getRow(rowIndex);
+					for (int cellIndex = headerRow.getFirstCellNum(); cellIndex < headerRow.getLastCellNum(); cellIndex++) {
+						HSSFCell headerRowCell = headerRow.getCell(cellIndex);
+						String cellName = headerRowCell.getStringCellValue();
 						
-						columnData = new HashMap<String,String>();
-						for (int cellIndex = dataRow.getFirstCellNum(); cellIndex <= (dataRow.getLastCellNum() - 1); cellIndex++) {
-							String colName = columnNames.get(cellIndex);
-							HSSFCell dataCell = dataRow.getCell(cellIndex);
-							
-							if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
-								columnData.put(colName,dataCell.getStringCellValue().trim());
-							} else if (HSSFDateUtil.isCellDateFormatted(dataCell)) {
-								// Default handling of date is to convert to string (if sqlite)
-								// may need to implement 'per database column type mapping'
-								// convert to ISO8601 string = YYYY-MM-DD HH:MM:SS.SSS
-								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-								Date date = dataCell.getDateCellValue();
-								
-								String dateFormattedCellValue = "";
-								if (date != null) {
-									dateFormattedCellValue = dateFormat.format(date);
-								} else {
-									dateFormattedCellValue = dataCell.getStringCellValue();
-								}
-								
-								columnData.put(colName,dateFormattedCellValue);
-							} else {
-								if (columnNamesAndTypes.get(colName) == ColumnType.INTEGER_NUMBER) {
-									columnData.put(colName, String.valueOf(new Double(dataCell.getNumericCellValue()).intValue()).trim());
-								} else {
-									columnData.put(colName, String.valueOf(dataCell.getNumericCellValue()).trim());
-								}
-							}
+						columnNames.add(cellName);
+						
+						HSSFCell typedRowCell = null;
+						if (typedRow != null) {
+							typedRowCell = typedRow.getCell(cellIndex);
 						}
 						
-						rowData.add(columnData);
+						ColumnType columnType = ColumnType.STRING;
+						
+						int cellType = Cell.CELL_TYPE_BLANK;
+						if (typedRowCell != null) {
+							cellType = typedRowCell.getCellType();
+						}
+						
+						switch (cellType) {
+							case Cell.CELL_TYPE_BLANK:
+								if (cellName.endsWith(".id")) {
+									columnType = ColumnType.INTEGER_NUMBER;
+								} else {
+									columnType = ColumnType.STRING;
+								}
+								break;
+							case Cell.CELL_TYPE_BOOLEAN:
+							case Cell.CELL_TYPE_ERROR:
+							case Cell.CELL_TYPE_STRING:
+								columnType = ColumnType.STRING;
+								break;
+							case Cell.CELL_TYPE_FORMULA:
+							case Cell.CELL_TYPE_NUMERIC:
+								if (HSSFDateUtil.isCellDateFormatted(typedRowCell)) {
+									columnType = ColumnType.DATE;
+								} else {
+									
+									columnType = ColumnType.INTEGER_NUMBER;
+								}
+								break;
+						}
+						
+						columnNamesAndTypes.put(headerRowCell.getStringCellValue(),
+								columnType);
 					}
-					this.tableData.put(tableName, rowData);
+					
+					this.tableDefinitions.put(tableName, columnNamesAndTypes);
+					
+					rowData = new ArrayList<HashMap<String,String>>();
+					
+					HashMap<String,String> columnData = new HashMap<String,String>();
+					if (sheet.getLastRowNum() > 1) {
+						for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+							HSSFRow dataRow = sheet.getRow(rowIndex);
+							
+							columnData = new HashMap<String,String>();
+							for (int cellIndex = dataRow.getFirstCellNum(); cellIndex <= (dataRow.getLastCellNum() - 1); cellIndex++) {
+								String colName = columnNames.get(cellIndex);
+								HSSFCell dataCell = dataRow.getCell(cellIndex);
+								
+								if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
+									columnData.put(colName,dataCell.getStringCellValue().trim());
+								} else if (HSSFDateUtil.isCellDateFormatted(dataCell)) {
+									// Default handling of date is to convert to string (if sqlite)
+									// may need to implement 'per database column type mapping'
+									// convert to ISO8601 string = YYYY-MM-DD HH:MM:SS.SSS
+									SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+									Date date = dataCell.getDateCellValue();
+									
+									String dateFormattedCellValue = "";
+									if (date != null) {
+										dateFormattedCellValue = dateFormat.format(date);
+									} else {
+										dateFormattedCellValue = dataCell.getStringCellValue();
+									}
+									
+									columnData.put(colName,dateFormattedCellValue);
+								} else {
+									if (columnNamesAndTypes.get(colName) == ColumnType.INTEGER_NUMBER) {
+										columnData.put(colName, String.valueOf(new Double(dataCell.getNumericCellValue()).intValue()).trim());
+									} else {
+										//decimal
+										columnData.put(colName, String.valueOf(dataCell.getNumericCellValue()).trim());
+									}
+								}
+							}
+							
+							rowData.add(columnData);
+						}
+						this.tableData.put(tableName, rowData);
+					}
 				}
 			}
 		} catch (FileNotFoundException e) {
