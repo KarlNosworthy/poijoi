@@ -19,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 
 public class SpreadsheetScanner {
 
@@ -92,6 +93,8 @@ public class SpreadsheetScanner {
 					
 					HashMap<String,ColumnType> columnNamesAndTypes = new HashMap<String,ColumnType>();
 					
+					DataFormatter dataFormatter = new DataFormatter();
+					
 					for (int cellIndex = headerRow.getFirstCellNum(); cellIndex < headerRow.getLastCellNum(); cellIndex++) {
 						HSSFCell headerRowCell = headerRow.getCell(cellIndex);
 						String cellName = headerRowCell.getStringCellValue();
@@ -128,8 +131,16 @@ public class SpreadsheetScanner {
 								if (HSSFDateUtil.isCellDateFormatted(typedRowCell)) {
 									columnType = ColumnType.DATE;
 								} else {
+									String formattedValue = dataFormatter.formatCellValue(typedRowCell);
 									
-									columnType = ColumnType.INTEGER_NUMBER;
+									if (formattedValue.contains(".")) {
+										columnType = ColumnType.DECIMAL_NUMBER;
+									} else {
+										columnType = ColumnType.INTEGER_NUMBER;
+									}
+
+									System.out.println("formatted value = "+formattedValue);
+									
 								}
 								break;
 						}
@@ -173,8 +184,8 @@ public class SpreadsheetScanner {
 									if (columnNamesAndTypes.get(colName) == ColumnType.INTEGER_NUMBER) {
 										columnData.put(colName, String.valueOf(new Double(dataCell.getNumericCellValue()).intValue()).trim());
 									} else {
-										//decimal
-										columnData.put(colName, String.valueOf(dataCell.getNumericCellValue()).trim());
+										String formattedDecimalValue = dataFormatter.formatCellValue(dataCell);
+										columnData.put(colName, formattedDecimalValue);
 									}
 								}
 							}
