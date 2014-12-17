@@ -49,6 +49,7 @@ public abstract class DatabaseCreator {
 					builder.append(" INTEGER");
 					break;
 				case DECIMAL_NUMBER:
+					builder.append(" REAL");
 				case DATE:
 					break;
 			}
