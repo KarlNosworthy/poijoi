@@ -43,9 +43,8 @@ public class JDBCDatabaseCreator extends DatabaseCreator {
 			
 			for (String tableName : tableDefinitions.keySet()) {
 				String sql = buildCreateTableSQL(tableName, tableDefinitions.get(tableName));
-				if (statement.execute(sql)) {
-					numberOfTablesCreated++;
-				}				
+				statement.execute(sql);
+				numberOfTablesCreated++;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -68,10 +67,10 @@ public class JDBCDatabaseCreator extends DatabaseCreator {
 			List<String> sqlStrings = buildInsertTableSQL(tableName, dataToImport, columnDefinitions);
 			
 			for (String sqlString : sqlStrings) {
-				if (statement.execute(sqlString)) {
-					numberOfRowsInserted++;
-				}				
+				statement.execute(sqlString);
+				numberOfRowsInserted++;
 			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

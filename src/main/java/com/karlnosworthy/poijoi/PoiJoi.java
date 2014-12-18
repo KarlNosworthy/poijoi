@@ -22,6 +22,9 @@ import com.karlnosworthy.poijoi.db.jdbc.JDBCDatabaseCreator;
  * @since 1.0
  */
 public class PoiJoi {
+	
+	private static final String COMMAND_OPTION_VERSION = "--version";
+	
 
 	private File sourceDataFile;
 	private File outputPath;
@@ -124,13 +127,15 @@ public class PoiJoi {
 				
 				JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator(connection);
 				
-				if (options.containsKey("--version")) {
-					Integer versionNumber = Integer.parseInt(options.get("--version"));
+				if (options.containsKey(COMMAND_OPTION_VERSION)) {
+					Integer versionNumber = Integer.parseInt(options.get(COMMAND_OPTION_VERSION));
 					databaseCreator.setVersionNumber(versionNumber);
 				}
 				
 				Map<String, HashMap<String,ColumnType>> tableDefinitions = scanner.getTableDefinitions();
-				System.out.println("Created " + databaseCreator.createTables(tableDefinitions) + " tables....");
+				
+				int numberOfTablesCreated = databaseCreator.createTables(tableDefinitions);
+				System.out.println("Created " + numberOfTablesCreated + " table(s)....");
 				
 				for (String tableName : tableDefinitions.keySet()) {
 					List<HashMap<String,String>> tableData = scanner.getTableData(tableName);
