@@ -109,10 +109,11 @@ public class PoiJoi {
 			if (outputPath.isDirectory()) {
 				String sourceDataFileAbsPath = sourceDataFile.getAbsolutePath();
 				
-				int lastIndex = sourceDataFileAbsPath.lastIndexOf(".");
-				String filePathWithoutExtension = sourceDataFileAbsPath.substring(0,lastIndex);
+				int indexOfLastPathSeparator = sourceDataFileAbsPath.lastIndexOf(File.separator);
+				int indexOfFileSeparator = sourceDataFileAbsPath.indexOf('.', indexOfLastPathSeparator);
+				String filePathWithoutExtension = sourceDataFileAbsPath.substring(indexOfLastPathSeparator, indexOfFileSeparator);
 				
-				jdbcUrl = DatabaseUtils.createLocalJdbcDatabaseUrl(new File(filePathWithoutExtension + ".db"));
+				jdbcUrl = DatabaseUtils.createLocalJdbcDatabaseUrl(new File(outputPath, filePathWithoutExtension + ".db"));
 			} else {
 				jdbcUrl = DatabaseUtils.createLocalJdbcDatabaseUrl(outputPath);
 			}
