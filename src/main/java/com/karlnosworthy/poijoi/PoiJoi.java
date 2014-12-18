@@ -137,12 +137,6 @@ public class PoiJoi {
 					
 					if (tableData != null) {
 						databaseCreator.insertRowsIntoTable(tableName, tableData, tableDefinitions.get(tableName));
-						
-						for (HashMap<String,String> rowData : tableData) {							
-							for (String columnName : rowData.keySet()) {
-								System.out.println(columnName + " = "+rowData.get(columnName));
-							}
-						}
 					}
 				}
 			} catch (SQLException e) {

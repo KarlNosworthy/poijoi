@@ -138,9 +138,6 @@ public class SpreadsheetScanner {
 									} else {
 										columnType = ColumnType.INTEGER_NUMBER;
 									}
-
-									System.out.println("formatted value = "+formattedValue);
-									
 								}
 								break;
 						}
