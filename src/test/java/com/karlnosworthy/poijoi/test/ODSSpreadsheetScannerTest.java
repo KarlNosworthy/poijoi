@@ -16,15 +16,13 @@ import org.junit.Test;
 import com.karlnosworthy.poijoi.core.SpreadsheetScanner;
 import com.karlnosworthy.poijoi.core.SpreadsheetScanner.ColumnType;
 
-
-public class SpreadsheetScannerTest {
+public class ODSSpreadsheetScannerTest {
 	
 	@Test
 	public void testColumnHeaders() throws Exception {
-		
-		File testFile = new File(getClass().getClassLoader().getResource("test1.xls").getFile());
-		
-		SpreadsheetScanner scanner = new SpreadsheetScanner(testFile);
+		File inputFile = new File(getClass().getClassLoader().getResource("test1.ods").getPath());
+
+		SpreadsheetScanner scanner = new SpreadsheetScanner(inputFile);
 		Set<String> columnNames = scanner.getColumnNames("Sheet1");
 		assertEquals(4,columnNames.size());
 		//check the column names
@@ -53,11 +51,13 @@ public class SpreadsheetScannerTest {
 		assertTrue(checkedCol3);
 		assertTrue(checkedCol4);
 	}
-
+	
 	@Test
 	public void testColumnTypes() throws Exception {
-		File testFile = new File("src/test/resources/test1.xls");
-		SpreadsheetScanner scanner = new SpreadsheetScanner(testFile);
+		
+		File inputFile = new File(getClass().getClassLoader().getResource("test1.ods").getPath());
+
+		SpreadsheetScanner scanner = new SpreadsheetScanner(inputFile);
 		Map<String, ColumnType> columns = scanner.getColumnNamesAndTypes("Sheet1");
 		assertEquals(4,columns.size());
 		//check the column types
@@ -95,8 +95,9 @@ public class SpreadsheetScannerTest {
 
 	@Test
 	public void testColumnValues() throws Exception {
-		File testFile = new File("src/test/resources/test1.xls");
-		SpreadsheetScanner scanner = new SpreadsheetScanner(testFile);
+		File inputFile = new File(getClass().getClassLoader().getResource("test1.ods").getPath());
+
+		SpreadsheetScanner scanner = new SpreadsheetScanner(inputFile);
 		List<HashMap<String, String>> tableData = scanner.getTableData("Sheet1");
 		assertEquals(2,tableData.size());
 		
