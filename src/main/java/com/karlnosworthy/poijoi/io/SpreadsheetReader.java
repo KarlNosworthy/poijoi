@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.core.io;
+package com.karlnosworthy.poijoi.io;
 
 import java.io.File;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.core.io.ods;
+package com.karlnosworthy.poijoi.io.ods;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +16,7 @@ import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 
 import com.karlnosworthy.poijoi.core.SpreadsheetScanner.ColumnType;
-import com.karlnosworthy.poijoi.core.io.SpreadsheetReader;
+import com.karlnosworthy.poijoi.io.SpreadsheetReader;
 
 public final class ODSSpreadsheetReader extends SpreadsheetReader {
 	
