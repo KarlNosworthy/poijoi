@@ -9,10 +9,10 @@ import java.util.Map;
 
 import org.sqlite.SQLiteConfig;
 
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.db.DatabaseCreator;
-import com.karlnosworthy.poijoi.io.ColumnDefinition;
-import com.karlnosworthy.poijoi.io.PoijoiMetaData;
-import com.karlnosworthy.poijoi.io.TableDefinition;
 
 public class JDBCDatabaseCreator extends DatabaseCreator {
 

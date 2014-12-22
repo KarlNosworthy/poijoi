@@ -9,12 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.db.DatabaseUtils;
 import com.karlnosworthy.poijoi.db.jdbc.JDBCDatabaseCreator;
-import com.karlnosworthy.poijoi.io.PoijoiMetaData;
 import com.karlnosworthy.poijoi.io.Reader;
 import com.karlnosworthy.poijoi.io.Reader.ReadType;
-import com.karlnosworthy.poijoi.io.TableDefinition;
 import com.karlnosworthy.poijoi.io.ods.ODSSpreadsheetReader;
 import com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetReader;
 

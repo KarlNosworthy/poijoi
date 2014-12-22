@@ -1,5 +1,7 @@
 package com.karlnosworthy.poijoi.io;
 
+import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
+
 public interface Reader {
 
 	public enum ReadType {

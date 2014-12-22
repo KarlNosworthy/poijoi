@@ -10,11 +10,11 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.karlnosworthy.poijoi.io.ColumnDefinition;
-import com.karlnosworthy.poijoi.io.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.io.PoijoiMetaData;
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.core.model.TableDefinition;
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.io.Reader.ReadType;
-import com.karlnosworthy.poijoi.io.TableDefinition;
 
 public class ODSSpreadsheetReaderTest {
 
