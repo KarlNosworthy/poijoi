@@ -1,5 +1,12 @@
 package com.karlnosworthy.poijoi.io.xls;
 
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.FileInputStream;
+
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
@@ -20,7 +27,19 @@ public class XLSSpreadsheetWriterTest {
 
 		// write that ODS into a XLS
 		Writer writer = new XLSSpreadsheetWriter();
-		writer.write("/home/barty/test.xls", metaData, WriteType.BOTH);
+		String temp = System.getProperty("java.io.tmpdir");
+		File file = new File(temp, "test.xls");
+		writer.write(file.getAbsolutePath(), metaData, WriteType.BOTH);
+		
+		// validate contents of the file
+		HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(file));
+		assertEquals(1, wb.getNumberOfSheets());
+		
+		HSSFSheet sheet = wb.getSheet("Sheet1");
+		assertNotNull(sheet);
+		
+		assertEquals(2, sheet.getLastRowNum());
+		
 		
 	}
 	
