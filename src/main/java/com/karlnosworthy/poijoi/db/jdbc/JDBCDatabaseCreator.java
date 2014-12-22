@@ -9,22 +9,24 @@ import java.util.Map;
 
 import org.sqlite.SQLiteConfig;
 
-import com.karlnosworthy.poijoi.core.SpreadsheetScanner.ColumnType;
 import com.karlnosworthy.poijoi.db.DatabaseCreator;
+import com.karlnosworthy.poijoi.io.ColumnDefinition;
+import com.karlnosworthy.poijoi.io.PoijoiMetaData;
+import com.karlnosworthy.poijoi.io.TableDefinition;
 
 public class JDBCDatabaseCreator extends DatabaseCreator {
-	
+
 	private Connection connection;
 
 	public JDBCDatabaseCreator(Connection connection) {
 		super();
 		this.connection = connection;
 	}
-	
+
 	public boolean setVersionNumber(Integer versionNumber) {
 		SQLiteConfig config = new SQLiteConfig();
 		config.setUserVersion(versionNumber);
-		
+
 		try {
 			config.apply(connection);
 			return true;
@@ -32,17 +34,19 @@ public class JDBCDatabaseCreator extends DatabaseCreator {
 			e1.printStackTrace();
 		}
 		return false;
-	}	
-	
-	public int createTables(Map<String,HashMap<String,ColumnType>> tableDefinitions) {
+	}
+
+	public int createTables(PoijoiMetaData metaData) {
 		int numberOfTablesCreated = 0;
-		
+
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
-			
+			Map<String, TableDefinition> tableDefinitions = metaData
+					.getTableDefinitions();
 			for (String tableName : tableDefinitions.keySet()) {
-				String sql = buildCreateTableSQL(tableName, tableDefinitions.get(tableName));
+				String sql = buildCreateTableSQL(tableName, tableDefinitions
+						.get(tableName).getColumnDefinitions());
 				statement.execute(sql);
 				numberOfTablesCreated++;
 			}
@@ -53,24 +57,27 @@ public class JDBCDatabaseCreator extends DatabaseCreator {
 				statement.close();
 			} catch (SQLException e) {
 			}
-		}		
+		}
 		return numberOfTablesCreated;
 	}
-	
-	public int insertRowsIntoTable(String tableName, List<HashMap<String,String>> dataToImport, HashMap<String,ColumnType> columnDefinitions) {
+
+	public int insertRowsIntoTable(String tableName,
+			List<HashMap<String, String>> dataToImport,
+			Map<String, ColumnDefinition> columnDefinitions) {
 		int numberOfRowsInserted = 0;
-		
+
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
-			
-			List<String> sqlStrings = buildInsertTableSQL(tableName, dataToImport, columnDefinitions);
-			
+
+			List<String> sqlStrings = buildInsertTableSQL(tableName,
+					dataToImport, columnDefinitions);
+
 			for (String sqlString : sqlStrings) {
 				statement.execute(sqlString);
 				numberOfRowsInserted++;
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -78,9 +85,7 @@ public class JDBCDatabaseCreator extends DatabaseCreator {
 				statement.close();
 			} catch (SQLException e) {
 			}
-		}		
+		}
 		return numberOfRowsInserted;
 	}
 }
-
-
