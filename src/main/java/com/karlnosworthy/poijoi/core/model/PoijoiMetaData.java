@@ -1,9 +1,10 @@
-package com.karlnosworthy.poijoi.io;
+package com.karlnosworthy.poijoi.core.model;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.io.Reader;
 import com.karlnosworthy.poijoi.io.Reader.ReadType;
 
 public class PoijoiMetaData {

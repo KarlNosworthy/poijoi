@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.karlnosworthy.poijoi.io.ColumnDefinition;
-import com.karlnosworthy.poijoi.io.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.io.PoijoiMetaData;
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 
 public abstract class DatabaseCreator {
 
