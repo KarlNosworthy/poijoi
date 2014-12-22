@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.core.io.xls;
+package com.karlnosworthy.poijoi.io.xls;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +19,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 
 import com.karlnosworthy.poijoi.core.SpreadsheetScanner.ColumnType;
-import com.karlnosworthy.poijoi.core.io.SpreadsheetReader;
+import com.karlnosworthy.poijoi.io.SpreadsheetReader;
 
 public final class XLSSpreadsheetReader extends SpreadsheetReader {
 
