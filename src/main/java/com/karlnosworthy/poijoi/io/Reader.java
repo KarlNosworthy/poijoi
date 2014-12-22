@@ -4,10 +4,6 @@ import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 
 public interface Reader {
 
-	public enum ReadType {
-		DATA, SCHEMA
-	}
-
 	/**
 	 * Read a source to build a Poijoi meta data object based on the read type
 	 * 
@@ -15,6 +11,6 @@ public interface Reader {
 	 * @param readType
 	 * @return
 	 */
-	PoijoiMetaData read(String source, ReadType readType) throws Exception;
+	PoijoiMetaData read(String source, boolean readData) throws Exception;
 
 }

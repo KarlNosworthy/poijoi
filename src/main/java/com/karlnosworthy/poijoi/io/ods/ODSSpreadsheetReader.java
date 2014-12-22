@@ -13,14 +13,14 @@ import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.io.Reader;
 
 public final class ODSSpreadsheetReader implements Reader {
 
-	public PoijoiMetaData read(String spreadsheetFile, ReadType readType)
+	public PoijoiMetaData read(String spreadsheetFile, boolean readData)
 			throws Exception {
 		SpreadsheetDocument document = null;
 		try {
@@ -30,18 +30,17 @@ public final class ODSSpreadsheetReader implements Reader {
 			int totalNumberOfSheets = document.getSheetCount();
 			for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
 				Table sheet = document.getSheetByIndex(sheetIndex);
-				TableDefinition tableDefinition = parseSheetMeta(sheet,
-						readType);
+				TableDefinition tableDefinition = parseSheetMeta(sheet);
 				if (tableDefinition == null) {
 					continue; // couldn't read table definition
 				}
 				tables.put(tableDefinition.getTableName(), tableDefinition);
-				if (readType != ReadType.SCHEMA) {
+				if (readData) {
 					tableData.put(tableDefinition.getTableName(),
 							readData(sheet, tableDefinition));
 				}
 			}
-			return new PoijoiMetaData(readType, tables, tableData);
+			return new PoijoiMetaData(readData, tables, tableData);
 		} finally {
 			if (document != null) {
 				document.close();
@@ -49,7 +48,7 @@ public final class ODSSpreadsheetReader implements Reader {
 		}
 	}
 
-	private TableDefinition parseSheetMeta(Table sheet, ReadType readType) {
+	private TableDefinition parseSheetMeta(Table sheet) {
 
 		// Find columns...
 		Row headerRow = sheet.getRowByIndex(0);

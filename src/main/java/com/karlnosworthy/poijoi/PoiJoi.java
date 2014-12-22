@@ -2,20 +2,15 @@ package com.karlnosworthy.poijoi;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
-import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.db.DatabaseUtils;
-import com.karlnosworthy.poijoi.db.jdbc.JDBCDatabaseCreator;
 import com.karlnosworthy.poijoi.io.Reader;
-import com.karlnosworthy.poijoi.io.Reader.ReadType;
+import com.karlnosworthy.poijoi.io.Writer;
+import com.karlnosworthy.poijoi.io.Writer.WriteType;
 import com.karlnosworthy.poijoi.io.ods.ODSSpreadsheetReader;
+import com.karlnosworthy.poijoi.io.sqlite.SQLiteDatabaseCreator;
 import com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetReader;
 
 /**
@@ -27,8 +22,6 @@ import com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetReader;
  * @since 1.0
  */
 public class PoiJoi {
-
-	private static final String COMMAND_OPTION_VERSION = "--version";
 
 	private File sourceDataFile;
 	private File outputPath;
@@ -119,7 +112,8 @@ public class PoiJoi {
 		this.options = options;
 	}
 
-	public void process() {
+	public void process() throws Exception {
+		// Read
 		Reader reader = null;
 		String inputFilePath = sourceDataFile.getAbsolutePath();
 		if (inputFilePath
@@ -129,61 +123,14 @@ public class PoiJoi {
 				.endsWith(PoiJoiConfiguration.MS_EXCEL_DOCUMENT_EXTENSION)) {
 			reader = new XLSSpreadsheetReader();
 		}
-
-		String jdbcUrl = null;
-		if (outputPath.isDirectory()) {
-			String sourceDataFileAbsPath = sourceDataFile.getAbsolutePath();
-
-			int indexOfLastPathSeparator = sourceDataFileAbsPath
-					.lastIndexOf(File.separator);
-			int indexOfFileSeparator = sourceDataFileAbsPath.indexOf('.',
-					indexOfLastPathSeparator);
-			String filePathWithoutExtension = sourceDataFileAbsPath.substring(
-					indexOfLastPathSeparator, indexOfFileSeparator);
-
-			jdbcUrl = DatabaseUtils.createLocalJdbcDatabaseUrl(new File(
-					outputPath, filePathWithoutExtension + ".db"));
-		} else {
-			jdbcUrl = DatabaseUtils.createLocalJdbcDatabaseUrl(outputPath);
-		}
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-			Connection connection = DriverManager.getConnection(jdbcUrl);
-
-			JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator(
-					connection);
-
-			if (options.containsKey(COMMAND_OPTION_VERSION)) {
-				Integer versionNumber = Integer.parseInt(options
-						.get(COMMAND_OPTION_VERSION));
-				databaseCreator.setVersionNumber(versionNumber);
-			}
-
-			PoijoiMetaData metaData = reader.read(inputFilePath, ReadType.DATA);
-			Map<String, TableDefinition> tableDefinitions = metaData
-					.getTableDefinitions();
-
-			int numberOfTablesCreated = databaseCreator.createTables(metaData);
-			System.out.println("Created " + numberOfTablesCreated
-					+ " table(s)....");
-
-			for (String tableName : tableDefinitions.keySet()) {
-				List<HashMap<String, String>> tableData = metaData
-						.getTableData(tableName);
-				if (tableData != null) {
-					databaseCreator.insertRowsIntoTable(tableName, tableData,
-							tableDefinitions.get(tableName)
-									.getColumnDefinitions());
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException cnfe) {
-			cnfe.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		PoijoiMetaData metaData = reader.read(inputFilePath, true);
+		
+		// Write
+		Writer writer = null;
+		// instantiate JDBC creator for the second
+		writer = new SQLiteDatabaseCreator();
+		writer.write(outputPath.getAbsolutePath(), metaData, WriteType.BOTH);
+		
 	}
 
 	/**
@@ -223,7 +170,7 @@ public class PoiJoi {
 				}
 
 				poiJoiInstance.process();
-			} catch (IOException ioe) {
+			} catch (Exception ioe) {
 				System.out.println("ERROR: " + ioe.getMessage());
 			}
 		}

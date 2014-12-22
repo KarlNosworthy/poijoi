@@ -17,14 +17,14 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.io.Reader;
 
 public final class XLSSpreadsheetReader implements Reader {
 
-	public PoijoiMetaData read(String spreadsheetFile, ReadType readType)
+	public PoijoiMetaData read(String spreadsheetFile, boolean readData)
 			throws Exception {
 		HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(
 				spreadsheetFile));
@@ -33,20 +33,20 @@ public final class XLSSpreadsheetReader implements Reader {
 		int totalNumberOfSheets = workbook.getNumberOfSheets();
 		for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
 			HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
-			TableDefinition tableDefinition = parseSheetMeta(sheet, readType);
+			TableDefinition tableDefinition = parseSheetMeta(sheet);
 			if (tableDefinition == null) {
 				continue; // couldn't read table definition
 			}
 			tables.put(tableDefinition.getTableName(), tableDefinition);
-			if (readType != ReadType.SCHEMA) {
+			if (readData) {
 				tableData.put(tableDefinition.getTableName(),
 						readData(sheet, tableDefinition));
 			}
 		}
-		return new PoijoiMetaData(readType, tables, tableData);
+		return new PoijoiMetaData(readData, tables, tableData);
 	}
 
-	private TableDefinition parseSheetMeta(HSSFSheet sheet, ReadType readType) {
+	private TableDefinition parseSheetMeta(HSSFSheet sheet) {
 
 		DataFormatter dataFormatter = new DataFormatter();
 
