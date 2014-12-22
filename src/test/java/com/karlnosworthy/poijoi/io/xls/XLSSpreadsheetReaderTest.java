@@ -11,10 +11,9 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.io.Reader.ReadType;
 
 public class XLSSpreadsheetReaderTest {
 
@@ -23,7 +22,7 @@ public class XLSSpreadsheetReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 		XLSSpreadsheetReader reader = new XLSSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, ReadType.SCHEMA);
+		PoijoiMetaData metaData = reader.read(path, false);
 
 		Map<String, TableDefinition> tableDefinitions = metaData
 				.getTableDefinitions();
@@ -49,7 +48,7 @@ public class XLSSpreadsheetReaderTest {
 				.getPath();
 
 		XLSSpreadsheetReader reader = new XLSSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, ReadType.SCHEMA);
+		PoijoiMetaData metaData = reader.read(path, false);
 
 		TableDefinition tableDefinition = metaData.getTableDefinition("Sheet1");
 		assertNotNull(tableDefinition);
@@ -71,7 +70,7 @@ public class XLSSpreadsheetReaderTest {
 				.getPath();
 
 		XLSSpreadsheetReader reader = new XLSSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, ReadType.DATA);
+		PoijoiMetaData metaData = reader.read(path, true);
 
 		// pull back sheet1 data
 		List<HashMap<String, String>> tableData = metaData

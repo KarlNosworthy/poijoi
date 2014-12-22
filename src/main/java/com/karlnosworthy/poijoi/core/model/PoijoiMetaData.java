@@ -4,26 +4,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.karlnosworthy.poijoi.io.Reader;
-import com.karlnosworthy.poijoi.io.Reader.ReadType;
-
 public class PoijoiMetaData {
 
-	private ReadType readType;
+	private boolean readData;
 	private Map<String, TableDefinition> tableDefinitions;
 	private Map<String, List<HashMap<String, String>>> tableData;
 
-	public PoijoiMetaData(ReadType readType,
+	public PoijoiMetaData(boolean readData,
 			Map<String, TableDefinition> tableDefinitions,
 			Map<String, List<HashMap<String, String>>> tableData) {
 		super();
-		this.readType = readType;
+		this.readData = readData;
 		this.tableDefinitions = tableDefinitions;
 		this.tableData = tableData;
 	}
 
-	public ReadType getReadType() {
-		return readType;
+	public boolean isReadData() {
+		return readData;
 	}
 
 	public Map<String, TableDefinition> getTableDefinitions() {

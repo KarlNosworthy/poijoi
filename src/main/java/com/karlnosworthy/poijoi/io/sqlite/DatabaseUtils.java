@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.db;
+package com.karlnosworthy.poijoi.io.sqlite;
 
 import java.io.File;
 
