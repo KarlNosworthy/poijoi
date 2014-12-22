@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.karlnosworthy.poijoi.PoiJoiConfiguration;
-import com.karlnosworthy.poijoi.core.ods.ODSSpreadsheetReader;
-import com.karlnosworthy.poijoi.core.xls.XLSSpreadsheetReader;
+import com.karlnosworthy.poijoi.core.io.SpreadsheetReader;
+import com.karlnosworthy.poijoi.core.io.ods.ODSSpreadsheetReader;
+import com.karlnosworthy.poijoi.core.io.xls.XLSSpreadsheetReader;
 
 public class SpreadsheetScanner {
 
