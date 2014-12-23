@@ -19,7 +19,7 @@ bin/
 
 # temp files
 *.*~
-/build/
+*/build/
 
 # Gradle
 .gradle/
