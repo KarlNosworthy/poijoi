@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetWriterTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2014-12-23T23:54:06" hostname="Karls-MacBook-Pro.local" time="0.0">
+  <properties/>
+  <testcase name="testWrite" classname="com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetWriterTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
