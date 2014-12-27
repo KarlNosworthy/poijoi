@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetReaderTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2014-12-22T23:32:44" hostname="Karls-MacBook-Pro.local" time="0.371">
+  <properties/>
+  <testcase name="testColumnTypes" classname="com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetReaderTest" time="0.355"/>
+  <testcase name="testColumnHeaders" classname="com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetReaderTest" time="0.005"/>
+  <testcase name="testColumnValues" classname="com.karlnosworthy.poijoi.io.xls.XLSSpreadsheetReaderTest" time="0.01"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
