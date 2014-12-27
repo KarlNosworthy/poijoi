@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.karlnosworthy.poijoi.io.ods.ODSSpreadsheetReaderTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2014-12-22T23:32:43" hostname="Karls-MacBook-Pro.local" time="1.224">
-  <properties/>
-  <testcase name="testColumnTypes" classname="com.karlnosworthy.poijoi.io.ods.ODSSpreadsheetReaderTest" time="1.135"/>
-  <testcase name="testColumnHeaders" classname="com.karlnosworthy.poijoi.io.ods.ODSSpreadsheetReaderTest" time="0.044"/>
-  <testcase name="testColumnValues" classname="com.karlnosworthy.poijoi.io.ods.ODSSpreadsheetReaderTest" time="0.044"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
