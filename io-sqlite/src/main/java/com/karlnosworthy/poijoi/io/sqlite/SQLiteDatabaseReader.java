@@ -15,9 +15,9 @@ import java.util.Map;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.JDBCMetaDataReader;
 import com.karlnosworthy.poijoi.io.Reader;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
+import com.karlnosworthy.poijoi.io.jdbc.JDBCMetaDataReader;
 
 @SupportsFormat(type = FormatType.SQLITE)
 public class SQLiteDatabaseReader implements Reader {

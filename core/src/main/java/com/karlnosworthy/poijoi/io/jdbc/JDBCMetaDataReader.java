@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io;
+package com.karlnosworthy.poijoi.io.jdbc;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
