@@ -1,11 +1,6 @@
-apply plugin:'java'
 
-version = '0.1'
-sourceCompatibility = 1.6
-targetCompatibility = 1.7
-
-repositories {
-	mavenCentral()
+jar {
+	appendix = 'io-ods'
 }
 
 dependencies {

@@ -1,6 +1,21 @@
-subprojects {
-    apply plugin: 'java'
 
+allprojects {
+	version = '0.5'
+	
+    apply plugin: 'java'
+	
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+	
+	jar {
+		archivesBaseName = 'poijoi'
+		classifier = 'SNAPSHOT'
+	}
+}
+
+subprojects {
     // Disable the test report for the individual test task
     test {
         reports.html.enabled = false
