@@ -37,7 +37,7 @@ public class SQLiteDatabaseWriter implements Writer {
 				System.out.println("Inserted " + inserts + " row(s)....");
 			}
 		} finally {
-			if (connection != null) {
+			if (connection != null) { 
 				connection.close();
 			}
 		}		

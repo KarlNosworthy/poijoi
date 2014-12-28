@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.xls;
+package com.karlnosworthy.poijoi.io.ods;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.Test;
+import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Table;
 
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
@@ -22,7 +22,7 @@ import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.io.Writer;
 import com.karlnosworthy.poijoi.io.Writer.WriteType;
 
-public class XLSSpreadsheetWriterTest {
+public class ODSSpreadsheetWriterTest {
 
 	@Test
 	public void testWrite() throws Exception {
@@ -52,7 +52,7 @@ public class XLSSpreadsheetWriterTest {
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);
 		
-		Writer writer = new XLSSpreadsheetWriter();
+		Writer writer = new ODSSpreadsheetWriter();
 		String temp = System.getProperty("java.io.tmpdir");
 		File file = new File(temp, "test.xls");
 		file.deleteOnExit();
@@ -61,11 +61,12 @@ public class XLSSpreadsheetWriterTest {
 		
 		
 		// validate contents of the file
-		HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(file));
-		assertEquals(1, wb.getNumberOfSheets());
+		SpreadsheetDocument spreadsheet = SpreadsheetDocument.loadDocument(new FileInputStream(file));
+		assertEquals(1, spreadsheet.getTableList().size());
 		
-		HSSFSheet sheet = wb.getSheet("TableOne");
-		assertNotNull(sheet);
-		assertEquals(1, sheet.getLastRowNum());
-	}	
+		Table table = spreadsheet.getTableByName("TableOne");
+		assertNotNull(table);
+		assertEquals(2, table.getRowCount());
+		spreadsheet.close();
+	}
 }
