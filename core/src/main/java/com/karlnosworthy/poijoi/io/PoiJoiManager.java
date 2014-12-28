@@ -39,9 +39,16 @@ public class PoiJoiManager {
 	private Reader getCachedReader(String inputSource) {
 		Reader reader = null;
 		
+		FormatType formatType = determineFormatType(inputSource);
+		
+		if (formatType == null) {
+			// throw an exception here to inform 'unable to determine format type'
+			return reader;
+		}
+		
 		if (readerInstanceCache != null && !readerInstanceCache.isEmpty()) {
-			if (readerInstanceCache.containsKey(inputSource)) {
-				reader = readerInstanceCache.get(inputSource);
+			if (readerInstanceCache.containsKey(formatType)) {
+				reader = readerInstanceCache.get(formatType);
 			}
 		}
 		
@@ -51,8 +58,6 @@ public class PoiJoiManager {
 				Iterator<Class<?>> readerClassIterator = readerClassCache.iterator();
 				while (readerClassIterator.hasNext()) {
 					Class<?> readerClass =  (Class<?>) readerClassIterator.next();
-					
-					FormatType formatType = determineFormatType(inputSource);
 					
 					if (supportsFormat(readerClass, formatType)) {
 						try {
@@ -87,9 +92,16 @@ public class PoiJoiManager {
 	private Writer getCachedWriter(String output) {
 		Writer writer = null;
 
+		FormatType formatType = determineFormatType(output);
+		
+		if (formatType == null) {
+			// throw an exception here to inform 'unable to determine format type'
+			return writer;
+		}
+		
 		if (writerInstanceCache != null && !writerInstanceCache.isEmpty()) {
-			if (writerInstanceCache.containsKey(output)) {
-				writer = writerInstanceCache.get(output);
+			if (writerInstanceCache.containsKey(formatType)) {
+				writer = writerInstanceCache.get(formatType);
 			}
 		}
 		
@@ -101,7 +113,6 @@ public class PoiJoiManager {
 				while (writerClassIterator.hasNext()) {
 					Class<?> writerClass =  (Class<?>) writerClassIterator.next();
 					
-					FormatType formatType = determineFormatType(output);
 					if (supportsFormat(writerClass, formatType)) {
 						try {
 							writer = (Writer) writerClass.newInstance();
@@ -130,19 +141,20 @@ public class PoiJoiManager {
 			String qualifierFilePath = qualifierFile.getAbsolutePath();
 
 			if (qualifierFilePath.endsWith(FormatType.XLS.name().toLowerCase())) {
-				return FormatType.XLS;
+				formatType = FormatType.XLS;
 			} else if (qualifierFilePath.endsWith(FormatType.XLSX.name().toLowerCase())) {
-				return FormatType.XLSX;
+				formatType = FormatType.XLSX;
 			} else if (qualifierFilePath.endsWith(FormatType.ODS.name().toLowerCase())) {
-				return FormatType.ODS;
+				formatType = FormatType.ODS;
 			}
 		} else if (isJdbcURL(qualifier)) {
 			int procotolEndIndex = (1 + qualifier.indexOf(":"));
 			int subProtocolEndIndex = qualifier.indexOf(":", procotolEndIndex);
 			
 			String subProtocol = qualifier.substring(procotolEndIndex, subProtocolEndIndex);
+			
 			if (subProtocol.equalsIgnoreCase(FormatType.SQLITE.name())) {
-				return FormatType.SQLITE;
+				formatType = FormatType.SQLITE;
 			}
 		}
 		
@@ -265,8 +277,11 @@ public class PoiJoiManager {
 			return false;
 		}
 		
-		File file = new File(inputSource);
-		return file.isFile();
+		if (inputSource.startsWith(File.separator)) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	private boolean isJdbcURL(String output) {

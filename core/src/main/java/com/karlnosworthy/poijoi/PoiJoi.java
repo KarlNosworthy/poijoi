@@ -21,7 +21,7 @@ import com.karlnosworthy.poijoi.io.Writer.WriteType;
  */
 public class PoiJoi {
 
-	private File sourceDataFile;
+	private String inputQualifier;
 	private String outputQualifier;
 	private Map<String, String> options;
 
@@ -33,42 +33,17 @@ public class PoiJoi {
 		this.options = new HashMap<String, String>();
 	}
 
-	/**
-	 * Returns the File instance that points towards the data file which is to
-	 * be used to specify and populate the database.
-	 * 
-	 * @return The File instance.
-	 */
-	public File getSourceDataFile() {
-		return this.sourceDataFile;
+	public String getSourceDataFile() {
+		return inputQualifier;
 	}
 
-	/**
-	 * Sets the File instance that points to the data file which is to be used
-	 * to specify and populate the database. The File instance must point
-	 * towards a file that exists and is readable by the current process.
-	 * 
-	 * @param sourceDataFile
-	 *            The File instance to use.
-	 * @throws IllegalArgumentException
-	 *             Thrown if the parameter provided is null.
-	 * @throws IOException
-	 *             Thrown if the file does not exist or cannot be read from the
-	 *             file system.
-	 */
-	public void setSourceDataFile(File sourceDataFile) throws IOException {
-		if (sourceDataFile == null) {
+	public void setInputQualifier(String inputQualifier) throws IOException {
+		if (inputQualifier == null) {
 			throw new IllegalArgumentException(
-					"The source data file instance cannot be null.");
-		} else if (!sourceDataFile.exists()) {
-			throw new IOException(
-					"The source data file specified does not exist in the file system.");
-		} else if (!sourceDataFile.canRead()) {
-			throw new IOException(
-					"The source data file specified is not readable.");
+					"The input qualifier cannot be null.");
 		}
-
-		this.sourceDataFile = sourceDataFile;
+			
+		this.inputQualifier = inputQualifier;
 	}
 
 	/**
@@ -100,10 +75,10 @@ public class PoiJoi {
 	public void process() throws Exception {
 		PoiJoiManager poiJoiManager = new PoiJoiManager();
 		
-		Reader reader = poiJoiManager.findReader(sourceDataFile.getAbsolutePath());
+		Reader reader = poiJoiManager.findReader(inputQualifier);
 		Writer writer = poiJoiManager.findWriter(outputQualifier);
 		
-		PoijoiMetaData metaData = reader.read(sourceDataFile.getAbsolutePath(), true);
+		PoijoiMetaData metaData = reader.read(inputQualifier, true);
 		writer.write(outputQualifier, metaData, WriteType.BOTH);
 	}
 
@@ -124,13 +99,15 @@ public class PoiJoi {
 			try {
 				if (args.length > 2) {
 					poiJoiInstance.setOptions(parseOptions(args[0]));
-					poiJoiInstance.setSourceDataFile(new File(args[1]));
+					poiJoiInstance.setInputQualifier(args[1]);
 					poiJoiInstance.setOutputQualifier(args[2]);
 				} else if (args.length == 2) {
-					poiJoiInstance.setSourceDataFile(new File(args[0]));
+					poiJoiInstance.setInputQualifier(args[0]);
 					poiJoiInstance.setOutputQualifier(args[1]);
 				} else {
 					poiJoiInstance.setOptions(parseOptions(args[0]));
+/*					
+					poiJoiInstance.setInputQualifier(inputQualifier);
 					File sourcePath = poiJoiInstance.getSourceDataFile();
 					if (sourcePath.isDirectory()) {
 						poiJoiInstance.setOutputQualifier(sourcePath
@@ -141,11 +118,13 @@ public class PoiJoi {
 						poiJoiInstance.setOutputQualifier(sourcePath
 								.getAbsolutePath().substring(0, index));
 					}
+*/					
 				}
 
 				poiJoiInstance.process();
 			} catch (Exception ioe) {
 				System.out.println("ERROR: " + ioe.getLocalizedMessage());
+				ioe.printStackTrace();
 			}
 		}
 	}
