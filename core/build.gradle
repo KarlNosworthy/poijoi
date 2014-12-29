@@ -1,0 +1,10 @@
+
+jar {
+	appendix = 'core'
+}
+
+buildscript {
+	repositories {
+		jcenter()
+	}
+}

@@ -1,0 +1,10 @@
+
+jar {
+	appendix = 'io-ods'
+}
+
+dependencies {
+	compile project(':core')
+	compile 'org.apache.odftoolkit:simple-odf:0.7-incubating'
+	testCompile 'junit:junit:4.+'
+}
