@@ -84,7 +84,7 @@ public class XLSXSpreadsheetReaderTest {
 		// Date is defaulting to DateTime object
 		assertEquals("2014-12-17 00:00:00.000", dataRow.get("col2Date"));
 		assertEquals("2", dataRow.get("col3Integer"));
-		assertEquals("12.2", dataRow.get("col4Decimal"));
+		assertEquals("12.02", dataRow.get("col4Decimal"));
 	}
 
 }
