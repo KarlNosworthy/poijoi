@@ -3,8 +3,27 @@ jar {
 	appendix = 'io-ods'
 }
 
+configurations {
+	provided
+	compile.extendsFrom provided
+}
+
 dependencies {
-	compile project(':core')
+	provided project(':core')
 	compile 'org.apache.odftoolkit:simple-odf:0.7-incubating'
 	testCompile 'junit:junit:4.+'
+}
+
+task jarWithDependencies(type:Jar, dependsOn:jar) {
+	classifier = 'withdependencies-SNAPSHOT'
+	appendix = jar.appendix
+	
+	def depsToInclude = configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	depsToInclude += sourceSets.main.output.classesDir
+
+	from { depsToInclude }
+}
+
+artifacts {
+	archives jarWithDependencies
 }

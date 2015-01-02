@@ -1,3 +1,5 @@
+import java.util.jar.JarEntry;
+
 
 jar {
 	appendix = 'core'
@@ -7,4 +9,18 @@ buildscript {
 	repositories {
 		jcenter()
 	}
+}
+
+task jarWithDependencies(type:Jar, dependsOn:jar) {
+	classifier = 'withdependencies-SNAPSHOT'
+	appendix = jar.appendix
+	
+	def depsToInclude = configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	    depsToInclude += sourceSets.main.output.classesDir
+	
+	from { depsToInclude }
+}
+
+artifacts {
+	archives jarWithDependencies
 }
