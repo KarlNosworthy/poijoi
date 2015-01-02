@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.ods;
+package com.karlnosworthy.poijoi.io.writer.ods;
 
 import java.util.Calendar;
 import java.util.Date;

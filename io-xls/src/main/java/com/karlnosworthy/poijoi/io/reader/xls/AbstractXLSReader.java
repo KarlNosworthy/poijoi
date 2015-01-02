@@ -1,39 +1,33 @@
-package com.karlnosworthy.poijoi.io.xls;
+package com.karlnosworthy.poijoi.io.reader.xls;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.Reader;
-import com.karlnosworthy.poijoi.io.SupportsFormat;
 
-@SupportsFormat(type = FormatType.XLS)
-public final class XLSSpreadsheetReader implements Reader<String> {
+public abstract class AbstractXLSReader<T> {
 
-	public PoijoiMetaData read(String spreadsheetFile, boolean readData)
-			throws Exception {
-		HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(
-				spreadsheetFile));
+	abstract Workbook getWorkbook(T source) throws Exception;
+	
+	public final PoijoiMetaData read(T source, boolean readData) throws Exception {
+		Workbook workbook = getWorkbook(source);
 		Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		int totalNumberOfSheets = workbook.getNumberOfSheets();
 		for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
-			HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
+			Sheet sheet = workbook.getSheetAt(sheetIndex);
 			TableDefinition tableDefinition = parseSheetMeta(sheet);
 			if (tableDefinition == null) {
 				continue; // couldn't read table definition
@@ -47,23 +41,23 @@ public final class XLSSpreadsheetReader implements Reader<String> {
 		return new PoijoiMetaData(readData, tables, tableData);
 	}
 
-	private TableDefinition parseSheetMeta(HSSFSheet sheet) {
+	private TableDefinition parseSheetMeta(Sheet sheet) {
 
 		DataFormatter dataFormatter = new DataFormatter();
 
 		// Find columns...
-		HSSFRow headerRow = sheet.getRow(0);
+		Row headerRow = sheet.getRow(0);
 
 		// If we don't have any columns then there's nothing we can do
 		if (headerRow != null) {
 			String tableName = sheet.getSheetName();
-			HSSFRow typedRow = sheet.getRow(1);
+			Row typedRow = sheet.getRow(1);
 			HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
 			for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
-				HSSFCell headerRowCell = headerRow.getCell(cellIndex);
+				Cell headerRowCell = headerRow.getCell(cellIndex);
 				String cellName = headerRowCell.getStringCellValue();
 
-				HSSFCell typedRowCell = null;
+				Cell typedRowCell = null;
 				if (typedRow != null) {
 					typedRowCell = typedRow.getCell(cellIndex);
 				}
@@ -113,12 +107,12 @@ public final class XLSSpreadsheetReader implements Reader<String> {
 		return null;
 	}
 
-	private List<HashMap<String, Object>> readData(HSSFSheet sheet,
+	private List<HashMap<String, Object>> readData(Sheet sheet,
 			TableDefinition tableDefinition) {
 		List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String, Object>>();
 		if (sheet.getLastRowNum() > 1) {
 			for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
-				HSSFRow dataRow = sheet.getRow(rowIndex);
+				Row dataRow = sheet.getRow(rowIndex);
 
 				HashMap<String, Object> columnData = new HashMap<String, Object>();
 				for (int cellIndex = dataRow.getFirstCellNum(); cellIndex <= (dataRow
@@ -126,7 +120,7 @@ public final class XLSSpreadsheetReader implements Reader<String> {
 					ColumnDefinition columnDefinition = tableDefinition
 							.getColumnDefinition(cellIndex);
 					String colName = columnDefinition.getColumnName();
-					HSSFCell dataCell = dataRow.getCell(cellIndex);
+					Cell dataCell = dataRow.getCell(cellIndex);
 
 					if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
 						columnData.put(colName, dataCell.getStringCellValue()
@@ -147,4 +141,5 @@ public final class XLSSpreadsheetReader implements Reader<String> {
 		}
 		return rowData;
 	}
+	
 }

@@ -1,9 +1,10 @@
-package com.karlnosworthy.poijoi.io.xlsx;
+package com.karlnosworthy.poijoi.io.reader.xlsx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -15,16 +16,15 @@ import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.xlsx.XLSXSpreadsheetReader;
 
-public class XLSXSpreadsheetReaderTest {
+public class XLSXFileReaderTest {
 
 	@Test
 	public void testColumnHeaders() throws Exception {
 		String path = getClass().getClassLoader().getResource("test1.xlsx")
 				.getPath();
-		XLSXSpreadsheetReader reader = new XLSXSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, false);
+		XLSXFileReader reader = new XLSXFileReader();
+		PoijoiMetaData metaData = reader.read(new File(path), false);
 
 		Map<String, TableDefinition> tableDefinitions = metaData
 				.getTableDefinitions();
@@ -49,8 +49,8 @@ public class XLSXSpreadsheetReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xlsx")
 				.getPath();
 
-		XLSXSpreadsheetReader reader = new XLSXSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, false);
+		XLSXFileReader reader = new XLSXFileReader();
+		PoijoiMetaData metaData = reader.read(new File(path), false);
 
 		TableDefinition tableDefinition = metaData.getTableDefinition("Sheet1");
 		assertNotNull(tableDefinition);
@@ -71,8 +71,8 @@ public class XLSXSpreadsheetReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xlsx")
 				.getPath();
 
-		XLSXSpreadsheetReader reader = new XLSXSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, true);
+		XLSXFileReader reader = new XLSXFileReader();
+		PoijoiMetaData metaData = reader.read(new File(path), true);
 
 		// pull back sheet1 data
 		List<HashMap<String, Object>> tableData = metaData

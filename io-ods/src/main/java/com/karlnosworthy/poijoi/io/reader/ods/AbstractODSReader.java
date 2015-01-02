@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.ods;
+package com.karlnosworthy.poijoi.io.reader.ods;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,20 +14,17 @@ import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.Reader;
-import com.karlnosworthy.poijoi.io.SupportsFormat;
 
-@SupportsFormat(type = FormatType.ODS)
-public final class ODSSpreadsheetReader implements Reader<String> {
-
-	public PoijoiMetaData read(String spreadsheetFile, boolean readData)
-			throws Exception {
+public abstract class AbstractODSReader<T> {
+	
+	abstract SpreadsheetDocument getDocument(T source) throws Exception;
+	
+	public final PoijoiMetaData read(T source, boolean readData) throws Exception {
 		SpreadsheetDocument document = null;
 		try {
 			Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 			Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
-			document = SpreadsheetDocument.loadDocument(spreadsheetFile);
+			document = getDocument(source);
 			int totalNumberOfSheets = document.getSheetCount();
 			for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
 				Table sheet = document.getSheetByIndex(sheetIndex);

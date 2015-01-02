@@ -1,9 +1,10 @@
-package com.karlnosworthy.poijoi.io.ods;
+package com.karlnosworthy.poijoi.io.reader.xls;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -16,14 +17,14 @@ import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
 
-public class ODSSpreadsheetReaderTest {
+public class XLSFileReaderTest {
 
 	@Test
 	public void testColumnHeaders() throws Exception {
-		String path = getClass().getClassLoader().getResource("test1.ods")
+		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
-		ODSSpreadsheetReader reader = new ODSSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, false);
+		XLSFileReader reader = new XLSFileReader();
+		PoijoiMetaData metaData = reader.read(new File(path), false);
 
 		Map<String, TableDefinition> tableDefinitions = metaData
 				.getTableDefinitions();
@@ -45,11 +46,11 @@ public class ODSSpreadsheetReaderTest {
 	@Test
 	public void testColumnTypes() throws Exception {
 
-		String path = getClass().getClassLoader().getResource("test1.ods")
+		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 
-		ODSSpreadsheetReader reader = new ODSSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, false);
+		XLSFileReader reader = new XLSFileReader();
+		PoijoiMetaData metaData = reader.read(new File(path), false);
 
 		TableDefinition tableDefinition = metaData.getTableDefinition("Sheet1");
 		assertNotNull(tableDefinition);
@@ -67,11 +68,11 @@ public class ODSSpreadsheetReaderTest {
 
 	@Test
 	public void testColumnValues() throws Exception {
-		String path = getClass().getClassLoader().getResource("test1.ods")
+		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 
-		ODSSpreadsheetReader reader = new ODSSpreadsheetReader();
-		PoijoiMetaData metaData = reader.read(path, true);
+		XLSFileReader reader = new XLSFileReader();
+		PoijoiMetaData metaData = reader.read(new File(path), true);
 
 		// pull back sheet1 data
 		List<HashMap<String, Object>> tableData = metaData

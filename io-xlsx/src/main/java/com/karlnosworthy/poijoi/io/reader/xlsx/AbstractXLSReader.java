@@ -1,6 +1,5 @@
-package com.karlnosworthy.poijoi.io.xlsx;
+package com.karlnosworthy.poijoi.io.reader.xlsx;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,25 +11,18 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.Reader;
-import com.karlnosworthy.poijoi.io.SupportsFormat;
 
-@SupportsFormat(type = FormatType.XLSX)
-public final class XLSXSpreadsheetReader implements Reader<String> {
+public abstract class AbstractXLSReader<T> {
 
-	public PoijoiMetaData read(String spreadsheetFile, boolean readData)
-			throws Exception {
+	abstract Workbook getWorkbook(T source) throws Exception;
 
-		Workbook workbook = new XSSFWorkbook(new FileInputStream(
-				spreadsheetFile));
-
+	public final PoijoiMetaData read(T source, boolean readData) throws Exception {
+		Workbook workbook = getWorkbook(source);
 		Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		int totalNumberOfSheets = workbook.getNumberOfSheets();
@@ -150,4 +142,5 @@ public final class XLSXSpreadsheetReader implements Reader<String> {
 		}
 		return rowData;
 	}
+
 }

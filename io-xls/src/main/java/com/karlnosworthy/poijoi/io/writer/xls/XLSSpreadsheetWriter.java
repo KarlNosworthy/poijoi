@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.xls;
+package com.karlnosworthy.poijoi.io.writer.xls;
 
 import java.io.File;
 import java.io.FileOutputStream;
