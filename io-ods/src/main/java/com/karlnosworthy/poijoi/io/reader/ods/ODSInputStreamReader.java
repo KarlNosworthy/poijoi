@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import org.odftoolkit.simple.SpreadsheetDocument;
 
-import com.karlnosworthy.poijoi.io.InputStreamReader;
+import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
 
 public class ODSInputStreamReader extends AbstractODSReader<InputStream> implements
 		InputStreamReader {

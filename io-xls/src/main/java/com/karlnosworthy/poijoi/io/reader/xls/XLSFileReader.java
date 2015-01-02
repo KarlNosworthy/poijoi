@@ -6,9 +6,9 @@ import java.io.FileInputStream;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.karlnosworthy.poijoi.io.FileReader;
 import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
+import com.karlnosworthy.poijoi.io.reader.FileReader;
 
 @SupportsFormat(type = FormatType.XLS)
 public final class XLSFileReader extends AbstractXLSReader<File> implements FileReader {

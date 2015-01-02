@@ -20,10 +20,9 @@ import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.Writer;
-import com.karlnosworthy.poijoi.io.Writer.WriteType;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 
-public class ODSSpreadsheetWriterTest {
+public class ODSFileWriterTest {
 
 	@Test
 	public void testWrite() throws Exception {
@@ -56,12 +55,12 @@ public class ODSSpreadsheetWriterTest {
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);
 		
-		Writer writer = new ODSSpreadsheetWriter();
+		ODSFileWriter writer = new ODSFileWriter();
 		String temp = System.getProperty("java.io.tmpdir");
 		File file = new File(temp, "test.xls");
 		file.deleteOnExit();
 		
-		writer.write(file.getAbsolutePath(), metaData, WriteType.BOTH);
+		writer.write(file, metaData, WriteType.BOTH);
 		
 		
 		// validate contents of the file

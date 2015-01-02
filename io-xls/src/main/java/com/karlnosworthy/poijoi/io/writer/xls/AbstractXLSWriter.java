@@ -1,7 +1,5 @@
 package com.karlnosworthy.poijoi.io.writer.xls;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,29 +9,30 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.SupportsFormat;
-import com.karlnosworthy.poijoi.io.Writer;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 
-@SupportsFormat(type = FormatType.XLS)
-public class XLSSpreadsheetWriter implements Writer {
+public abstract class AbstractXLSWriter<T> {
 
-	@Override
-	public void write(String output, PoijoiMetaData metaData,
-			WriteType writeType) throws Exception {
+	abstract void write(T output, Workbook workbook) throws Exception;
+	
+	public final void write(T output, PoijoiMetaData metaData, WriteType writeType)
+			throws Exception {
 
 		HSSFWorkbook wb = new HSSFWorkbook();
-		
-		Map<String, TableDefinition> tableDefinitions = metaData.getTableDefinitions();
+
+		Map<String, TableDefinition> tableDefinitions = metaData
+				.getTableDefinitions();
 		for (String tableName : tableDefinitions.keySet()) {
 			HSSFSheet sheet = wb.createSheet(tableName);
 			TableDefinition table = tableDefinitions.get(tableName);
-			Map<String, ColumnDefinition> columnDefinitions = table.getColumnDefinitions();
-			
+			Map<String, ColumnDefinition> columnDefinitions = table
+					.getColumnDefinitions();
+
 			// do headers
 			if (writeType != WriteType.DATA_ONLY) {
 				HSSFRow headerRow = sheet.createRow(0);
@@ -42,36 +41,39 @@ public class XLSSpreadsheetWriter implements Writer {
 					cell.setCellValue(cd.getColumnName());
 				}
 			}
-			
+
 			// write out the data into the sheet
 			if (writeType != WriteType.SCHEMA_ONLY) {
-				List<HashMap<String,Object>> tableData = metaData.getTableData(tableName);
+				List<HashMap<String, Object>> tableData = metaData
+						.getTableData(tableName);
 				for (int rowIndex = 0; rowIndex < tableData.size(); rowIndex++) {
 					int insertIndex = rowIndex;
 					if (writeType != WriteType.DATA_ONLY) {
-						insertIndex++; // increase the insert index if header included
+						insertIndex++; // increase the insert index if header
+										// included
 					}
 					HSSFRow row = sheet.createRow(insertIndex);
-					HashMap<String,Object> columnData = tableData.get(rowIndex);
+					HashMap<String, Object> columnData = tableData
+							.get(rowIndex);
 					for (String columnName : columnData.keySet()) {
-						ColumnDefinition columnDefinition = table.getColumnDefinition(columnName);
-						HSSFCell cell = row.createCell(columnDefinition.getColumnIndex());
+						ColumnDefinition columnDefinition = table
+								.getColumnDefinition(columnName);
+						HSSFCell cell = row.createCell(columnDefinition
+								.getColumnIndex());
 						switch (columnDefinition.getColumnType()) {
-							case DATE:
-								cell.setCellValue((Date) columnData.get(columnName));
-								break;
-							default:
-								cell.setCellValue(columnData.get(columnName).toString());
+						case DATE:
+							cell.setCellValue((Date) columnData.get(columnName));
+							break;
+						default:
+							cell.setCellValue(columnData.get(columnName)
+									.toString());
 						}
 					}
 				}
 			}
-			
+
 		}
-		
-		// write out to the output... XLS file
-		FileOutputStream fos = new FileOutputStream(new File(output));
-		wb.write(fos);
-		fos.close();
+		write(output, wb);
 	}
+
 }

@@ -13,15 +13,14 @@ import org.odftoolkit.simple.table.Table;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.SupportsFormat;
-import com.karlnosworthy.poijoi.io.Writer;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 
-@SupportsFormat(type = FormatType.ODS)
-public class ODSSpreadsheetWriter implements Writer {
+public abstract class AbstractODSWriter<T> {
 
-	@Override
-	public void write(String output, PoijoiMetaData metaData,
+	abstract void write(T output, SpreadsheetDocument spreadsheetDocument)
+			throws Exception;
+
+	public final void write(T output, PoijoiMetaData metaData,
 			WriteType writeType) throws Exception {
 
 		SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument
@@ -100,7 +99,7 @@ public class ODSSpreadsheetWriter implements Writer {
 				table = spreadsheetDocument.addTable();
 			}
 		}
-		spreadsheetDocument.save(output);
+		write(output, spreadsheetDocument);
 	}
 
 }

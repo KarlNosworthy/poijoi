@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.sqlite;
+package com.karlnosworthy.poijoi.io.reader.sqlite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
