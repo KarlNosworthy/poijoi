@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.xls;
+package com.karlnosworthy.poijoi.io.writer.xls;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
