@@ -9,10 +9,10 @@ import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.jdbc.JDBCDatabaseCreator;
-import com.karlnosworthy.poijoi.io.writer.Writer;
+import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 
 @SupportsFormat(type = FormatType.SQLITE)
-public class SQLiteDatabaseWriter implements Writer<Connection> {
+public class SQLiteDatabaseWriter implements JDBCConnectionWriter {
 
 	private static final String COMMAND_OPTION_VERSION = "--version";
 
