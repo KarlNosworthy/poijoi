@@ -18,15 +18,19 @@ import java.util.jar.JarFile;
 
 import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
+import com.karlnosworthy.poijoi.io.reader.FileReader;
+import com.karlnosworthy.poijoi.io.reader.JDBCConnectionReader;
 import com.karlnosworthy.poijoi.io.reader.Reader;
+import com.karlnosworthy.poijoi.io.writer.FileWriter;
+import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.io.writer.Writer;
 
 public class PoiJoiManager {
 	
 	private Set<Class<?>> readerClassCache;
-	private HashMap<FormatType, Reader<?>> readerInstanceCache;
+	private HashMap<String, Reader<?>> readerInstanceCache;
 	private Set<Class<?>> writerClassCache;
-	private HashMap<FormatType, Writer<?>> writerInstanceCache;
+	private HashMap<String, Writer<?>> writerInstanceCache;
 
 	public PoiJoiManager() throws IOException {
 		super();
@@ -45,7 +49,7 @@ public class PoiJoiManager {
 		Reader<T> reader = null;
 		
 		if (readerInstanceCache != null && !readerInstanceCache.isEmpty()) {
-			if (readerInstanceCache.containsKey(formatType)) {
+			if (readerInstanceCache.containsKey(formatType.name() + input.getClass().getName())) {
 				reader = (Reader<T>) readerInstanceCache.get(formatType);
 			}
 		}
@@ -61,9 +65,9 @@ public class PoiJoiManager {
 						try {
 							reader = (Reader) readerClass.newInstance();
 							if (readerInstanceCache == null) {
-								readerInstanceCache = new HashMap<FormatType,Reader<?>>();
+								readerInstanceCache = new HashMap<String,Reader<?>>();
 							}
-							readerInstanceCache.put(formatType, reader);
+							readerInstanceCache.put(formatType.name() + input.getClass().getName(), reader);
 						} catch (InstantiationException instantiationException) {
 							instantiationException.printStackTrace();
 						} catch (IllegalAccessException illegalAccessException) {
@@ -92,7 +96,7 @@ public class PoiJoiManager {
 		
 		if (writerInstanceCache != null && !writerInstanceCache.isEmpty()) {
 			if (writerInstanceCache.containsKey(formatType)) {
-				writer = (Writer<T>) writerInstanceCache.get(formatType);
+				writer = (Writer<T>) writerInstanceCache.get(formatType.name() + output.getClass().getName());
 			}
 		}
 		
@@ -108,9 +112,9 @@ public class PoiJoiManager {
 						try {
 							writer = (Writer) writerClass.newInstance();
 							if (writerInstanceCache == null) {
-								writerInstanceCache = new HashMap<FormatType,Writer<?>>();
+								writerInstanceCache = new HashMap<String,Writer<?>>();
 							}
-							writerInstanceCache.put(formatType, writer);
+							writerInstanceCache.put(formatType.name() + output.getClass().getName(), writer);
 						} catch (InstantiationException instantiationException) {
 							instantiationException.printStackTrace();
 						} catch (IllegalAccessException illegalAccessException) {
@@ -124,9 +128,11 @@ public class PoiJoiManager {
 	}
 	
 	private void findAndCacheClassesOnClasspath() throws IOException {
-		Map<String, Set<Class<?>>> foundClasses = findAll(getClass().getClassLoader(), getClass().getPackage().getName());
-		this.readerClassCache = foundClasses.get(Reader.class.getName());
-		this.writerClassCache = foundClasses.get(Writer.class.getName());
+		Map<String, Set<Class<?>>> foundReaderClasses = findAll(getClass().getClassLoader(), getClass().getPackage().getName() + ".io.reader");
+		Map<String, Set<Class<?>>> foundWriterClasses = findAll(getClass().getClassLoader(), getClass().getPackage().getName() + ".io.writer");
+		
+		this.readerClassCache = foundReaderClasses.get(Reader.class.getName());
+		this.writerClassCache = foundWriterClasses.get(Writer.class.getName());
 	}
 	
 	
@@ -142,7 +148,7 @@ public class PoiJoiManager {
 		Enumeration<URL> resourceURLs = getClass().getClassLoader().getResources(resourcePath);
 		while (resourceURLs.hasMoreElements()) {
 			URL resourceURL = resourceURLs.nextElement();
-
+			
 			if (isJarURL(resourceURL)) {
 				URLConnection con = resourceURL.openConnection();
 				JarFile jarFile = null;
@@ -209,14 +215,18 @@ public class PoiJoiManager {
 	}
 	
 	private boolean isValidReaderImplementation(Class<?> _class) {
-		if (Reader.class.isAssignableFrom(_class) && !_class.isInterface()) {
+		if ((Reader.class.isAssignableFrom(_class) && !_class.isInterface()) ||
+		    (FileReader.class.isAssignableFrom(_class)  && !_class.isInterface()) ||
+		    (JDBCConnectionReader.class.isAssignableFrom(_class) && !_class.isInterface())) {
 			return true;
 		}
 		return false;
 	}
 	
 	private boolean isValidWriterImplementation(Class<?> _class) {
-		if (Writer.class.isAssignableFrom(_class) && !_class.isInterface()) {
+		if ((Writer.class.isAssignableFrom(_class) && !_class.isInterface()) ||
+			(FileWriter.class.isAssignableFrom(_class) && !_class.isInterface()) ||
+			(JDBCConnectionWriter.class.isAssignableFrom(_class) && !_class.isInterface())) {
 			return true;
 		}
 		return false;

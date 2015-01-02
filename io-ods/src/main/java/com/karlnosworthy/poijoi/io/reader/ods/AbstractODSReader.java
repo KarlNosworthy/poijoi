@@ -26,7 +26,7 @@ public abstract class AbstractODSReader<T> {
 			Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 			document = getDocument(source);
 			int totalNumberOfSheets = document.getSheetCount();
-			for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
+			for (int sheetIndex = 0; sheetIndex < totalNumberOfSheets; sheetIndex++) {
 				Table sheet = document.getSheetByIndex(sheetIndex);
 				TableDefinition tableDefinition = parseSheetMeta(sheet);
 				if (tableDefinition == null) {

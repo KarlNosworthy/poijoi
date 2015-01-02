@@ -26,7 +26,7 @@ public abstract class AbstractXLSReader<T> {
 		Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		int totalNumberOfSheets = workbook.getNumberOfSheets();
-		for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
+		for (int sheetIndex = 0; sheetIndex < totalNumberOfSheets; sheetIndex++) {
 			Sheet sheet = workbook.getSheetAt(sheetIndex);
 			TableDefinition tableDefinition = parseSheetMeta(sheet);
 			if (tableDefinition == null) {
@@ -121,7 +121,7 @@ public abstract class AbstractXLSReader<T> {
 							.getColumnDefinition(cellIndex);
 					String colName = columnDefinition.getColumnName();
 					Cell dataCell = dataRow.getCell(cellIndex);
-
+					
 					if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
 						columnData.put(colName, dataCell.getStringCellValue()
 								.trim());

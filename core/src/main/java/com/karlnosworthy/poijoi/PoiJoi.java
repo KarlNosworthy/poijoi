@@ -79,7 +79,8 @@ public class PoiJoi {
 
 		FormatType inputFormat = determineFormatType(inputQualifier);
 		FormatType outputFormat = determineFormatType(outputQualifier);
-
+		
+		
 		Object inputSource = null;
 		if (inputFormat == FormatType.SQLITE) {
 			inputSource = DriverManager.getConnection(inputQualifier);
