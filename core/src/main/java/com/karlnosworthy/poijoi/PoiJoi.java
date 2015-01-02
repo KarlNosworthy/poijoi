@@ -2,10 +2,12 @@ package com.karlnosworthy.poijoi;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.io.FormatType;
@@ -23,6 +25,7 @@ import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
  */
 public class PoiJoi {
 
+	private static final Logger logger = LoggerFactory.getLogger(PoiJoi.class);
 	private String inputQualifier;
 	private String outputQualifier;
 	private Map<String, String> options;
@@ -78,16 +81,18 @@ public class PoiJoi {
 		PoiJoiManager poiJoiManager = new PoiJoiManager();
 
 		FormatType inputFormat = determineFormatType(inputQualifier);
-		FormatType outputFormat = determineFormatType(outputQualifier);
-		
-		
+
 		Object inputSource = null;
 		if (inputFormat == FormatType.SQLITE) {
 			inputSource = DriverManager.getConnection(inputQualifier);
 		} else {
 			inputSource = new File(inputQualifier);
 		}
+		
+		logger.info("Input Format: {}, Input Source: {} ", inputFormat, inputSource);
 
+		FormatType outputFormat = determineFormatType(outputQualifier);
+		
 		Object output = null;
 		if (outputFormat == FormatType.SQLITE) {
 			output = DriverManager.getConnection(outputQualifier);
@@ -95,8 +100,19 @@ public class PoiJoi {
 			output = new File(outputQualifier);
 		}
 
+		logger.info("Output Format: {}, output:  {}", outputFormat, output);
+		
 		Reader reader = poiJoiManager.findReader(inputSource, inputFormat);
+		
+		if (reader == null) {
+			logger.info("No Reader Found for Format {} and input source {}", inputFormat, inputSource);
+		}
+		
 		Writer writer = poiJoiManager.findWriter(output, outputFormat);
+		
+		if (writer == null) {
+			logger.info("No Writer Found for Format {} and input source {}", outputFormat, output);
+		}
 
 		PoijoiMetaData metaData = reader.read(inputSource, true);
 		writer.write(output, metaData, WriteType.BOTH);
@@ -113,7 +129,7 @@ public class PoiJoi {
 	public static void main(String... args) {
 
 		if (args.length == 0) {
-			System.out.println(PoiJoi.getUsageString());
+			logger.info(PoiJoi.getUsageString());
 		} else {
 			PoiJoi poiJoiInstance = new PoiJoi();
 			try {
@@ -141,8 +157,7 @@ public class PoiJoi {
 
 				poiJoiInstance.process();
 			} catch (Exception ioe) {
-				System.out.println("ERROR: " + ioe.getLocalizedMessage());
-				ioe.printStackTrace();
+				logger.error(ioe.getMessage(), ioe);
 			}
 		}
 	}
