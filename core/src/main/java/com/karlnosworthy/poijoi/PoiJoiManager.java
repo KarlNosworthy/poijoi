@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io;
+package com.karlnosworthy.poijoi;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.karlnosworthy.poijoi.io.FormatType;
+import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.Reader;
 import com.karlnosworthy.poijoi.io.writer.Writer;
 

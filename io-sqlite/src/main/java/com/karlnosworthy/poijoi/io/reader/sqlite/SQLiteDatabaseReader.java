@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.UnsupportedMapping;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
-import com.karlnosworthy.poijoi.io.UnsupportedMapping;
-import com.karlnosworthy.poijoi.io.jdbc.JDBCConnectionReader;
 import com.karlnosworthy.poijoi.io.jdbc.JDBCMetaDataReader;
+import com.karlnosworthy.poijoi.io.reader.JDBCConnectionReader;
 
 @SupportsFormat(type = FormatType.SQLITE)
 public class SQLiteDatabaseReader implements JDBCConnectionReader {

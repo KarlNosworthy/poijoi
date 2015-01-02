@@ -1,9 +1,8 @@
-package com.karlnosworthy.poijoi.io.jdbc;
+package com.karlnosworthy.poijoi.io.reader;
 
 import java.sql.Connection;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
-import com.karlnosworthy.poijoi.io.reader.Reader;
 
 public interface JDBCConnectionReader extends Reader<Connection> {
 	
