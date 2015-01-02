@@ -2,7 +2,7 @@ package com.karlnosworthy.poijoi.io;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 
-public interface Writer {
+public interface Writer<T> {
 	
 	public enum WriteType {
 		DATA_ONLY,
@@ -10,5 +10,5 @@ public interface Writer {
 		BOTH
 	}
 
-	void write(String output, PoijoiMetaData metaData, WriteType writeType) throws Exception;
+	void write(T output, PoijoiMetaData metaData, WriteType writeType) throws Exception;
 }

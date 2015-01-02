@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -26,24 +28,35 @@ public class SQLLiteDatabaseReaderTest {
 		path = "jdbc:sqlite:" + path;
 		
 		SQLiteDatabaseReader reader = new SQLiteDatabaseReader();
-		PoijoiMetaData metaData = reader.read(path, false);
+		
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(path);
+			PoijoiMetaData metaData = reader.read(connection, false);
 
-		Map<String, TableDefinition> tableDefinitions = metaData
-				.getTableDefinitions();
-		assertEquals(1, tableDefinitions.size());
+			Map<String, TableDefinition> tableDefinitions = metaData
+					.getTableDefinitions();
+			assertEquals(1, tableDefinitions.size());
 
-		TableDefinition tableDefinition = tableDefinitions.get("Sheet1");
-		assertNotNull(tableDefinition);
+			TableDefinition tableDefinition = tableDefinitions.get("Sheet1");
+			assertNotNull(tableDefinition);
 
-		assertEquals(5, tableDefinition.getColumnCount());
-		Map<String, ColumnDefinition> columnDefinitions = tableDefinition
-				.getColumnDefinitions();
+			assertEquals(5, tableDefinition.getColumnCount());
+			Map<String, ColumnDefinition> columnDefinitions = tableDefinition
+					.getColumnDefinitions();
 
-		assertTrue(columnDefinitions.containsKey("id"));
-		assertTrue(columnDefinitions.containsKey("col1String"));
-		assertTrue(columnDefinitions.containsKey("col2Date"));
-		assertTrue(columnDefinitions.containsKey("col3Integer"));
-		assertTrue(columnDefinitions.containsKey("col4Decimal"));
+			assertTrue(columnDefinitions.containsKey("id"));
+			assertTrue(columnDefinitions.containsKey("col1String"));
+			assertTrue(columnDefinitions.containsKey("col2Date"));
+			assertTrue(columnDefinitions.containsKey("col3Integer"));
+			assertTrue(columnDefinitions.containsKey("col4Decimal"));
+			
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+		
 	}
 	
 	@Test
@@ -54,23 +67,32 @@ public class SQLLiteDatabaseReaderTest {
 		path = "jdbc:sqlite:" + path;
 		
 		SQLiteDatabaseReader reader = new SQLiteDatabaseReader();
-		PoijoiMetaData metaData = reader.read(path, true);
 		
-		// pull back sheet1 data
-		List<HashMap<String, Object>> tableData = metaData
-				.getTableData("Sheet1");
-		assertEquals(2, tableData.size());
-
-		Map<String, Object> dataRow = tableData.get(1);
-		// check the column values
-		assertEquals("string2", dataRow.get("col1String"));
-		// Date is defaulting to DateTime object
-		Calendar cal = Calendar.getInstance();
-		cal.set(2014, 11, 17, 0, 0, 0);
-		cal.set(Calendar.MILLISECOND,0);
-		assertEquals(cal.getTime(), dataRow.get("col2Date"));
-		assertEquals(new Integer("2"), dataRow.get("col3Integer"));
-		assertEquals(new Double("12.02"), dataRow.get("col4Decimal"));
-	}	
+		Connection connection = null;
+		try {
+			connection = DriverManager.getConnection(path);
+			PoijoiMetaData metaData = reader.read(connection, true);
 	
+			// pull back sheet1 data
+			List<HashMap<String, Object>> tableData = metaData
+					.getTableData("Sheet1");
+			
+			assertEquals(2, tableData.size());
+	
+			Map<String, Object> dataRow = tableData.get(1);
+			// check the column values
+			assertEquals("string2", dataRow.get("col1String"));
+			// Date is defaulting to DateTime object
+			Calendar cal = Calendar.getInstance();
+			cal.set(2014, 11, 17, 0, 0, 0);
+			cal.set(Calendar.MILLISECOND,0);
+			assertEquals(cal.getTime(), dataRow.get("col2Date"));
+			assertEquals(new Integer("2"), dataRow.get("col3Integer"));
+			assertEquals(new Double("12.02"), dataRow.get("col4Decimal"));
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+	}	
 }

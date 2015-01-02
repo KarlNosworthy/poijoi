@@ -2,7 +2,6 @@ package com.karlnosworthy.poijoi.io.sqlite;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -16,25 +15,21 @@ import java.util.Map;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.Reader;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.UnsupportedMapping;
+import com.karlnosworthy.poijoi.io.jdbc.JDBCConnectionReader;
 import com.karlnosworthy.poijoi.io.jdbc.JDBCMetaDataReader;
 
 @SupportsFormat(type = FormatType.SQLITE)
-public class SQLiteDatabaseReader implements Reader<String> {
+public class SQLiteDatabaseReader implements JDBCConnectionReader {
 
 	@Override
-	public PoijoiMetaData read(String source, boolean readData)
-			throws Exception {
+	public PoijoiMetaData read(Connection connection, boolean readData) throws Exception {
 
 		PoijoiMetaData metaData = null;
-		Connection connection = null;
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-
-			connection = DriverManager.getConnection(source);
 
 			Map<String, TableDefinition> tableDefinitions = parseDatabaseMetaData(connection
 					.getMetaData());
