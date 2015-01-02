@@ -44,7 +44,7 @@ public class PoiJoi {
 			throw new IllegalArgumentException(
 					"The input qualifier cannot be null.");
 		}
-			
+
 		this.inputQualifier = inputQualifier;
 	}
 
@@ -60,11 +60,11 @@ public class PoiJoi {
 		if (outputQualifier == null) {
 			throw new IllegalArgumentException(
 					"The output path file instance cannot be null.");
-/*			
-		} else if (outputPath.isFile() && outputPath.exists()) {
-			throw new IOException(
-					"The output path specified a file that already exists.");
-*/					
+			/*
+			 * } else if (outputPath.isFile() && outputPath.exists()) { throw
+			 * new IOException(
+			 * "The output path specified a file that already exists.");
+			 */
 		}
 
 		this.outputQualifier = outputQualifier;
@@ -76,15 +76,29 @@ public class PoiJoi {
 
 	public void process() throws Exception {
 		PoiJoiManager poiJoiManager = new PoiJoiManager();
-		
-		Connection inputConnection = DriverManager.getConnection(inputQualifier);
-		File outputFile = new File(outputQualifier);
-		
-		Reader<Connection> reader = poiJoiManager.findReader(inputConnection, FormatType.SQLITE);
-		Writer<File> writer = poiJoiManager.findWriter(outputFile, FormatType.XLS);
-		
-		PoijoiMetaData metaData = reader.read(inputConnection, true);
-		writer.write(outputFile, metaData, WriteType.BOTH);
+
+		FormatType inputFormat = determineFormatType(inputQualifier);
+		FormatType outputFormat = determineFormatType(outputQualifier);
+
+		Object inputSource = null;
+		if (inputFormat == FormatType.SQLITE) {
+			inputSource = DriverManager.getConnection(inputQualifier);
+		} else {
+			inputSource = new File(inputQualifier);
+		}
+
+		Object output = null;
+		if (outputFormat == FormatType.SQLITE) {
+			output = DriverManager.getConnection(outputQualifier);
+		} else {
+			output = new File(outputQualifier);
+		}
+
+		Reader reader = poiJoiManager.findReader(inputSource, inputFormat);
+		Writer writer = poiJoiManager.findWriter(output, outputFormat);
+
+		PoijoiMetaData metaData = reader.read(inputSource, true);
+		writer.write(output, metaData, WriteType.BOTH);
 	}
 
 	/**
@@ -111,19 +125,17 @@ public class PoiJoi {
 					poiJoiInstance.setOutputQualifier(args[1]);
 				} else {
 					poiJoiInstance.setOptions(parseOptions(args[0]));
-/*					
-					poiJoiInstance.setInputQualifier(inputQualifier);
-					File sourcePath = poiJoiInstance.getSourceDataFile();
-					if (sourcePath.isDirectory()) {
-						poiJoiInstance.setOutputQualifier(sourcePath
-								.getAbsolutePath());
-					} else {
-						int index = sourcePath.getAbsolutePath().lastIndexOf(
-								File.separator);
-						poiJoiInstance.setOutputQualifier(sourcePath
-								.getAbsolutePath().substring(0, index));
-					}
-*/					
+					/*
+					 * poiJoiInstance.setInputQualifier(inputQualifier); File
+					 * sourcePath = poiJoiInstance.getSourceDataFile(); if
+					 * (sourcePath.isDirectory()) {
+					 * poiJoiInstance.setOutputQualifier(sourcePath
+					 * .getAbsolutePath()); } else { int index =
+					 * sourcePath.getAbsolutePath().lastIndexOf(
+					 * File.separator);
+					 * poiJoiInstance.setOutputQualifier(sourcePath
+					 * .getAbsolutePath().substring(0, index)); }
+					 */
 				}
 
 				poiJoiInstance.process();
@@ -153,5 +165,59 @@ public class PoiJoi {
 					optionsItems[1 + optionItemIndex]);
 		}
 		return parsedOptions;
+	}
+
+	private FormatType determineFormatType(String qualifier) {
+		FormatType formatType = null;
+
+		if (isFile(qualifier)) {
+			File qualifierFile = new File(qualifier);
+
+			String qualifierFilePath = qualifierFile.getAbsolutePath();
+
+			if (qualifierFilePath.endsWith(FormatType.XLS.name().toLowerCase())) {
+				formatType = FormatType.XLS;
+			} else if (qualifierFilePath.endsWith(FormatType.XLSX.name()
+					.toLowerCase())) {
+				formatType = FormatType.XLSX;
+			} else if (qualifierFilePath.endsWith(FormatType.ODS.name()
+					.toLowerCase())) {
+				formatType = FormatType.ODS;
+			}
+		} else if (isJdbcURL(qualifier)) {
+			int procotolEndIndex = (1 + qualifier.indexOf(":"));
+			int subProtocolEndIndex = qualifier.indexOf(":", procotolEndIndex);
+
+			String subProtocol = qualifier.substring(procotolEndIndex,
+					subProtocolEndIndex);
+
+			if (subProtocol.equalsIgnoreCase(FormatType.SQLITE.name())) {
+				formatType = FormatType.SQLITE;
+			}
+		}
+
+		return formatType;
+	}
+
+	private boolean isFile(String inputSource) {
+		if (inputSource == null || inputSource.length() == 0) {
+			return false;
+		}
+
+		if (inputSource.startsWith(File.separator)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean isJdbcURL(String output) {
+		if (output == null || output.length() == 0) {
+			return false;
+		}
+		if (output.startsWith("jdbc:")) {
+			return true;
+		}
+		return false;
 	}
 }

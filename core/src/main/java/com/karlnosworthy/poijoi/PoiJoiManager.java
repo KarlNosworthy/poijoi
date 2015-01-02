@@ -123,35 +123,6 @@ public class PoiJoiManager {
 		return writer;
 	}
 	
-	private FormatType determineFormatType(String qualifier) {
-		FormatType formatType = null;
-		
-		if (isFile(qualifier)) {
-			File qualifierFile = new File(qualifier);
-			
-			String qualifierFilePath = qualifierFile.getAbsolutePath();
-
-			if (qualifierFilePath.endsWith(FormatType.XLS.name().toLowerCase())) {
-				formatType = FormatType.XLS;
-			} else if (qualifierFilePath.endsWith(FormatType.XLSX.name().toLowerCase())) {
-				formatType = FormatType.XLSX;
-			} else if (qualifierFilePath.endsWith(FormatType.ODS.name().toLowerCase())) {
-				formatType = FormatType.ODS;
-			}
-		} else if (isJdbcURL(qualifier)) {
-			int procotolEndIndex = (1 + qualifier.indexOf(":"));
-			int subProtocolEndIndex = qualifier.indexOf(":", procotolEndIndex);
-			
-			String subProtocol = qualifier.substring(procotolEndIndex, subProtocolEndIndex);
-			
-			if (subProtocol.equalsIgnoreCase(FormatType.SQLITE.name())) {
-				formatType = FormatType.SQLITE;
-			}
-		}
-		
-		return formatType;
-	}
-	
 	private void findAndCacheClassesOnClasspath() throws IOException {
 		Map<String, Set<Class<?>>> foundClasses = findAll(getClass().getClassLoader(), getClass().getPackage().getName());
 		this.readerClassCache = foundClasses.get(Reader.class.getName());
@@ -261,28 +232,6 @@ public class PoiJoiManager {
 
 	private boolean isJarURL(URL url) {
 		return url.getProtocol().equals("jar");
-	}
-	
-	private boolean isFile(String inputSource) {
-		if (inputSource == null || inputSource.length() == 0) {
-			return false;
-		}
-		
-		if (inputSource.startsWith(File.separator)) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private boolean isJdbcURL(String output) {
-		if (output == null || output.length() == 0) {
-			return false;
-		}
-		if (output.startsWith("jdbc:")) {
-			return true;
-		}
-		return false;
 	}
 	
 	private String makePackageName(String rootPackageName, String subPackageName, boolean appendFinalSeparator) {
