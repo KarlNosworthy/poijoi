@@ -8,11 +8,11 @@ public class PoijoiMetaData {
 
 	private boolean readData;
 	private Map<String, TableDefinition> tableDefinitions;
-	private Map<String, List<HashMap<String, String>>> tableData;
+	private Map<String, List<HashMap<String, Object>>> tableData;
 
 	public PoijoiMetaData(boolean readData,
 			Map<String, TableDefinition> tableDefinitions,
-			Map<String, List<HashMap<String, String>>> tableData) {
+			Map<String, List<HashMap<String, Object>>> tableData) {
 		super();
 		this.readData = readData;
 		this.tableDefinitions = tableDefinitions;
@@ -27,7 +27,7 @@ public class PoijoiMetaData {
 		return tableDefinitions;
 	}
 
-	public Map<String, List<HashMap<String, String>>> getTableData() {
+	public Map<String, List<HashMap<String, Object>>> getTableData() {
 		return tableData;
 	}
 	
@@ -35,7 +35,7 @@ public class PoijoiMetaData {
 		return tableDefinitions.get(tableName);
 	}
 	
-	public List<HashMap<String, String>> getTableData(String tableName) {
+	public List<HashMap<String, Object>> getTableData(String tableName) {
 		return tableData.get(tableName);
 	}
 

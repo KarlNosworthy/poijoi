@@ -1,9 +1,7 @@
 package com.karlnosworthy.poijoi.io.xlsx;
 
 import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +27,14 @@ public final class XLSXSpreadsheetReader implements Reader {
 
 	public PoijoiMetaData read(String spreadsheetFile, boolean readData)
 			throws Exception {
-		
-		Workbook workbook = new XSSFWorkbook(new FileInputStream(spreadsheetFile));
-		
+
+		Workbook workbook = new XSSFWorkbook(new FileInputStream(
+				spreadsheetFile));
+
 		Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
-		Map<String, List<HashMap<String, String>>> tableData = new HashMap<String, List<HashMap<String, String>>>();
+		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		int totalNumberOfSheets = workbook.getNumberOfSheets();
-		
+
 		for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
 			Sheet sheet = workbook.getSheetAt(sheetIndex);
 			TableDefinition tableDefinition = parseSheetMeta(sheet);
@@ -117,15 +116,14 @@ public final class XLSXSpreadsheetReader implements Reader {
 		return null;
 	}
 
-	private List<HashMap<String, String>> readData(Sheet sheet, TableDefinition tableDefinition) {
-		DataFormatter dataFormatter = new DataFormatter();
-		
-		List<HashMap<String, String>> rowData = new ArrayList<HashMap<String, String>>();
+	private List<HashMap<String, Object>> readData(Sheet sheet,
+			TableDefinition tableDefinition) {
+		List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String, Object>>();
 		if (sheet.getLastRowNum() > 1) {
 			for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 				Row dataRow = sheet.getRow(rowIndex);
 
-				HashMap<String, String> columnData = new HashMap<String, String>();
+				HashMap<String, Object> columnData = new HashMap<String, Object>();
 				for (int cellIndex = dataRow.getFirstCellNum(); cellIndex <= (dataRow
 						.getLastCellNum() - 1); cellIndex++) {
 					ColumnDefinition columnDefinition = tableDefinition
@@ -137,37 +135,13 @@ public final class XLSXSpreadsheetReader implements Reader {
 						columnData.put(colName, dataCell.getStringCellValue()
 								.trim());
 					} else if (HSSFDateUtil.isCellDateFormatted(dataCell)) {
-						// Default handling of date is to convert to
-						// string (if sqlite)
-						// may need to implement 'per database
-						// column type mapping'
-						// convert to ISO8601 string = YYYY-MM-DD
-						// HH:MM:SS.SSS
-						SimpleDateFormat dateFormat = new SimpleDateFormat(
-								"yyyy-MM-dd HH:mm:ss.SSS");
-						Date date = dataCell.getDateCellValue();
-
-						String dateFormattedCellValue = "";
-						if (date != null) {
-							dateFormattedCellValue = dateFormat.format(date);
-						} else {
-							dateFormattedCellValue = dataCell
-									.getStringCellValue();
-						}
-
-						columnData.put(colName, dateFormattedCellValue);
+						columnData.put(colName, dataCell.getDateCellValue());
 					} else {
+						Double d = new Double(dataCell.getNumericCellValue());
 						if (columnDefinition.getColumnType() == ColumnType.INTEGER_NUMBER) {
-							columnData.put(
-									colName,
-									String.valueOf(
-											new Double(dataCell
-													.getNumericCellValue())
-													.intValue()).trim());
+							columnData.put(colName, d.intValue());
 						} else {
-							String formattedDecimalValue = dataFormatter
-									.formatCellValue(dataCell);
-							columnData.put(colName, formattedDecimalValue);
+							columnData.put(colName, d);
 						}
 					}
 				}

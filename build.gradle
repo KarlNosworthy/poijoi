@@ -19,6 +19,7 @@ subprojects {
     // Disable the test report for the individual test task
     test {
         reports.html.enabled = false
+        ignoreFailures = true
     }
 }
 
