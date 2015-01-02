@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,17 +74,20 @@ public class ODSSpreadsheetReaderTest {
 		PoijoiMetaData metaData = reader.read(path, true);
 
 		// pull back sheet1 data
-		List<HashMap<String, String>> tableData = metaData
+		List<HashMap<String, Object>> tableData = metaData
 				.getTableData("Sheet1");
 		assertEquals(2, tableData.size());
 
-		Map<String, String> dataRow = tableData.get(1);
+		Map<String, Object> dataRow = tableData.get(1);
 		// check the column values
 		assertEquals("string2", dataRow.get("col1String"));
 		// Date is defaulting to DateTime object
-		assertEquals("2014-12-17 00:00:00.000", dataRow.get("col2Date"));
-		assertEquals("2", dataRow.get("col3Integer"));
-		assertEquals("12.02", dataRow.get("col4Decimal"));
+		Calendar cal = Calendar.getInstance();
+		cal.set(2014, 11, 17, 0, 0, 0);
+		cal.set(Calendar.MILLISECOND,0);
+		assertEquals(cal.getTime(), dataRow.get("col2Date"));
+		assertEquals(new Integer("2"), dataRow.get("col3Integer"));
+		assertEquals(new Double("12.02"), dataRow.get("col4Decimal"));
 	}
 
 }

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,16 +37,19 @@ public class ODSSpreadsheetWriterTest {
 		Map<String, TableDefinition> tableDefinitions = new HashMap<String,TableDefinition>();
 		tableDefinitions.put("TableOne", new TableDefinition("TableOne", columnDefinitions));
 		
-		HashMap<String,String> row1Data = new HashMap<String,String>();
+		HashMap<String, Object> row1Data = new HashMap<String, Object>();
 		row1Data.put("col1String", "hello");
-		row1Data.put("col2Date", "31/12/2014");
-		row1Data.put("col3Integer", "19");
-		row1Data.put("col4Decimal", "1.5");
+		Calendar cal = Calendar.getInstance();
+		cal.set(2014, 12, 31, 0, 0, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		row1Data.put("col2Date", cal.getTime());
+		row1Data.put("col3Integer", new Integer(19));
+		row1Data.put("col4Decimal", new Double("1.5"));
 		
-		List<HashMap<String,String>> rowData = new ArrayList<HashMap<String,String>>();
+		List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String,Object>>();
 		rowData.add(row1Data);
 		
-		Map<String, List<HashMap<String, String>>> tableData = new HashMap<String, List<HashMap<String, String>>>();
+		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		tableData.put("TableOne", rowData);
 		
 		PoijoiMetaData metaData = new PoijoiMetaData(true, tableDefinitions, tableData);

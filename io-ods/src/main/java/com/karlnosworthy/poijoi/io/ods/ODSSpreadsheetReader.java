@@ -1,8 +1,6 @@
 package com.karlnosworthy.poijoi.io.ods;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,7 @@ public final class ODSSpreadsheetReader implements Reader {
 		SpreadsheetDocument document = null;
 		try {
 			Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
-			Map<String, List<HashMap<String, String>>> tableData = new HashMap<String, List<HashMap<String, String>>>();
+			Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 			document = SpreadsheetDocument.loadDocument(spreadsheetFile);
 			int totalNumberOfSheets = document.getSheetCount();
 			for (int sheetIndex = 0; sheetIndex < (totalNumberOfSheets - 1); sheetIndex++) {
@@ -106,22 +104,21 @@ public final class ODSSpreadsheetReader implements Reader {
 		return null;
 	}
 
-	private List<HashMap<String, String>> readData(Table sheet,
+	private List<HashMap<String, Object>> readData(Table sheet,
 			TableDefinition tableDefinition) {
-		List<HashMap<String, String>> rowData = new ArrayList<HashMap<String, String>>();
+		List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String, Object>>();
 		int sheetRowCount = sheet.getRowCount();
 		if (sheetRowCount > 1) {
 			for (int rowIndex = 1; rowIndex <= (sheetRowCount - 1); rowIndex++) {
 				Row dataRow = sheet.getRowByIndex(rowIndex);
 				int dataRowCellCount = dataRow.getCellCount();
-				HashMap<String, String> columnData = new HashMap<String, String>();
+				HashMap<String, Object> columnData = new HashMap<String, Object>();
 				if (dataRowCellCount == tableDefinition.getColumnCount()) {
 					for (int cellIndex = 0; cellIndex <= (dataRowCellCount - 1); cellIndex++) {
 						ColumnDefinition columnDefinition = tableDefinition
 								.getColumnDefinition(cellIndex);
 						String colName = columnDefinition.getColumnName();
 						Cell dataCell = dataRow.getCellByIndex(cellIndex);
-
 						if (dataCell.getValueType() != null) {
 							if (dataCell.getValueType().equalsIgnoreCase(
 									"string")) {
@@ -129,40 +126,14 @@ public final class ODSSpreadsheetReader implements Reader {
 										.getStringValue().trim());
 							} else if (dataCell.getValueType()
 									.equalsIgnoreCase("date")) {
-								// Default handling of date is to
-								// convert to string (if sqlite)
-								// may need to implement 'per
-								// database column type mapping'
-								// convert to ISO8601 string =
-								// YYYY-MM-DD HH:MM:SS.SSS
-								SimpleDateFormat dateFormat = new SimpleDateFormat(
-										"yyyy-MM-dd HH:mm:ss.SSS");
-								Calendar date = dataCell.getDateValue();
-
-								String dateFormattedCellValue = "";
-								if (date != null) {
-									dateFormattedCellValue = dateFormat
-											.format(date.getTime());
-								} else {
-									dateFormattedCellValue = dataCell
-											.getStringValue();
-								}
-
-								columnData.put(colName, dateFormattedCellValue);
+								columnData.put(colName, dataCell.getDateValue()
+										.getTime());
 							} else {
+								Double d = new Double(dataCell.getDoubleValue());
 								if (columnDefinition.getColumnType() == ColumnType.INTEGER_NUMBER) {
-									columnData
-											.put(colName,
-													String.valueOf(
-															new Double(
-																	dataCell.getDoubleValue())
-																	.intValue())
-															.trim());
+									columnData.put(colName, d.intValue());
 								} else {
-									String formattedDecimalValue = dataCell
-											.getDoubleValue().toString();
-									columnData.put(colName,
-											formattedDecimalValue);
+									columnData.put(colName, d);
 								}
 							}
 						} else {

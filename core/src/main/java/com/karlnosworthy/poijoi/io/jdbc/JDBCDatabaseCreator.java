@@ -52,7 +52,7 @@ public class JDBCDatabaseCreator {
 		Map<String, TableDefinition> tableDefinitions = metaData
 				.getTableDefinitions();
 		for (String tableName : tableDefinitions.keySet()) {
-			List<HashMap<String, String>> tableData = metaData
+			List<HashMap<String, Object>> tableData = metaData
 					.getTableData(tableName);
 			if (tableData != null) {
 				Statement statement = null;

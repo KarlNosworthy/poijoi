@@ -2,6 +2,7 @@ package com.karlnosworthy.poijoi.io.xlsx;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,18 +46,24 @@ public class XLSXSpreadsheetWriter implements Writer {
 			
 			// write out the data into the sheet
 			if (writeType != WriteType.SCHEMA_ONLY) {
-				List<HashMap<String,String>> tableData = metaData.getTableData(tableName);
+				List<HashMap<String, Object>> tableData = metaData.getTableData(tableName);
 				for (int rowIndex = 0; rowIndex < tableData.size(); rowIndex++) {
 					int insertIndex = rowIndex;
 					if (writeType != WriteType.DATA_ONLY) {
 						insertIndex++; // increase the insert index if header included
 					}
 					Row row = sheet.createRow(insertIndex);
-					HashMap<String,String> columnData = tableData.get(rowIndex);
+					HashMap<String,Object> columnData = tableData.get(rowIndex);
 					for (String columnName : columnData.keySet()) {
 						ColumnDefinition columnDefinition = table.getColumnDefinition(columnName);
 						Cell cell = row.createCell(columnDefinition.getColumnIndex());
-						cell.setCellValue(columnData.get(columnName));
+						switch (columnDefinition.getColumnType()) {
+							case DATE:
+								cell.setCellValue((Date) columnData.get(columnName));
+								break;
+							default:
+								cell.setCellValue(columnData.get(columnName).toString());
+						}
 					}
 				}
 			}

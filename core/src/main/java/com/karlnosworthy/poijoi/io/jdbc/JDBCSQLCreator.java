@@ -1,5 +1,6 @@
 package com.karlnosworthy.poijoi.io.jdbc;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,7 @@ import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
 
 public class JDBCSQLCreator {
-	
+
 	/**
 	 * 
 	 * @param connection
@@ -19,15 +20,16 @@ public class JDBCSQLCreator {
 	 * @return
 	 */
 	public String buildCreateTableSQL(TableDefinition tableDefinition) {
-		
+
 		StringBuilder builder = new StringBuilder();
 
 		builder.append("CREATE TABLE ");
 		builder.append(tableDefinition.getTableName());
 		builder.append(" (");
 		builder.append("id INTEGER PRIMARY KEY AUTOINCREMENT");
-		
-		for (String columnName : tableDefinition.getColumnDefinitions().keySet()) {
+
+		for (String columnName : tableDefinition.getColumnDefinitions()
+				.keySet()) {
 			builder.append(",\"");
 
 			if (columnName.indexOf(".") >= 0) {
@@ -36,39 +38,40 @@ public class JDBCSQLCreator {
 				builder.append(columnName);
 			}
 			builder.append("\"");
-			
-			ColumnDefinition columnDefinition = tableDefinition.getColumnDefinition(columnName);
+
+			ColumnDefinition columnDefinition = tableDefinition
+					.getColumnDefinition(columnName);
 
 			ColumnType columnType = columnDefinition.getColumnType();
 
 			switch (columnType) {
-				case STRING:
-					builder.append(" TEXT");
-					break;
-				case INTEGER_NUMBER:
-					builder.append(" INTEGER");
-					break;
-				case DECIMAL_NUMBER:
-					builder.append(" REAL");
-				case DATE:
-					break;
+			case STRING:
+				builder.append(" TEXT");
+				break;
+			case INTEGER_NUMBER:
+				builder.append(" INTEGER");
+				break;
+			case DECIMAL_NUMBER:
+				builder.append(" REAL");
+				break;
+			case DATE:
+				builder.append(" DATE");
+				break;
 			}
 		}
 		builder.append(");");
 
 		return builder.toString();
-	}	
-	
-	
-	
-	public List<String> buildInsertTableSQL(String tableName, 
-											List<HashMap<String, String>> dataToImport,
-											Map<String, ColumnDefinition> columnDefinitions) {
-		
+	}
+
+	public List<String> buildInsertTableSQL(String tableName,
+			List<HashMap<String, Object>> dataToImport,
+			Map<String, ColumnDefinition> columnDefinitions) {
+
 		List<String> insertSqlStrings = new ArrayList<String>();
 
 		StringBuilder builder = null;
-		for (HashMap<String, String> columnData : dataToImport) {
+		for (HashMap<String, Object> columnData : dataToImport) {
 			builder = new StringBuilder();
 
 			builder.append("INSERT INTO '");
@@ -102,20 +105,23 @@ public class JDBCSQLCreator {
 					}
 					ColumnType columnType = columnDefinitions.get(columnName)
 							.getColumnType();
-					if (columnType == ColumnType.STRING
-							|| columnType == ColumnType.DATE) {
+					Object val = columnData.get(columnName);
+					if (columnType == ColumnType.DATE) {
+						SimpleDateFormat dateFormat = new SimpleDateFormat(
+								"yyyy-MM-dd HH:mm:ss.SSS");
 						builder.append("'");
-						builder.append(columnData.get(columnName));
+						builder.append(dateFormat.format(val));
+						builder.append("'");
+					} else if (columnType == ColumnType.STRING) {
+						builder.append("'");
+						builder.append(val);
 						builder.append("'");
 					} else {
 						builder.append(columnData.get(columnName));
 					}
-
 				}
 			}
-
 			builder.append(");");
-
 			insertSqlStrings.add(builder.toString());
 		}
 		return insertSqlStrings;
