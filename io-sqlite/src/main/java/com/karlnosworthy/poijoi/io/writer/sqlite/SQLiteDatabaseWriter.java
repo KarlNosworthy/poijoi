@@ -3,17 +3,22 @@ package com.karlnosworthy.poijoi.io.writer.sqlite;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
+import com.karlnosworthy.poijoi.io.reader.sqlite.SQLiteDatabaseReader;
 import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.jdbc.JDBCDatabaseCreator;
 
 @SupportsFormat(type = FormatType.SQLITE)
 public class SQLiteDatabaseWriter implements JDBCConnectionWriter {
 
+	private static final Logger logger = LoggerFactory.getLogger(SQLiteDatabaseReader.class);
+	
 	private static final String COMMAND_OPTION_VERSION = "--version";
 
 	@Override
@@ -25,13 +30,12 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter {
 		if (writeType != WriteType.DATA_ONLY) {
 			int numberOfTablesCreated = databaseCreator.createTables(
 					connection, metaData);
-			System.out.println("Created " + numberOfTablesCreated
-					+ " table(s)....");
+			logger.info("Created {} tables....", numberOfTablesCreated);
 		}
 
 		if (writeType != WriteType.SCHEMA_ONLY) {
 			int inserts = databaseCreator.writeData(connection, metaData);
-			System.out.println("Inserted " + inserts + " row(s)....");
+			logger.info("Inserted {} row(s)....", inserts);
 		}
 	}
 
