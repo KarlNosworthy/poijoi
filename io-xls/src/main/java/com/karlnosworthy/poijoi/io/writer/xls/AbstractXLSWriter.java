@@ -11,10 +11,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
-import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
+import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public abstract class AbstractXLSWriter<T> {
 

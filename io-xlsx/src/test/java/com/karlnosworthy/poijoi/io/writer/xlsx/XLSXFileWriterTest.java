@@ -16,11 +16,11 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
-import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
+import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.TableDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
 public class XLSXFileWriterTest {
 

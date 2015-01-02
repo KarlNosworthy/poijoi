@@ -7,12 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 
-import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.sqlite.SQLiteDatabaseReader;
 import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.jdbc.JDBCDatabaseCreator;
+import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 
 @SupportsFormat(type = FormatType.SQLITE)
 public class SQLiteDatabaseWriter implements JDBCConnectionWriter {

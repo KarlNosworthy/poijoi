@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.core.model;
+package com.karlnosworthy.poijoi.model;
 
 public class ColumnDefinition {
 
