@@ -10,10 +10,10 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Table;
 
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
-import com.karlnosworthy.poijoi.core.model.TableDefinition;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
+import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public abstract class AbstractODSWriter<T> {
 

@@ -10,10 +10,10 @@ import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
 
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
-import com.karlnosworthy.poijoi.core.model.TableDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.TableDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
 public abstract class AbstractODSReader<T> {
 	

@@ -1,6 +1,6 @@
 package com.karlnosworthy.poijoi.io.reader;
 
-import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 
 public interface Reader<T> {
 	
