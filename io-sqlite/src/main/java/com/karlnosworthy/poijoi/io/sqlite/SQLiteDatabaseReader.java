@@ -22,7 +22,7 @@ import com.karlnosworthy.poijoi.io.UnsupportedMapping;
 import com.karlnosworthy.poijoi.io.jdbc.JDBCMetaDataReader;
 
 @SupportsFormat(type = FormatType.SQLITE)
-public class SQLiteDatabaseReader implements Reader {
+public class SQLiteDatabaseReader implements Reader<String> {
 
 	@Override
 	public PoijoiMetaData read(String source, boolean readData)

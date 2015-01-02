@@ -23,7 +23,7 @@ import com.karlnosworthy.poijoi.io.Reader;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 
 @SupportsFormat(type = FormatType.XLS)
-public final class XLSSpreadsheetReader implements Reader {
+public final class XLSSpreadsheetReader implements Reader<String> {
 
 	public PoijoiMetaData read(String spreadsheetFile, boolean readData)
 			throws Exception {
