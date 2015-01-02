@@ -20,10 +20,9 @@ import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.Writer;
-import com.karlnosworthy.poijoi.io.Writer.WriteType;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 
-public class XLSXSpreadsheetWriterTest {
+public class XLSXFileWriterTest {
 
 	@Test
 	public void testWrite() throws Exception {
@@ -61,12 +60,12 @@ public class XLSXSpreadsheetWriterTest {
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);
 
-		Writer writer = new XLSXSpreadsheetWriter();
+		XLSXFileWriter writer = new XLSXFileWriter();
 		String temp = System.getProperty("java.io.tmpdir");
 		File file = new File(temp, "test.xlsx");
 		file.deleteOnExit();
 
-		writer.write(file.getAbsolutePath(), metaData, WriteType.BOTH);
+		writer.write(file, metaData, WriteType.BOTH);
 
 		// validate contents of the file
 		XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(file));

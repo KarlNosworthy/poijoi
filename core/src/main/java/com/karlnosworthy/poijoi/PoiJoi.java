@@ -10,9 +10,9 @@ import java.util.Map;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.PoiJoiManager;
-import com.karlnosworthy.poijoi.io.Reader;
-import com.karlnosworthy.poijoi.io.Writer;
-import com.karlnosworthy.poijoi.io.Writer.WriteType;
+import com.karlnosworthy.poijoi.io.reader.Reader;
+import com.karlnosworthy.poijoi.io.writer.Writer;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 
 /**
  * The main PoiJoi class which can be used inside a framework or as a

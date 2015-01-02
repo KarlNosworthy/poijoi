@@ -1,7 +1,5 @@
 package com.karlnosworthy.poijoi.io.writer.xlsx;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,15 +14,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.karlnosworthy.poijoi.core.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.core.model.TableDefinition;
-import com.karlnosworthy.poijoi.io.FormatType;
-import com.karlnosworthy.poijoi.io.SupportsFormat;
-import com.karlnosworthy.poijoi.io.Writer;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 
-@SupportsFormat(type = FormatType.XLSX)
-public class XLSXSpreadsheetWriter implements Writer {
+public abstract class AbstractXLSXWriter<T> {
 
-	@Override
-	public void write(String output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
+	abstract void write(T output, Workbook workbook) throws Exception;
+	
+	public final void write(T output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
 
 		Workbook wb = new XSSFWorkbook();
 		
@@ -69,10 +65,7 @@ public class XLSXSpreadsheetWriter implements Writer {
 			}
 			
 		}
-		
-		// write out to the output... XLS file
-		FileOutputStream fos = new FileOutputStream(new File(output));
-		wb.write(fos);
-		fos.close();
+		write(output, wb);
 	}
+	
 }

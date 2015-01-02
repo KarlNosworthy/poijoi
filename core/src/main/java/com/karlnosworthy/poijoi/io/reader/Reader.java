@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io;
+package com.karlnosworthy.poijoi.io.reader;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
 

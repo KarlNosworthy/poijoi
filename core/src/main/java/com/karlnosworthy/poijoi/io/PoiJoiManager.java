@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import com.karlnosworthy.poijoi.io.reader.Reader;
+import com.karlnosworthy.poijoi.io.writer.Writer;
+
 public class PoiJoiManager {
 	
 	private Set<Class<?>> readerClassCache;

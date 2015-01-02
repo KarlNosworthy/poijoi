@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.sqlite;
+package com.karlnosworthy.poijoi.io.reader.sqlite;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
