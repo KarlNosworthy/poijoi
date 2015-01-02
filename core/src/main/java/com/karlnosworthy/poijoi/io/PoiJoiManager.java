@@ -19,36 +19,29 @@ import java.util.jar.JarFile;
 public class PoiJoiManager {
 	
 	private Set<Class<?>> readerClassCache;
-	private HashMap<FormatType, Reader> readerInstanceCache;
+	private HashMap<FormatType, Reader<?>> readerInstanceCache;
 	private Set<Class<?>> writerClassCache;
-	private HashMap<FormatType, Writer> writerInstanceCache;
+	private HashMap<FormatType, Writer<?>> writerInstanceCache;
 
 	public PoiJoiManager() throws IOException {
 		super();
 		findAndCacheClassesOnClasspath();
 	}
 	
-	public Reader findReader(String input) throws IOException {
-		return getCachedReader(input);
+	public <T> Reader<T> findReader(T input, FormatType formatType) throws IOException {
+		return getCachedReader(input, formatType);
 	}
 	
-	public Writer findWriter(String output) {
-		return getCachedWriter(output);
+	public <T> Writer<T> findWriter(T output, FormatType formatType) {
+		return getCachedWriter(output, formatType);
 	}	
 	
-	private Reader getCachedReader(String inputSource) {
-		Reader reader = null;
-		
-		FormatType formatType = determineFormatType(inputSource);
-		
-		if (formatType == null) {
-			// throw an exception here to inform 'unable to determine format type'
-			return reader;
-		}
+	private <T> Reader<T> getCachedReader(T input, FormatType formatType) {
+		Reader<T> reader = null;
 		
 		if (readerInstanceCache != null && !readerInstanceCache.isEmpty()) {
 			if (readerInstanceCache.containsKey(formatType)) {
-				reader = readerInstanceCache.get(formatType);
+				reader = (Reader<T>) readerInstanceCache.get(formatType);
 			}
 		}
 		
@@ -63,7 +56,7 @@ public class PoiJoiManager {
 						try {
 							reader = (Reader) readerClass.newInstance();
 							if (readerInstanceCache == null) {
-								readerInstanceCache = new HashMap<FormatType,Reader>();
+								readerInstanceCache = new HashMap<FormatType,Reader<?>>();
 							}
 							readerInstanceCache.put(formatType, reader);
 						} catch (InstantiationException instantiationException) {
@@ -89,19 +82,12 @@ public class PoiJoiManager {
 		return false;
 	}
 	
-	private Writer getCachedWriter(String output) {
-		Writer writer = null;
-
-		FormatType formatType = determineFormatType(output);
-		
-		if (formatType == null) {
-			// throw an exception here to inform 'unable to determine format type'
-			return writer;
-		}
+	private <T> Writer<T> getCachedWriter(T output, FormatType formatType) {
+		Writer<T> writer = null;
 		
 		if (writerInstanceCache != null && !writerInstanceCache.isEmpty()) {
 			if (writerInstanceCache.containsKey(formatType)) {
-				writer = writerInstanceCache.get(formatType);
+				writer = (Writer<T>) writerInstanceCache.get(formatType);
 			}
 		}
 		
@@ -117,7 +103,7 @@ public class PoiJoiManager {
 						try {
 							writer = (Writer) writerClass.newInstance();
 							if (writerInstanceCache == null) {
-								writerInstanceCache = new HashMap<FormatType,Writer>();
+								writerInstanceCache = new HashMap<FormatType,Writer<?>>();
 							}
 							writerInstanceCache.put(formatType, writer);
 						} catch (InstantiationException instantiationException) {

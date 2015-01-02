@@ -1,10 +1,14 @@
 package com.karlnosworthy.poijoi;
 
+import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.karlnosworthy.poijoi.core.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.PoiJoiManager;
 import com.karlnosworthy.poijoi.io.Reader;
 import com.karlnosworthy.poijoi.io.Writer;
@@ -74,11 +78,14 @@ public class PoiJoi {
 	public void process() throws Exception {
 		PoiJoiManager poiJoiManager = new PoiJoiManager();
 		
-		Reader reader = poiJoiManager.findReader(inputQualifier);
-		Writer writer = poiJoiManager.findWriter(outputQualifier);
+		Connection inputConnection = DriverManager.getConnection(inputQualifier);
+		File outputFile = new File(outputQualifier);
 		
-		PoijoiMetaData metaData = reader.read(inputQualifier, true);
-		writer.write(outputQualifier, metaData, WriteType.BOTH);
+		Reader<Connection> reader = poiJoiManager.findReader(inputConnection, FormatType.SQLITE);
+		Writer<File> writer = poiJoiManager.findWriter(outputFile, FormatType.XLS);
+		
+		PoijoiMetaData metaData = reader.read(inputConnection, true);
+		writer.write(outputFile, metaData, WriteType.BOTH);
 	}
 
 	/**
