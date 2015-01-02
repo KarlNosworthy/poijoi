@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.jdbc;
+package com.karlnosworthy.poijoi.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
