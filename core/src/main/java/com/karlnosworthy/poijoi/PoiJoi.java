@@ -78,7 +78,7 @@ public class PoiJoi {
 	}
 
 	public void process() throws Exception {
-		PoiJoiManager poiJoiManager = new PoiJoiManager();
+		PoiJoiManager poiJoiManager = new PoiJoiManager(new PoiJoiOptions(options));
 
 		FormatType inputFormat = determineFormatType(inputQualifier);
 

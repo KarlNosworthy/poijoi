@@ -17,6 +17,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.karlnosworthy.poijoi.io.FormatType;
+import com.karlnosworthy.poijoi.io.OptionAware;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.FileReader;
 import com.karlnosworthy.poijoi.io.reader.JDBCConnectionReader;
@@ -27,22 +28,42 @@ import com.karlnosworthy.poijoi.io.writer.Writer;
 
 public class PoiJoiManager {
 	
+	private PoiJoiOptions options;
 	private Set<Class<?>> readerClassCache;
 	private HashMap<String, Reader<?>> readerInstanceCache;
 	private Set<Class<?>> writerClassCache;
 	private HashMap<String, Writer<?>> writerInstanceCache;
+	
 
 	public PoiJoiManager() throws IOException {
 		super();
 		findAndCacheClassesOnClasspath();
 	}
 	
+	public PoiJoiManager(PoiJoiOptions options) throws IOException {
+		super();
+		this.options = options;
+		findAndCacheClassesOnClasspath();
+	}
+	
 	public <T> Reader<T> findReader(T input, FormatType formatType) throws IOException {
-		return getCachedReader(input, formatType);
+		Reader<T> reader = getCachedReader(input, formatType);
+		
+		if (reader instanceof OptionAware) {
+			((OptionAware) reader).setOptions(options);
+		}
+		
+		return reader;
 	}
 	
 	public <T> Writer<T> findWriter(T output, FormatType formatType) {
-		return getCachedWriter(output, formatType);
+		Writer<T> writer = getCachedWriter(output, formatType);
+		
+		if (writer instanceof OptionAware) {
+			((OptionAware) writer).setOptions(options);
+		}
+		
+		return writer;
 	}	
 	
 	private <T> Reader<T> getCachedReader(T input, FormatType formatType) {
