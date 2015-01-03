@@ -1,239 +1,307 @@
 package com.karlnosworthy.poijoi;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.sql.DriverManager;
+import java.lang.annotation.Annotation;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import com.karlnosworthy.poijoi.io.FormatType;
+import com.karlnosworthy.poijoi.io.OptionAware;
+import com.karlnosworthy.poijoi.io.SupportsFormat;
+import com.karlnosworthy.poijoi.io.reader.FileReader;
+import com.karlnosworthy.poijoi.io.reader.JDBCConnectionReader;
 import com.karlnosworthy.poijoi.io.reader.Reader;
+import com.karlnosworthy.poijoi.io.writer.FileWriter;
+import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.io.writer.Writer;
-import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 
-/**
- * The main PoiJoi class which can be used inside a framework or as a
- * stand-alone command line application to create and populate a database from a
- * source data file.
- * 
- * @author Karl Nosworthy
- * @since 1.0
- */
 public class PoiJoi {
+	
+	private PoiJoiOptions options;
+	private Set<Class<?>> readerClassCache;
+	private HashMap<String, Reader<?>> readerInstanceCache;
+	private Set<Class<?>> writerClassCache;
+	private HashMap<String, Writer<?>> writerInstanceCache;
+	
 
-	private static final Logger logger = LoggerFactory.getLogger(PoiJoi.class);
-	private String inputQualifier;
-	private String outputQualifier;
-	private Map<String, String> options;
-
-	/**
-	 * Constructs a new PoiJoi instance.
-	 */
-	public PoiJoi() {
+	public PoiJoi() throws IOException {
 		super();
-		this.options = new HashMap<String, String>();
+		findAndCacheClassesOnClasspath();
 	}
-
-	public String getSourceDataFile() {
-		return inputQualifier;
-	}
-
-	public void setInputQualifier(String inputQualifier) throws IOException {
-		if (inputQualifier == null) {
-			throw new IllegalArgumentException(
-					"The input qualifier cannot be null.");
-		}
-
-		this.inputQualifier = inputQualifier;
-	}
-
-	/**
-	 */
-	public String getOutputQualifier() {
-		return this.outputQualifier;
-	}
-
-	/**
-	 */
-	public void setOutputQualifier(String outputQualifier) throws IOException {
-		if (outputQualifier == null) {
-			throw new IllegalArgumentException(
-					"The output path file instance cannot be null.");
-			/*
-			 * } else if (outputPath.isFile() && outputPath.exists()) { throw
-			 * new IOException(
-			 * "The output path specified a file that already exists.");
-			 */
-		}
-
-		this.outputQualifier = outputQualifier;
-	}
-
-	public void setOptions(Map<String, String> options) {
+	
+	public PoiJoi(PoiJoiOptions options) throws IOException {
+		super();
 		this.options = options;
+		findAndCacheClassesOnClasspath();
 	}
-
-	public void process() throws Exception {
-		PoiJoiManager poiJoiManager = new PoiJoiManager(new PoiJoiOptions(options));
-
-		FormatType inputFormat = determineFormatType(inputQualifier);
-
-		Object inputSource = null;
-		if (inputFormat == FormatType.SQLITE) {
-			inputSource = DriverManager.getConnection(inputQualifier);
-		} else {
-			inputSource = new File(inputQualifier);
+	
+	public <T> Reader<T> findReader(T input, FormatType formatType) throws IOException {
+		Reader<T> reader = getCachedReader(input, formatType);
+		
+		if (reader instanceof OptionAware) {
+			((OptionAware) reader).setOptions(options);
 		}
 		
-		logger.info("Input Format: {}, Input Source: {} ", inputFormat, inputSource);
-
-		FormatType outputFormat = determineFormatType(outputQualifier);
+		return reader;
+	}
+	
+	public <T> Writer<T> findWriter(T output, FormatType formatType) {
+		Writer<T> writer = getCachedWriter(output, formatType);
 		
-		Object output = null;
-		if (outputFormat == FormatType.SQLITE) {
-			output = DriverManager.getConnection(outputQualifier);
-		} else {
-			output = new File(outputQualifier);
+		if (writer instanceof OptionAware) {
+			((OptionAware) writer).setOptions(options);
 		}
-
-		logger.info("Output Format: {}, output:  {}", outputFormat, output);
 		
-		Reader reader = poiJoiManager.findReader(inputSource, inputFormat);
+		return writer;
+	}	
+	
+	private <T> Reader<T> getCachedReader(T input, FormatType formatType) {
+		Reader<T> reader = null;
+		
+		if (readerInstanceCache != null && !readerInstanceCache.isEmpty()) {
+			if (readerInstanceCache.containsKey(formatType.name() + input.getClass().getName())) {
+				reader = (Reader<T>) readerInstanceCache.get(formatType);
+			}
+		}
 		
 		if (reader == null) {
-			logger.info("No Reader Found for Format {} and input source {}", inputFormat, inputSource);
+			if (readerClassCache != null && !readerClassCache.isEmpty()) {
+				
+				Iterator<Class<?>> readerClassIterator = readerClassCache.iterator();
+				while (readerClassIterator.hasNext()) {
+					Class<?> readerClass =  (Class<?>) readerClassIterator.next();
+					
+					if (supportsFormat(readerClass, formatType)) {
+						try {
+							reader = (Reader) readerClass.newInstance();
+							if (readerInstanceCache == null) {
+								readerInstanceCache = new HashMap<String,Reader<?>>();
+							}
+							readerInstanceCache.put(formatType.name() + input.getClass().getName(), reader);
+						} catch (InstantiationException instantiationException) {
+							instantiationException.printStackTrace();
+						} catch (IllegalAccessException illegalAccessException) {
+							illegalAccessException.printStackTrace();
+						}
+					}
+				}
+			}
 		}
+		return reader;
+	}
+	
+	private boolean supportsFormat(Class _class, FormatType formatType) {
+		Annotation annotation = (Annotation) _class.getAnnotation(SupportsFormat.class);
+		if (annotation instanceof SupportsFormat) {
+			SupportsFormat supportsFormatAnnotation = (SupportsFormat) annotation;
+			if (supportsFormatAnnotation.type() == formatType) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private <T> Writer<T> getCachedWriter(T output, FormatType formatType) {
+		Writer<T> writer = null;
 		
-		Writer writer = poiJoiManager.findWriter(output, outputFormat);
+		if (writerInstanceCache != null && !writerInstanceCache.isEmpty()) {
+			if (writerInstanceCache.containsKey(formatType)) {
+				writer = (Writer<T>) writerInstanceCache.get(formatType.name() + output.getClass().getName());
+			}
+		}
 		
 		if (writer == null) {
-			logger.info("No Writer Found for Format {} and input source {}", outputFormat, output);
-		}
-
-		PoijoiMetaData metaData = reader.read(inputSource, true);
-		writer.write(output, metaData, WriteType.BOTH);
-	}
-
-	/**
-	 * The command line entry point which supports the following usage:
-	 * 
-	 * Usage: PoiJoi <path to data file> [output path]
-	 * 
-	 * @param args
-	 *            The command line arguments provided.
-	 */
-	public static void main(String... args) {
-
-		if (args.length == 0) {
-			logger.info(PoiJoi.getUsageString());
-		} else {
-			PoiJoi poiJoiInstance = new PoiJoi();
-			try {
-				if (args.length > 2) {
-					poiJoiInstance.setOptions(parseOptions(args[0]));
-					poiJoiInstance.setInputQualifier(args[1]);
-					poiJoiInstance.setOutputQualifier(args[2]);
-				} else if (args.length == 2) {
-					poiJoiInstance.setInputQualifier(args[0]);
-					poiJoiInstance.setOutputQualifier(args[1]);
-				} else {
-					poiJoiInstance.setOptions(parseOptions(args[0]));
-					/*
-					 * poiJoiInstance.setInputQualifier(inputQualifier); File
-					 * sourcePath = poiJoiInstance.getSourceDataFile(); if
-					 * (sourcePath.isDirectory()) {
-					 * poiJoiInstance.setOutputQualifier(sourcePath
-					 * .getAbsolutePath()); } else { int index =
-					 * sourcePath.getAbsolutePath().lastIndexOf(
-					 * File.separator);
-					 * poiJoiInstance.setOutputQualifier(sourcePath
-					 * .getAbsolutePath().substring(0, index)); }
-					 */
+			if (writerClassCache != null && !writerClassCache.isEmpty()) {
+				
+				Iterator<Class<?>> writerClassIterator = writerClassCache.iterator();
+				
+				while (writerClassIterator.hasNext()) {
+					Class<?> writerClass =  (Class<?>) writerClassIterator.next();
+					
+					if (supportsFormat(writerClass, formatType)) {
+						try {
+							writer = (Writer) writerClass.newInstance();
+							if (writerInstanceCache == null) {
+								writerInstanceCache = new HashMap<String,Writer<?>>();
+							}
+							writerInstanceCache.put(formatType.name() + output.getClass().getName(), writer);
+						} catch (InstantiationException instantiationException) {
+							instantiationException.printStackTrace();
+						} catch (IllegalAccessException illegalAccessException) {
+							illegalAccessException.printStackTrace();
+						}
+					}
 				}
+			}		
+		}
+		return writer;
+	}
+	
+	private void findAndCacheClassesOnClasspath() throws IOException {
+		Map<String, Set<Class<?>>> foundReaderClasses = findAll(getClass().getClassLoader(), getClass().getPackage().getName() + ".io.reader");
+		Map<String, Set<Class<?>>> foundWriterClasses = findAll(getClass().getClassLoader(), getClass().getPackage().getName() + ".io.writer");
+		
+		this.readerClassCache = foundReaderClasses.get(Reader.class.getName());
+		this.writerClassCache = foundWriterClasses.get(Writer.class.getName());
+	}
+	
+	
+	private Map<String, Set<Class<?>>> findAll(ClassLoader classLoader, String rootPackage) throws IOException {
 
-				poiJoiInstance.process();
-			} catch (Exception ioe) {
-				logger.error(ioe.getMessage(), ioe);
+		Set<Class<?>> readerClasses = new HashSet<Class<?>>();
+		Set<Class<?>> writerClasses = new HashSet<Class<?>>();
+		
+		
+		Set<Class<?>> classes = new HashSet<Class<?>>();
+
+		String resourcePath = createResourceName(rootPackage);
+		Enumeration<URL> resourceURLs = getClass().getClassLoader().getResources(resourcePath);
+		while (resourceURLs.hasMoreElements()) {
+			URL resourceURL = resourceURLs.nextElement();
+			
+			if (isJarURL(resourceURL)) {
+				URLConnection con = resourceURL.openConnection();
+				JarFile jarFile = null;
+
+				if (con instanceof JarURLConnection) {
+					JarURLConnection jarCon = (JarURLConnection) con;
+					jarCon.setUseCaches(false);
+					jarFile = jarCon.getJarFile();
+					
+					classes.addAll(findClassesInEntries(rootPackage, jarFile, classLoader));
+				}
+			} else {
+				File[] subDirectories = obtainSubDirectoryNames(new File(resourceURL.getFile()));
+				
+				for (File subDirectory : subDirectories) {
+					File[] potentialClassFilenames = obtainClassFilenames(subDirectory);
+					
+					String packageName = makePackageName(rootPackage, subDirectory.getName(), true);
+					for (File potentialClassFilename : potentialClassFilenames) {
+						try {
+							classes.add(Class.forName(packageName + potentialClassFilename.getName().replace(".class", "")));
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 			}
 		}
+		
+		for (Class<?> _class : classes) {
+			if (isValidReaderImplementation(_class)) {
+				readerClasses.add(_class);
+			} else if (isValidWriterImplementation(_class)) {
+				writerClasses.add(_class);
+			}
+		}
+		
+		Map<String, Set<Class<?>>> foundClasses = new HashMap<String, Set<Class<?>>>();
+		foundClasses.put(Reader.class.getName(), readerClasses);
+		foundClasses.put(Writer.class.getName(), writerClasses);
+		
+		return foundClasses;
+	}	
+	
+	private Set<Class<?>> findClassesInEntries(String rootPackageName, JarFile jarFile, ClassLoader classLoader) {
+		Set<Class<?>> classes = new HashSet<Class<?>>();
+
+		String resourceName = createResourceName(rootPackageName);
+		for (Enumeration<JarEntry> entries = jarFile.entries(); entries.hasMoreElements();) {
+			JarEntry entry = entries.nextElement();
+			String entryPath = entry.getName();
+
+			if (entryPath.startsWith(resourceName) && entryPath.endsWith(".class")) {
+				String className = createPackageName(entryPath).replace(".class", "");
+				try {
+					Class<?> _clazz = classLoader.loadClass(className);
+					classes.add(_clazz);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return classes;
+	}
+	
+	private boolean isValidReaderImplementation(Class<?> _class) {
+		if ((Reader.class.isAssignableFrom(_class) && !_class.isInterface()) ||
+		    (FileReader.class.isAssignableFrom(_class)  && !_class.isInterface()) ||
+		    (JDBCConnectionReader.class.isAssignableFrom(_class) && !_class.isInterface())) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isValidWriterImplementation(Class<?> _class) {
+		if ((Writer.class.isAssignableFrom(_class) && !_class.isInterface()) ||
+			(FileWriter.class.isAssignableFrom(_class) && !_class.isInterface()) ||
+			(JDBCConnectionWriter.class.isAssignableFrom(_class) && !_class.isInterface())) {
+			return true;
+		}
+		return false;
+	}
+	
+	private String createResourceName(String packageName) {
+		return (packageName.replace('.', '/') + '/');
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public static String getUsageString() {
+	private String createPackageName(String resourceName) {
+		return resourceName.replace('/', '.');
+	}
+
+	private boolean isJarURL(URL url) {
+		return url.getProtocol().equals("jar");
+	}
+	
+	private String makePackageName(String rootPackageName, String subPackageName, boolean appendFinalSeparator) {
 		StringBuilder builder = new StringBuilder();
-		builder.append("PoiJoi [options] <path to datafile> [outputpath]");
+		builder.append(rootPackageName);
+		builder.append(".");
+		builder.append(subPackageName);
+
+		if (appendFinalSeparator) {
+			builder.append(".");
+		}
 		return builder.toString();
 	}
-
-	private static Map<String, String> parseOptions(String optionsArgsString) {
-		Map<String, String> parsedOptions = new HashMap<String, String>();
-
-		String[] optionsItems = optionsArgsString.split("=");
-		for (int optionItemIndex = 0; optionItemIndex < optionsItems.length; optionItemIndex += 2) {
-			parsedOptions.put(optionsItems[optionItemIndex],
-					optionsItems[1 + optionItemIndex]);
-		}
-		return parsedOptions;
-	}
-
-	private FormatType determineFormatType(String qualifier) {
-		FormatType formatType = null;
-
-		if (isFile(qualifier)) {
-			File qualifierFile = new File(qualifier);
-
-			String qualifierFilePath = qualifierFile.getAbsolutePath();
-
-			if (qualifierFilePath.endsWith(FormatType.XLS.name().toLowerCase())) {
-				formatType = FormatType.XLS;
-			} else if (qualifierFilePath.endsWith(FormatType.XLSX.name()
-					.toLowerCase())) {
-				formatType = FormatType.XLSX;
-			} else if (qualifierFilePath.endsWith(FormatType.ODS.name()
-					.toLowerCase())) {
-				formatType = FormatType.ODS;
+	
+	
+	private File[] obtainSubDirectoryNames(File rootDir) {
+		return rootDir.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				if (name.indexOf(".") < 0) {
+					return true;
+				}
+				return false;
 			}
-		} else if (isJdbcURL(qualifier)) {
-			int procotolEndIndex = (1 + qualifier.indexOf(":"));
-			int subProtocolEndIndex = qualifier.indexOf(":", procotolEndIndex);
-
-			String subProtocol = qualifier.substring(procotolEndIndex,
-					subProtocolEndIndex);
-
-			if (subProtocol.equalsIgnoreCase(FormatType.SQLITE.name())) {
-				formatType = FormatType.SQLITE;
+		});
+	}
+	
+	private File[] obtainClassFilenames(File rootDir) {
+		return rootDir.listFiles(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				if (name.endsWith(".class") && name.indexOf("$") < 0 &&
+					!name.equals("Reader.class") && !name.equals("Writer.class") &&
+					!name.endsWith("Test.class")) {
+					return true;
+				}
+				return false;
 			}
-		}
-
-		return formatType;
-	}
-
-	private boolean isFile(String inputSource) {
-		if (inputSource == null || inputSource.length() == 0) {
-			return false;
-		}
-
-		if (inputSource.startsWith(File.separator)) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private boolean isJdbcURL(String output) {
-		if (output == null || output.length() == 0) {
-			return false;
-		}
-		if (output.startsWith("jdbc:")) {
-			return true;
-		}
-		return false;
+		});
 	}
 }

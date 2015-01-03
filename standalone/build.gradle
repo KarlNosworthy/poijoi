@@ -1,0 +1,33 @@
+
+jar {
+	appendix = 'standalone'
+}
+
+dependencies {
+	compile project(':core')
+	compile project(':io-ods')
+	compile project(':io-xls')
+	compile project(':io-xlsx')
+	compile project(':io-sqlite')
+}
+
+buildscript {
+	repositories {
+		jcenter()
+	}
+}
+
+task commandLineJar(type:Jar) {
+	manifest {
+		attributes 'Implementation-Title': 'Poijoi',
+			'Implementation-Version': version,
+			'Main-Class': 'com.karlnosworthy.poijoi.PoiJoiLauncher'
+	}
+	baseName = 'poijoi-standalone'
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
+}
+
+artifacts {
+	archives commandLineJar
+}

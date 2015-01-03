@@ -17,6 +17,12 @@ dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
+task sourceJar(type: Jar) {
+	from sourceSets.main.allSource
+	appendix = jar.appendix
+	classifier = 'source-SNAPSHOT'
+}
+
 task jarWithDependencies(type:Jar, dependsOn:jar) {
 	classifier = 'withdependencies-SNAPSHOT'
 	appendix = jar.appendix
@@ -28,5 +34,5 @@ task jarWithDependencies(type:Jar, dependsOn:jar) {
 }
 
 artifacts {
-	archives jarWithDependencies
+	archives jarWithDependencies, sourceJar
 }

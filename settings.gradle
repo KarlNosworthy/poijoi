@@ -1,1 +1,1 @@
-include 'core', 'io-ods', 'io-xls', 'io-xlsx', 'io-sqlite'
+include 'core', 'io-ods', 'io-xls', 'io-xlsx', 'io-sqlite', 'standalone'
