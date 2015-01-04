@@ -6,6 +6,12 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 
 import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
 
+/**
+ * An ODSInputStreamReader interacts with the ODS file using an {@link InputStream}
+ * 
+ * @author john.bartlett
+ *
+ */
 public class ODSInputStreamReader extends AbstractODSReader<InputStream> implements
 		InputStreamReader {
 
