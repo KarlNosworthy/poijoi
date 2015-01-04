@@ -1,11 +1,13 @@
 package com.karlnosworthy.poijoi.io.reader;
 
+import java.io.File;
 import java.sql.Connection;
 
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
-
+/**
+ * Reader that specifically uses a {@link Connection} for the Source
+ * 
+ * @author john.bartlett
+ */
 public interface JDBCConnectionReader extends Reader<Connection> {
-	
-	@Override
-	public PoijoiMetaData read(Connection connection, boolean readData) throws Exception;
+
 }

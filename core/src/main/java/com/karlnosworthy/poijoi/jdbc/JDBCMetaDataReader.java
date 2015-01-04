@@ -11,8 +11,8 @@ import java.util.Map;
 
 import com.karlnosworthy.poijoi.UnsupportedMapping;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.model.TableDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
+import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class JDBCMetaDataReader {
 

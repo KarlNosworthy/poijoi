@@ -2,6 +2,12 @@ package com.karlnosworthy.poijoi.model;
 
 import java.util.Map;
 
+/**
+ * Representation of a database table
+ * 
+ * @author john.bartlett
+ *
+ */
 public class TableDefinition {
 
 	private String tableName;
@@ -23,14 +29,23 @@ public class TableDefinition {
 		return columnDefinitions;
 	}
 
-	public ColumnDefinition getColumnDefinition(String columnName) {
-		return columnDefinitions.get(columnName);
-	}
-
+	/**
+	 * The number of columns in this table
+	 */
 	public int getColumnCount() {
 		return columnDefinitions.size();
 	}
 
+	/**
+	 * Get a {@link ColumnDefinition} based on it's name
+	 */
+	public ColumnDefinition getColumnDefinition(String columnName) {
+		return columnDefinitions.get(columnName);
+	}
+	
+	/**
+	 * Get a {@link ColumnDefinition} based on it's index
+	 */
 	public ColumnDefinition getColumnDefinition(int index) {
 		for (ColumnDefinition cd : columnDefinitions.values()) {
 			if (cd.getColumnIndex() == index) {
@@ -39,5 +54,6 @@ public class TableDefinition {
 		}
 		return null;
 	}
+	
 
 }

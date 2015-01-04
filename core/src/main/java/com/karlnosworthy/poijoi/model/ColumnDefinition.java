@@ -1,5 +1,11 @@
 package com.karlnosworthy.poijoi.model;
 
+/**
+ * Representation of a database column
+ * 
+ * @author john.bartlett
+ *
+ */
 public class ColumnDefinition {
 
 	public enum ColumnType {
