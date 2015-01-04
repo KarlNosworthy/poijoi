@@ -17,18 +17,21 @@ import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
-public class SQLLiteDatabaseReaderTest {
-	
+public class SQLiteDatabaseReaderTest {
+
+	/**
+	 * Test that the column names are correctly read using the headers
+	 */
 	@Test
 	public void testColumnHeaders() throws Exception {
-		
+
 		String path = getClass().getClassLoader().getResource("test.sqlite")
 				.getPath();
-		
+
 		path = "jdbc:sqlite:" + path;
-		
+
 		SQLiteDatabaseReader reader = new SQLiteDatabaseReader();
-		
+
 		Connection connection = null;
 		try {
 			connection = DriverManager.getConnection(path);
@@ -50,42 +53,46 @@ public class SQLLiteDatabaseReaderTest {
 			assertTrue(columnDefinitions.containsKey("col2Date"));
 			assertTrue(columnDefinitions.containsKey("col3Integer"));
 			assertTrue(columnDefinitions.containsKey("col4Decimal"));
-			
+
 		} finally {
 			if (connection != null) {
 				connection.close();
 			}
 		}
-		
+
 	}
-	
+
+	/**
+	 * Test that the column values come through as expected and are the correct
+	 * types
+	 */
 	@Test
 	public void testColumnValues() throws Exception {
 		String path = getClass().getClassLoader().getResource("test.sqlite")
 				.getPath();
-		
+
 		path = "jdbc:sqlite:" + path;
-		
+
 		SQLiteDatabaseReader reader = new SQLiteDatabaseReader();
-		
+
 		Connection connection = null;
 		try {
 			connection = DriverManager.getConnection(path);
 			PoijoiMetaData metaData = reader.read(connection, true);
-	
+
 			// pull back sheet1 data
 			List<HashMap<String, Object>> tableData = metaData
 					.getTableData("Sheet1");
-			
+
 			assertEquals(2, tableData.size());
-	
+
 			Map<String, Object> dataRow = tableData.get(1);
 			// check the column values
 			assertEquals("string2", dataRow.get("col1String"));
 			// Date is defaulting to DateTime object
 			Calendar cal = Calendar.getInstance();
 			cal.set(2014, 11, 17, 0, 0, 0);
-			cal.set(Calendar.MILLISECOND,0);
+			cal.set(Calendar.MILLISECOND, 0);
 			assertEquals(cal.getTime(), dataRow.get("col2Date"));
 			assertEquals(new Integer("2"), dataRow.get("col3Integer"));
 			assertEquals(new Double("12.02"), dataRow.get("col4Decimal"));
@@ -94,5 +101,5 @@ public class SQLLiteDatabaseReaderTest {
 				connection.close();
 			}
 		}
-	}	
+	}
 }
