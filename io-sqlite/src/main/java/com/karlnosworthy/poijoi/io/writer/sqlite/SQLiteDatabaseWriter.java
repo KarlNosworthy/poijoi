@@ -16,31 +16,42 @@ import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.jdbc.JDBCDatabaseCreator;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 
+/**
+ * Write an SQLite Database from the contents of a {@link PoijoiMetaData}.
+ * 
+ * @author john.bartlett
+ *
+ */
 @SupportsFormat(type = FormatType.SQLITE)
 public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 
-	private static final Logger logger = LoggerFactory.getLogger(SQLiteDatabaseReader.class);
-	
-	private static final String COMMAND_OPTION_VERSION = "--version";
+	private static final Logger logger = LoggerFactory
+			.getLogger(SQLiteDatabaseReader.class);
 
 	private PoiJoiOptions options;
-	
-	
-	public void setOptions(PoiJoiOptions options) {
-		this.options = options;
-	}
-	
+
+	/**
+	 * Writes an SQLite Database (and optionally the data) based on the contents
+	 * of a {@link PoijoiMetaData}.
+	 * 
+	 * @param connection
+	 *            The connection to the SQLite Database
+	 * @param metaData
+	 *            A {@link PoijoiMetaData} holding the table structures and
+	 *            optionally the table data
+	 * @param writeType
+	 *            Control over what gets written
+	 */
 	@Override
 	public final void write(Connection connection, PoijoiMetaData metaData,
 			WriteType writeType) throws Exception {
 		Class.forName("org.sqlite.JDBC");
 		JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator();
-		
-		if (options != null) {
-			if (options.hasValue("--version")) {
-				Integer versionNumber = Integer.parseInt(options.getValue("--version"));
-				setVersionNumber(connection, versionNumber);
-			}
+
+		if (options != null && options.hasValue("--version")) {
+			Integer versionNumber = Integer.parseInt(options
+					.getValue("--version"));
+			setVersionNumber(connection, versionNumber);
 		}
 
 		if (writeType != WriteType.DATA_ONLY) {
@@ -61,11 +72,15 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 		config.setUserVersion(versionNumber);
 		try {
 			config.apply(connection);
-			System.out.println("Just set the version number to '"+versionNumber+"'");
+			logger.info("Just set the version number to '{}'", versionNumber);
 			return true;
 		} catch (SQLException e1) {
-			e1.printStackTrace();
+			logger.warn(e1.getMessage(), e1);
 		}
 		return false;
+	}
+
+	public void setOptions(PoiJoiOptions options) {
+		this.options = options;
 	}
 }

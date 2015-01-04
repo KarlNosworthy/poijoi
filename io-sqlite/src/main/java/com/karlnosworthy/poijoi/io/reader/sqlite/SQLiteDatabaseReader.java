@@ -20,39 +20,45 @@ import com.karlnosworthy.poijoi.jdbc.JDBCMetaDataReader;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
+/**
+ * Read an SQLite Database and populate the content into a
+ * {@link PoijoiMetaData}.
+ * 
+ * @author john.bartlett
+ *
+ */
 @SupportsFormat(type = FormatType.SQLITE)
 public class SQLiteDatabaseReader implements JDBCConnectionReader {
 
+	/**
+	 * Builds a {@link PoijoiMetaData} object representing an SQLite Database
+	 * structure and optionally the data itself using a {@link Connection}.
+	 * 
+	 * @param connection
+	 *            The connection to the SQLite Database
+	 * @param readData
+	 *            Whether or not to read the data or just the database structure
+	 * @return a {@link PoijoiMetaData} holding the table structures and
+	 *         optionally the table data
+	 */
 	@Override
-	public PoijoiMetaData read(Connection connection, boolean readData) throws Exception {
-
-		PoijoiMetaData metaData = null;
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-
-			Map<String, TableDefinition> tableDefinitions = parseDatabaseMetaData(connection
-					.getMetaData());
-			Map<String, List<HashMap<String, Object>>> tableData = null;
-
-			if (readData) {
-				tableData = readData(connection, tableDefinitions);
-			}
-			metaData = new PoijoiMetaData(readData, tableDefinitions, tableData);
-
-		} finally {
-			if (connection != null) {
-				connection.close();
-			}
+	public PoijoiMetaData read(Connection connection, boolean readData)
+			throws Exception {
+		Class.forName("org.sqlite.JDBC");
+		Map<String, TableDefinition> tableDefinitions = parseDatabaseMetaData(connection
+				.getMetaData());
+		Map<String, List<HashMap<String, Object>>> tableData = null;
+		if (readData) {
+			tableData = readData(connection, tableDefinitions);
 		}
-		return metaData;
+		return new PoijoiMetaData(readData, tableDefinitions, tableData);
 	}
 
 	private Map<String, TableDefinition> parseDatabaseMetaData(
-			DatabaseMetaData databaseMetaData) throws SQLException, UnsupportedMapping {
+			DatabaseMetaData databaseMetaData) throws SQLException,
+			UnsupportedMapping {
 		JDBCMetaDataReader metaDataReader = new JDBCMetaDataReader(
 				databaseMetaData);
-
 		String schemaName = metaDataReader.getDefaultSchemaName();
 		return metaDataReader.getTableDefinitions(
 				metaDataReader.getTableNames(schemaName), schemaName);
@@ -62,18 +68,14 @@ public class SQLiteDatabaseReader implements JDBCConnectionReader {
 			Connection connection, Map<String, TableDefinition> tableDefinitions)
 			throws SQLException, UnsupportedMapping {
 
-		ResultSet tableDataResultSet = null;
-
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
-
 		for (String tableName : tableDefinitions.keySet()) {
 
 			Statement statement = connection.createStatement();
-			tableDataResultSet = statement.executeQuery("select * from "
-					+ tableName);
+			ResultSet tableDataResultSet = statement
+					.executeQuery("select * from " + tableName);
 
 			List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String, Object>>();
-
 			ResultSetMetaData resultSetMetaData = tableDataResultSet
 					.getMetaData();
 			while (tableDataResultSet.next()) {

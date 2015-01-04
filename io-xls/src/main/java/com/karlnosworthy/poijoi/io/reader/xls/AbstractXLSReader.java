@@ -13,15 +13,41 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
-import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
+/**
+ * Abstract class used to handle all the generic XLS access and then specific
+ * implementations will have to handle how the {@link Workbook} is initially
+ * loaded.
+ * 
+ * @author john.bartlett
+ *
+ * @param <T>
+ *            The source Type
+ */
 public abstract class AbstractXLSReader<T> {
 
+	/**
+	 * Get a {@link Workbook} based on the source type
+	 */
 	abstract Workbook getWorkbook(T source) throws Exception;
-	
-	public final PoijoiMetaData read(T source, boolean readData) throws Exception {
+
+	/**
+	 * Reads in a XLS representation of a database and converts it into a
+	 * {@link PoijoiMetaData} object which holds the table structures and
+	 * optionally the database data.
+	 * 
+	 * @param source
+	 *            The source of the data (e.g. java.io.File etc)
+	 * @param readData
+	 *            Whether or not to read the data or just the database structure
+	 * @return a {@link PoijoiMetaData} holding the table structures and
+	 *         optionally the table data
+	 */
+	public final PoijoiMetaData read(T source, boolean readData)
+			throws Exception {
 		Workbook workbook = getWorkbook(source);
 		Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
@@ -45,21 +71,21 @@ public abstract class AbstractXLSReader<T> {
 
 		DataFormatter dataFormatter = new DataFormatter();
 
-		// Find columns...
+		// Find header column
 		Row headerRow = sheet.getRow(0);
 
 		// If we don't have any columns then there's nothing we can do
 		if (headerRow != null) {
 			String tableName = sheet.getSheetName();
-			Row typedRow = sheet.getRow(1);
+			Row dataRow = sheet.getRow(1);
 			HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
 			for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
 				Cell headerRowCell = headerRow.getCell(cellIndex);
 				String cellName = headerRowCell.getStringCellValue();
 
 				Cell typedRowCell = null;
-				if (typedRow != null) {
-					typedRowCell = typedRow.getCell(cellIndex);
+				if (dataRow != null) {
+					typedRowCell = dataRow.getCell(cellIndex);
 				}
 
 				ColumnType columnType = ColumnType.STRING;
@@ -121,7 +147,7 @@ public abstract class AbstractXLSReader<T> {
 							.getColumnDefinition(cellIndex);
 					String colName = columnDefinition.getColumnName();
 					Cell dataCell = dataRow.getCell(cellIndex);
-					
+
 					if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
 						columnData.put(colName, dataCell.getStringCellValue()
 								.trim());
@@ -141,5 +167,5 @@ public abstract class AbstractXLSReader<T> {
 		}
 		return rowData;
 	}
-	
+
 }

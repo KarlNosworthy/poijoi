@@ -16,12 +16,41 @@ import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
+/**
+ * Abstract class used to handle all the generic XLS access and then specific
+ * implementations will have to handle how they write the {@link Workbook} out.
+ * 
+ * @author john.bartlett
+ *
+ * @param <T>
+ *            The output type
+ */
 public abstract class AbstractXLSWriter<T> {
 
+	/**
+	 * Write the generated {@link Workbook} to a given output
+	 * 
+	 * @param output
+	 *            The output mechanism
+	 * @param workbook
+	 *            The workbook to output
+	 */
 	abstract void write(T output, Workbook workbook) throws Exception;
-	
-	public final void write(T output, PoijoiMetaData metaData, WriteType writeType)
-			throws Exception {
+
+	/**
+	 * Writes out an XLS File to reflect the table structures and optionally the
+	 * data stored in the {@link PoijoiMetaData}.
+	 * 
+	 * @param output
+	 *            The mechanism for outputting the data (e.g. java.io.File etc)
+	 * @param metaData
+	 *            a {@link PoijoiMetaData} holding the table structures and
+	 *            optionally the table data
+	 * @param writeType
+	 *            Rules around what to write
+	 */
+	public final void write(T output, PoijoiMetaData metaData,
+			WriteType writeType) throws Exception {
 
 		HSSFWorkbook wb = new HSSFWorkbook();
 

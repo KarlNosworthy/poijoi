@@ -9,17 +9,48 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.table.Row;
 import org.odftoolkit.simple.table.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
-import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
+/**
+ * Abstract class used to handle all the generic ODS access and then specific
+ * implementations will have to handle how the {@link SpreadsheetDocument} is
+ * initially loaded.
+ * 
+ * @author john.bartlett
+ *
+ * @param <T>
+ *            The source Type
+ */
 public abstract class AbstractODSReader<T> {
-	
+
+	protected static final Logger logger = LoggerFactory
+			.getLogger(AbstractODSReader.class);
+
+	/**
+	 * Get a {@link SpreadsheetDocument} based on the source type
+	 */
 	abstract SpreadsheetDocument getDocument(T source) throws Exception;
-	
-	public final PoijoiMetaData read(T source, boolean readData) throws Exception {
+
+	/**
+	 * Reads in a representation of a database and converts it into a
+	 * {@link PoijoiMetaData} object which holds the table structures and
+	 * optionally the database data.
+	 * 
+	 * @param source
+	 *            The source of the data (e.g. java.io.File etc)
+	 * @param readData
+	 *            Whether or not to read the data or just the database structure
+	 * @return a {@link PoijoiMetaData} holding the table structures and
+	 *         optionally the table data
+	 */
+	public final PoijoiMetaData read(T source, boolean readData)
+			throws Exception {
 		SpreadsheetDocument document = null;
 		try {
 			Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
@@ -46,61 +77,83 @@ public abstract class AbstractODSReader<T> {
 		}
 	}
 
+	/**
+	 * Parse the table structure stored within a sheet
+	 */
 	private TableDefinition parseSheetMeta(Table sheet) {
 
-		// Find columns...
+		String tableName = sheet.getTableName();
+
+		// Find header column
 		Row headerRow = sheet.getRowByIndex(0);
 
-		// If we don't have any columns then there's nothing we can do
-		if (headerRow != null && headerRow.getCellCount() > 0) {
-			String tableName = sheet.getTableName();
+		// If we don't have a valid header skip
+		if (!validHeader(headerRow)) {
+			logger.warn("Couldn't find valid header row on {}, so skipping",
+					tableName);
+			return null;
+		}
 
-			Row typedRow = sheet.getRowByIndex(1);
+		// first row of data
+		Row dataRow = sheet.getRowByIndex(1);
+		if (dataRow == null) {
+			logger.warn("Couldn't find data row in {}, so skipping", tableName);
+			return null;
+		}
 
-			HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
-
-			for (int cellIndex = 0; cellIndex < headerRow.getCellCount(); cellIndex++) {
-				Cell headerRowCell = headerRow.getCellByIndex(cellIndex);
-				String cellName = headerRowCell.getStringValue();
-				Cell typedRowCell = null;
-				if (typedRow != null) {
-					typedRowCell = typedRow.getCellByIndex(cellIndex);
-				}
-				ColumnType columnType = ColumnType.STRING;
-				String cellType = null;
-				if (typedRowCell != null) {
-					cellType = typedRowCell.getValueType();
-				}
-				if (cellType != null) {
-					if (typedRowCell.getDisplayText().endsWith(".id")) {
-						columnType = ColumnType.INTEGER_NUMBER;
+		// iterate over all columns of first row and work out types based on
+		// the data
+		HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
+		for (int cellIndex = 0; cellIndex < headerRow.getCellCount(); cellIndex++) {
+			Cell headerRowCell = headerRow.getCellByIndex(cellIndex);
+			String cellName = headerRowCell.getStringValue();
+			Cell typedRowCell = dataRow.getCellByIndex(cellIndex);
+			ColumnType columnType = ColumnType.STRING;
+			String cellType = typedRowCell.getValueType();
+			if (typedRowCell.getDisplayText().endsWith(".id")) {
+				columnType = ColumnType.INTEGER_NUMBER;
+			} else {
+				if (cellType.equalsIgnoreCase("boolean")
+						|| cellType.equalsIgnoreCase("string")) {
+					columnType = ColumnType.STRING;
+				} else if (cellType.equalsIgnoreCase("currency")
+						|| cellType.equalsIgnoreCase("float")) {
+					if (typedRowCell.getStringValue().indexOf('.') != -1) {
+						columnType = ColumnType.DECIMAL_NUMBER;
 					} else {
-						if (cellType.equalsIgnoreCase("boolean")
-								|| cellType.equalsIgnoreCase("string")) {
-							columnType = ColumnType.STRING;
-						} else if (cellType.equalsIgnoreCase("currency")
-								|| cellType.equalsIgnoreCase("float")) {
-							if (typedRowCell.getStringValue().indexOf('.') != -1) {
-								columnType = ColumnType.DECIMAL_NUMBER;
-							} else {
-								columnType = ColumnType.INTEGER_NUMBER;
-							}
-						} else if (cellType.equalsIgnoreCase("date")) {
-							columnType = ColumnType.DATE;
-						}
+						columnType = ColumnType.INTEGER_NUMBER;
 					}
-					ColumnDefinition cd = new ColumnDefinition(cellName,
-							cellIndex, columnType);
-					columns.put(cellName, cd);
+				} else if (cellType.equalsIgnoreCase("date")) {
+					columnType = ColumnType.DATE;
 				}
 			}
-			if (!columns.isEmpty()) {
-				return new TableDefinition(tableName, columns);
-			}
+			ColumnDefinition cd = new ColumnDefinition(cellName, cellIndex,
+					columnType);
+			columns.put(cellName, cd);
+		}
+		if (!columns.isEmpty()) {
+			return new TableDefinition(tableName, columns);
 		}
 		return null;
 	}
 
+	/**
+	 * Check for a valid header row
+	 */
+	private boolean validHeader(Row headerRow) {
+		if (headerRow == null || headerRow.getCellCount() < 1) {
+			return false;
+		}
+		// if the header has cells make sure the first has content
+		Cell headerCell = headerRow.getCellByIndex(0);
+		return headerCell.getStringValue() != null
+				&& !headerCell.getStringValue().trim().isEmpty();
+	}
+
+	/**
+	 * Read the data stored in a sheet based on the passed in
+	 * {@link TableDefinition}
+	 */
 	private List<HashMap<String, Object>> readData(Table sheet,
 			TableDefinition tableDefinition) {
 		List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String, Object>>();

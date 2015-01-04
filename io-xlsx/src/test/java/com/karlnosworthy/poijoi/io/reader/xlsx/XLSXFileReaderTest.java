@@ -13,12 +13,15 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
-import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
 public class XLSXFileReaderTest {
 
+	/**
+	 * Test that the column names are correctly read using the headers
+	 */
 	@Test
 	public void testColumnHeaders() throws Exception {
 		String path = getClass().getClassLoader().getResource("test1.xlsx")
@@ -43,6 +46,9 @@ public class XLSXFileReaderTest {
 		assertTrue(columnDefinitions.containsKey("col4Decimal"));
 	}
 
+	/**
+	 * Check that the mappings for the column types work as expected
+	 */
 	@Test
 	public void testColumnTypes() throws Exception {
 
@@ -66,6 +72,10 @@ public class XLSXFileReaderTest {
 				.getColumnDefinition("col4Decimal").getColumnType());
 	}
 
+	/**
+	 * Test that the column values come through as expected and are the correct
+	 * types
+	 */
 	@Test
 	public void testColumnValues() throws Exception {
 		String path = getClass().getClassLoader().getResource("test1.xlsx")

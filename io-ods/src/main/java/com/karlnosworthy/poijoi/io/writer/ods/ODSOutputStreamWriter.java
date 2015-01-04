@@ -6,6 +6,12 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 
 import com.karlnosworthy.poijoi.io.writer.OutputStreamWriter;
 
+/**
+ * A ODSFileWriter writes the ODS file out to an {@link OutputStream}
+ * 
+ * @author john.bartlett
+ *
+ */
 public class ODSOutputStreamWriter extends AbstractODSWriter<OutputStream>
 		implements OutputStreamWriter {
 

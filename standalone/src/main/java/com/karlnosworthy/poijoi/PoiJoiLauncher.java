@@ -63,13 +63,7 @@ public class PoiJoiLauncher {
 		if (outputQualifier == null) {
 			throw new IllegalArgumentException(
 					"The output path file instance cannot be null.");
-			/*
-			 * } else if (outputPath.isFile() && outputPath.exists()) { throw
-			 * new IOException(
-			 * "The output path specified a file that already exists.");
-			 */
 		}
-
 		this.outputQualifier = outputQualifier;
 	}
 
@@ -102,13 +96,13 @@ public class PoiJoiLauncher {
 
 		logger.info("Output Format: {}, output:  {}", outputFormat, output);
 		
-		Reader reader = poiJoiManager.findReader(inputSource, inputFormat);
+		Reader<Object> reader = poiJoiManager.findReader(inputSource, inputFormat);
 		
 		if (reader == null) {
 			logger.info("No Reader Found for Format {} and input source {}", inputFormat, inputSource);
 		}
 		
-		Writer writer = poiJoiManager.findWriter(output, outputFormat);
+		Writer<Object> writer = poiJoiManager.findWriter(output, outputFormat);
 		
 		if (writer == null) {
 			logger.info("No Writer Found for Format {} and input source {}", outputFormat, output);
@@ -127,9 +121,8 @@ public class PoiJoiLauncher {
 	 *            The command line arguments provided.
 	 */
 	public static void main(String... args) {
-
 		if (args.length == 0) {
-			logger.info(PoiJoiLauncher.getUsageString());
+			System.out.println(PoiJoiLauncher.getUsageString());
 		} else {
 			PoiJoiLauncher poiJoiInstance = new PoiJoiLauncher();
 			try {
@@ -142,22 +135,10 @@ public class PoiJoiLauncher {
 					poiJoiInstance.setOutputQualifier(args[1]);
 				} else {
 					poiJoiInstance.setOptions(parseOptions(args[0]));
-					/*
-					 * poiJoiInstance.setInputQualifier(inputQualifier); File
-					 * sourcePath = poiJoiInstance.getSourceDataFile(); if
-					 * (sourcePath.isDirectory()) {
-					 * poiJoiInstance.setOutputQualifier(sourcePath
-					 * .getAbsolutePath()); } else { int index =
-					 * sourcePath.getAbsolutePath().lastIndexOf(
-					 * File.separator);
-					 * poiJoiInstance.setOutputQualifier(sourcePath
-					 * .getAbsolutePath().substring(0, index)); }
-					 */
 				}
-
 				poiJoiInstance.process();
-			} catch (Exception ioe) {
-				logger.error(ioe.getMessage(), ioe);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
