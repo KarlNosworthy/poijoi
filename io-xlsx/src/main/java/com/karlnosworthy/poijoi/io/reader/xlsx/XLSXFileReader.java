@@ -10,6 +10,12 @@ import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.FileReader;
 
+/**
+ * An XLSXFileReader interacts with an XLSX file using a {@link File}
+ * 
+ * @author john.bartlett
+ *
+ */
 @SupportsFormat(type = FormatType.XLSX)
 public final class XLSXFileReader extends AbstractXLSReader<File> implements FileReader {
 

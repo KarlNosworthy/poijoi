@@ -18,12 +18,16 @@ import org.junit.Test;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
-import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
 public class XLSXFileWriterTest {
 
+	/**
+	 * Based on a mocked up Table structure and data set make sure the writer
+	 * correctly outputs a valid XLSX file
+	 */
 	@Test
 	public void testWrite() throws Exception {
 

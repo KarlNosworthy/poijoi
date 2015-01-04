@@ -7,8 +7,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
 
-public class XLSXInputStreamReader extends AbstractXLSReader<InputStream> implements
-		InputStreamReader {
+/**
+ * An XLSXInputStreamReader interacts with an XLSX file using a
+ * {@link InputStream}
+ * 
+ * @author john.bartlett
+ *
+ */
+public class XLSXInputStreamReader extends AbstractXLSReader<InputStream>
+		implements InputStreamReader {
 
 	@Override
 	Workbook getWorkbook(InputStream source) throws Exception {
