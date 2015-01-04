@@ -9,6 +9,12 @@ import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.FileWriter;
 
+/**
+ * A XLSFileWriter writes the XLS file using an {@link File}
+ * 
+ * @author john.bartlett
+ *
+ */
 @SupportsFormat(type = FormatType.XLS)
 public class XLSFileWriter extends AbstractXLSWriter<File> implements
 		FileWriter {

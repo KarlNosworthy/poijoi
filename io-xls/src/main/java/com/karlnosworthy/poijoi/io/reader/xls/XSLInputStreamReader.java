@@ -7,6 +7,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
 
+/**
+ * An XSLInputStreamReader interacts with an XLS file using a {@link InputStream}
+ * 
+ * @author john.bartlett
+ *
+ */
 public class XSLInputStreamReader extends AbstractXLSReader<InputStream> implements
 		InputStreamReader {
 
