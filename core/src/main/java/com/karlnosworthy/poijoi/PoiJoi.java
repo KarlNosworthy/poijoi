@@ -33,8 +33,8 @@ import com.karlnosworthy.poijoi.io.writer.Writer;
 /**
  * The central access to PoiJoi functionality where readers and writers are loaded and can be obtained.
  * 
- * An instance can be configuring using a {@linkPoiJoiOptions} instance or left as defaults. If provided, these options
- * are then passed onto any Reader or Writer instance that implements the {@OptionAware} interface.
+ * An instance can be configuring using a {@link PoiJoiOptions} instance or left as defaults. If provided, these options
+ * are then passed onto any Reader or Writer instance that implements the {@link OptionAware} interface.
  * 
  * WARNING: A cache of applicable reader and writer classes is created on construction by searching the classpath
  *          for applicable implementations.  It's suggested that unless otherwise required, a single instance is
@@ -102,7 +102,7 @@ public class PoiJoi {
 	/**
 	 * Searches for a known writer that supports the given input type and format.
 	 * 
-	 * @param input The type of input that the reader needs to support.
+	 * @param output The type of output that the reader needs to support.
 	 * @param formatType The format type of the data that the reader will be reading.
 	 * @return An instance of an applicable reader (may be null).
 	 */

@@ -12,13 +12,6 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class JDBCSQLCreator {
 
-	/**
-	 * 
-	 * @param connection
-	 * @param tableName
-	 * @param columnDefinitions
-	 * @return
-	 */
 	public String buildCreateTableSQL(TableDefinition tableDefinition) {
 
 		StringBuilder builder = new StringBuilder();

@@ -16,9 +16,15 @@ buildscript {
 }
 
 task sourceJar(type: Jar) {
-	from sourceSets.main.allSource
 	appendix = jar.appendix
 	classifier = 'source-SNAPSHOT'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc-SNAPSHOT'
+	appendix = jar.appendix
+	from javadoc.destinationDir
 }
 
 task jarWithDependencies(type:Jar, dependsOn:jar) {
@@ -32,5 +38,5 @@ task jarWithDependencies(type:Jar, dependsOn:jar) {
 }
 
 artifacts {
-	archives jarWithDependencies, sourceJar
+	archives jarWithDependencies, sourceJar, javadocJar
 }
