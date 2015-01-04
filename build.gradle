@@ -19,7 +19,7 @@ subprojects {
     // Disable the test report for the individual test task
     test {
         reports.html.enabled = false
-    }	
+    }
 }
 
 task testReport(type: TestReport) {
@@ -27,41 +27,3 @@ task testReport(type: TestReport) {
     // Include the results from the `test` task in all subprojects
     reportOn subprojects*.test
 }
-	
-/*
-gradle.buildFinished { buildResult ->
-	tasks.createStandaloneJar.execute()
-}
-
-task createStandaloneJar(type:Jar) {
-	def outputDir = file("${buildDir}/unpacked/dist")
-	def inputJar
-	
-	println "Creating Standalone Jar..."
-		
-	subprojects.each {subproject ->
-		println "${subproject.name}"
-		
-		
-		def subproject_with_dep_jarname=  "poijoi-${subproject.name}-${version}-withdependencies-${jar.classifier}.jar"
-		
-		inputJar = file("${subproject.libsDir}/${subproject_with_dep_jarname}")
-		
-		println "Input jar is ${inputJar}"
-		
-		from zipTree(inputJar)
-		into outputDir
-	}
-	
-	baseName = 'poijoi-all'
-	
-	manifest {
-		attributes 'Implementation-Title': 'PoiJoi',
-			'Implementation-Version': version,
-			'Main-Class': 'com.karlnosworthy.poijoi.PoiJoi'
-	}
-	
-	from { outputDir }
-	with jar
-}
-*/
