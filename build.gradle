@@ -1,8 +1,14 @@
 
 allprojects {
-	version = '0.9.1'
+	version = '0.9.1-SNAPSHOT'
 	
     apply plugin: 'java'
+	
+	buildscript {
+		repositories {
+			jcenter()
+		}
+	}
 	
 	repositories {
 		mavenCentral()
@@ -11,7 +17,6 @@ allprojects {
 	
 	jar {
 		archivesBaseName = 'poijoi'
-		classifier = 'SNAPSHOT'
 	}
 }
 
@@ -20,6 +25,28 @@ subprojects {
     test {
         reports.html.enabled = false
     }
+	
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		appendix = project.name
+		classifier = 'javadoc'
+		from javadoc.destinationDir
+	}
+	
+	task sourceJar(type: Jar) {
+		appendix = project.name
+		classifier = 'source'
+		from sourceSets.main.allSource
+	}
+	
+	task jarWithDependencies(type:Jar) {
+		appendix = project.name
+		classifier = 'withdependencies'
+		from project.configurations.compile, project.sourceSets.main.output.classesDir
+	}
+	
+	artifacts {
+		archives jarWithDependencies, javadocJar, sourceJar
+	}
 }
 
 task testReport(type: TestReport) {

@@ -11,12 +11,6 @@ dependencies {
 	compile project(':io-sqlite')
 }
 
-buildscript {
-	repositories {
-		jcenter()
-	}
-}
-
 task commandLineJar(type:Jar) {
 	manifest {
 		attributes 'Implementation-Title': 'Poijoi',
@@ -24,7 +18,8 @@ task commandLineJar(type:Jar) {
 			'Main-Class': 'com.karlnosworthy.poijoi.PoiJoiLauncher'
 	}
 	baseName = 'poijoi-standalone'
-	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	
+	from configurations.compile
 	with jar
 }
 

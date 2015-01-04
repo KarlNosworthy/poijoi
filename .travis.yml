@@ -1,6 +1,9 @@
 language: java
 jdk: oraclejdk7
 
+notifications:
+  slack: bristolopensource:naGu8ITR6cP3rUsVEUh98JrC
+
 before_install:
  - chmod +x gradlew
 

@@ -16,24 +16,3 @@ dependencies {
 	compile 'ch.qos.logback:logback-classic:1.1.2'
 	testCompile 'junit:junit:4.+'
 }
-
-task sourceJar(type: Jar) {
-	from sourceSets.main.allSource
-	appendix = jar.appendix
-	classifier = 'source-SNAPSHOT'
-}
-
-task jarWithDependencies(type:Jar, dependsOn:jar) {
-	println "Running jarWithDependencies"
-	classifier = 'withdependencies-SNAPSHOT'
-	appendix = jar.appendix
-	
-	def depsToInclude = configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-	depsToInclude += sourceSets.main.output.classesDir
-
-	from { depsToInclude }
-}
-
-artifacts {
-	archives jarWithDependencies, sourceJar
-}

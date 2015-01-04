@@ -14,29 +14,3 @@ buildscript {
 		jcenter()
 	}
 }
-
-task sourceJar(type: Jar) {
-	appendix = jar.appendix
-	classifier = 'source-SNAPSHOT'
-	from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc-SNAPSHOT'
-	appendix = jar.appendix
-	from javadoc.destinationDir
-}
-
-task jarWithDependencies(type:Jar, dependsOn:jar) {
-	classifier = 'withdependencies-SNAPSHOT'
-	appendix = jar.appendix
-	
-	def depsToInclude = configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-	    depsToInclude += sourceSets.main.output.classesDir
-	
-	from { depsToInclude }
-}
-
-artifacts {
-	archives jarWithDependencies, sourceJar, javadocJar
-}
