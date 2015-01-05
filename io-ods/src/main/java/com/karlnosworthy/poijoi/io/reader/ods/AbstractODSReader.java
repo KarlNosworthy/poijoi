@@ -31,31 +31,38 @@ public abstract class AbstractODSReader<T> {
 
 	protected static final Logger logger = LoggerFactory
 			.getLogger(AbstractODSReader.class);
+	
+	abstract boolean isValidInput(T input);
 
 	/**
-	 * Get a {@link SpreadsheetDocument} based on the source type
+	 * Get a {@link SpreadsheetDocument} based on the input type
 	 */
-	abstract SpreadsheetDocument getDocument(T source) throws Exception;
+	abstract SpreadsheetDocument getDocument(T input) throws Exception;
 
 	/**
 	 * Reads in a representation of a database and converts it into a
 	 * {@link PoijoiMetaData} object which holds the table structures and
 	 * optionally the database data.
 	 * 
-	 * @param source
-	 *            The source of the data (e.g. java.io.File etc)
+	 * @param input
+	 *            The input of the data (e.g. java.io.File etc)
 	 * @param readData
 	 *            Whether or not to read the data or just the database structure
 	 * @return a {@link PoijoiMetaData} holding the table structures and
 	 *         optionally the table data
 	 */
-	public final PoijoiMetaData read(T source, boolean readData)
+	public final PoijoiMetaData read(T input, boolean readData)
 			throws Exception {
+		
+		if (!isValidInput(input)) {
+			return null;
+		}
+		
 		SpreadsheetDocument document = null;
 		try {
 			Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 			Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
-			document = getDocument(source);
+			document = getDocument(input);
 			int totalNumberOfSheets = document.getSheetCount();
 			for (int sheetIndex = 0; sheetIndex < totalNumberOfSheets; sheetIndex++) {
 				Table sheet = document.getSheetByIndex(sheetIndex);

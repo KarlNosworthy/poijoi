@@ -28,6 +28,8 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
  */
 public abstract class AbstractODSWriter<T> {
 
+	abstract boolean isValidOutput(T output);
+	
 	/**
 	 * Write the generated {@link SpreadsheetDocument} to a given output
 	 * 
@@ -53,6 +55,10 @@ public abstract class AbstractODSWriter<T> {
 	 */
 	public final void write(T output, PoijoiMetaData metaData,
 			WriteType writeType) throws Exception {
+		
+		if (!isValidOutput(output) || !isValidMetadata(metaData)) {
+			return;
+		}
 
 		// create a new spreadsheet document ready to write out to the output
 		SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument
@@ -135,6 +141,19 @@ public abstract class AbstractODSWriter<T> {
 
 		// write out the spreadsheet
 		write(output, spreadsheetDocument);
+	}
+	
+	private boolean isValidMetadata(PoijoiMetaData metadata) {
+		if (metadata == null) {
+			return false;
+		} else {
+			if (metadata.getTableDefinitions() == null || metadata.getTableDefinitions().isEmpty()) {
+				return false;
+			} else if (metadata.isReadData() && metadata.getTableData() == null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

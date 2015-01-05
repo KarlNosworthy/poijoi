@@ -18,8 +18,15 @@ import com.karlnosworthy.poijoi.io.writer.FileWriter;
 public class ODSFileWriter extends AbstractODSWriter<File> implements FileWriter {
 
 	@Override
+	boolean isValidOutput(File output) {
+		if (output == null || output.isDirectory()) {
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
 	void write(File output, SpreadsheetDocument spreadsheetDocument) throws Exception {
 		spreadsheetDocument.save(output);
 	}
-
 }

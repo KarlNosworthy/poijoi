@@ -19,8 +19,15 @@ public class ODSFileReader extends AbstractODSReader<File> implements
 		FileReader {
 
 	@Override
-	SpreadsheetDocument getDocument(File source) throws Exception {
-		return SpreadsheetDocument.loadDocument(source);
+	SpreadsheetDocument getDocument(File input) throws Exception {
+		return SpreadsheetDocument.loadDocument(input);
 	}
 
+	@Override
+	boolean isValidInput(File input) {
+		if (input == null || input.isDirectory()) {
+			return false;
+		}
+		return true;
+	}
 }

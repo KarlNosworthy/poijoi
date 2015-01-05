@@ -22,60 +22,72 @@ import org.odftoolkit.simple.table.Table;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
-public class ODSFileWriterTest {
+public class ODSOutputStreamWriterTest {
 	
-	private ODSFileWriter writer;
-	
+	private ODSOutputStreamWriter outputStreamWriter;
 	
 	@Before
 	public void onSetup() {
-		writer = new ODSFileWriter();
+		outputStreamWriter = new ODSOutputStreamWriter();
 	}
 	
 	@After
 	public void onTeardown() {
-		writer = null;
-	}
-	
-	/**
-	 * Check that passing in a null file is handled safety.
-	 */
-	@Test
-	public void testWriteWithNullFile() throws Exception {
-		writer.write(null, null, WriteType.SCHEMA_ONLY);
+		outputStreamWriter = null;
 	}
 
 	/**
-	 * Check that passing in a file that references a directory is handled safely.
+	 * Check that passing in a null stream is handled safety.
 	 */
 	@Test
-	public void testWriteWithDirectoryNotFile() throws Exception {
-		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		writer.write(new File(javaTmpDir), null, WriteType.SCHEMA_ONLY);
+	public void testWriteWithNullOutputStream() throws Exception {
+		outputStreamWriter.write(null, null, WriteType.BOTH);
 	}
 	
-	/**
-	 * Check that passing in null meta-data is handled safely.
-	 */
+	@Test
+	public void testWriteWithClosedInputStream() throws Exception {
+		
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		File tempOutputFile = new File(javaTmpDir,"temp_spreadsheet.ods");
+		OutputStream outputStream = new FileOutputStream(tempOutputFile);
+		outputStream.close();
+		
+		outputStreamWriter.write(outputStream, null, WriteType.BOTH);
+	}
+	
 	@Test
 	public void testWriteWithNullMetadata() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
 		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.ods");
-		writer.write(testOutputFile, null, WriteType.SCHEMA_ONLY);
-	}
 
+		OutputStream outputStream = null;
+		try {
+			outputStream = new FileOutputStream(testOutputFile);
+			outputStreamWriter.write(outputStream, null, WriteType.SCHEMA_ONLY);
+		} finally {
+			outputStream.close();
+		}
+	}
+	
 	@Test
 	public void testWriteWithInvalidMetadata() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
 		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.ods");
-		PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
-		writer.write(testOutputFile, metadata, WriteType.SCHEMA_ONLY);
-	}	
 
+		OutputStream outputStream = null;
+		try {
+			outputStream = new FileOutputStream(testOutputFile);
+			PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
+			outputStreamWriter.write(outputStream, metadata, WriteType.SCHEMA_ONLY);
+		} finally {
+			outputStream.close();
+		}
+	}
+	
 	/**
 	 * Based on a mocked up Table structure and data set make sure the writer
 	 * correctly outputs a valid ODS file
@@ -117,20 +129,24 @@ public class ODSFileWriterTest {
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);
 
-		String tempDir = System.getProperty("java.io.tmpdir");
-		File file = new File(tempDir, "test.xls");
-		file.deleteOnExit();
 
-		writer.write(file, metaData, WriteType.BOTH);
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		File testFile = new File(javaTmpDir, "temp_spreadsheet.ods");
+		testFile.deleteOnExit();
+
+		OutputStream outputStream = new FileOutputStream(testFile);
+		outputStreamWriter.write(outputStream, metaData, WriteType.BOTH);
+		outputStream.close();
 
 		// validate contents of the file
 		SpreadsheetDocument spreadsheet = SpreadsheetDocument
-				.loadDocument(new FileInputStream(file));
+				.loadDocument(new FileInputStream(testFile));
 		assertEquals(1, spreadsheet.getTableList().size());
 
 		Table table = spreadsheet.getTableByName("TableOne");
 		assertNotNull(table);
 		assertEquals(2, table.getRowCount());
 		spreadsheet.close();
-	}
+	}	
+	
 }

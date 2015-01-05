@@ -20,6 +20,27 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 public class ODSFileReaderTest {
 
 	/**
+	 * Check that passing in a null file is handled safety.
+	 */
+	@Test
+	public void testReaderWithNullFile() throws Exception {
+		ODSFileReader reader = new ODSFileReader();
+		PoijoiMetaData metaData = reader.read(null, true);
+		assertTrue(metaData == null);
+	}
+
+	/**
+	 * Check that passing in a file that references a directory is handled safely.
+	 */
+	@Test
+	public void testReaderWithDirectoryNotFile() throws Exception {
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		ODSFileReader reader = new ODSFileReader();
+		PoijoiMetaData metaData = reader.read(new File(javaTmpDir), true);
+		assertTrue(metaData == null);
+	}
+
+	/**
 	 * Test that the column names are correctly read using the headers
 	 */
 	@Test
@@ -100,5 +121,4 @@ public class ODSFileReaderTest {
 		assertEquals(new Integer("2"), dataRow.get("col3Integer"));
 		assertEquals(new Double("12.02"), dataRow.get("col4Decimal"));
 	}
-
 }
