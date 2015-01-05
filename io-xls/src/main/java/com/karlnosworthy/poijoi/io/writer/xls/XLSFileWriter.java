@@ -20,6 +20,14 @@ public class XLSFileWriter extends AbstractXLSWriter<File> implements
 		FileWriter {
 
 	@Override
+	boolean isValidOutput(File output) {
+		if (output == null || output.isDirectory()) {
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
 	void write(File output, Workbook workbook) throws Exception {
 		FileOutputStream fos = new FileOutputStream(output);
 		workbook.write(fos);

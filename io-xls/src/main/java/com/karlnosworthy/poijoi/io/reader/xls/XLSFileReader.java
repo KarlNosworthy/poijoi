@@ -24,4 +24,11 @@ public final class XLSFileReader extends AbstractXLSReader<File> implements File
 		return new HSSFWorkbook(new FileInputStream(source));
 	}
 	
+	@Override
+	boolean isValidInput(File input) {
+		if (input == null || input.isDirectory()) {
+			return false;
+		}
+		return true;
+	}
 }

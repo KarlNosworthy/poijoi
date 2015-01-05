@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
@@ -19,6 +21,37 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class XLSFileReaderTest {
 
+	private XLSFileReader reader;
+	
+	
+	@Before
+	public void onSetup() {
+		reader = new XLSFileReader();
+	}
+	
+	@After
+	public void teardown() {
+		reader = null;
+	}
+	
+	/**
+	 * Check that passing in a null file is handled safety.
+	 */
+	@Test
+	public void testReaderWithNullFile() throws Exception {
+		PoijoiMetaData metaData = reader.read(null, true);
+		assertTrue(metaData == null);
+	}
+
+	/**
+	 * Check that passing in a file that references a directory is handled safely.
+	 */
+	@Test
+	public void testReaderWithDirectoryNotFile() throws Exception {
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		PoijoiMetaData metaData = reader.read(new File(javaTmpDir), true);
+		assertTrue(metaData == null);
+	}
 	/**
 	 * Test that the column names are correctly read using the headers
 	 */
@@ -26,7 +59,7 @@ public class XLSFileReaderTest {
 	public void testColumnHeaders() throws Exception {
 		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
-		XLSFileReader reader = new XLSFileReader();
+		
 		PoijoiMetaData metaData = reader.read(new File(path), false);
 
 		Map<String, TableDefinition> tableDefinitions = metaData
@@ -55,7 +88,6 @@ public class XLSFileReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 
-		XLSFileReader reader = new XLSFileReader();
 		PoijoiMetaData metaData = reader.read(new File(path), false);
 
 		TableDefinition tableDefinition = metaData.getTableDefinition("Sheet1");
@@ -81,7 +113,6 @@ public class XLSFileReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 
-		XLSFileReader reader = new XLSFileReader();
 		PoijoiMetaData metaData = reader.read(new File(path), true);
 
 		// pull back sheet1 data
@@ -100,5 +131,4 @@ public class XLSFileReaderTest {
 		assertEquals(new Integer("2"), dataRow.get("col3Integer"));
 		assertEquals(new Double("12.02"), dataRow.get("col4Decimal"));
 	}
-
 }

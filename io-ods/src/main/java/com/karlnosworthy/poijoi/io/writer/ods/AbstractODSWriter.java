@@ -155,5 +155,4 @@ public abstract class AbstractODSWriter<T> {
 		}
 		return true;
 	}
-
 }

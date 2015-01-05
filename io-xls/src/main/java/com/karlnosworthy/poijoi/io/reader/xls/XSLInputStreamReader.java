@@ -1,5 +1,6 @@
 package com.karlnosworthy.poijoi.io.reader.xls;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -21,4 +22,17 @@ public class XSLInputStreamReader extends AbstractXLSReader<InputStream> impleme
 		return new HSSFWorkbook(source);
 	}
 
+	@Override
+	boolean isValidInput(InputStream input) {
+		if (input == null) {
+			return false;
+		} else {
+			try {
+				input.available();
+			} catch (IOException ioException) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

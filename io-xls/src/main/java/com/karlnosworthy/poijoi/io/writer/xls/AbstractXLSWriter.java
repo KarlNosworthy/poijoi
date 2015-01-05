@@ -26,6 +26,8 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
  *            The output type
  */
 public abstract class AbstractXLSWriter<T> {
+	
+	abstract boolean isValidOutput(T output);
 
 	/**
 	 * Write the generated {@link Workbook} to a given output
@@ -52,6 +54,10 @@ public abstract class AbstractXLSWriter<T> {
 	public final void write(T output, PoijoiMetaData metaData,
 			WriteType writeType) throws Exception {
 
+		if (!isValidOutput(output) || !isValidMetadata(metaData)) {
+			return;
+		}
+		
 		HSSFWorkbook wb = new HSSFWorkbook();
 
 		Map<String, TableDefinition> tableDefinitions = metaData
@@ -104,5 +110,17 @@ public abstract class AbstractXLSWriter<T> {
 		}
 		write(output, wb);
 	}
-
+	
+	private boolean isValidMetadata(PoijoiMetaData metadata) {
+		if (metadata == null) {
+			return false;
+		} else {
+			if (metadata.getTableDefinitions() == null || metadata.getTableDefinitions().isEmpty()) {
+				return false;
+			} else if (metadata.isReadData() && metadata.getTableData() == null) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
