@@ -18,7 +18,15 @@ import com.karlnosworthy.poijoi.io.writer.FileWriter;
 @SupportsFormat(type = FormatType.XLSX)
 public class XLSXFileWriter extends AbstractXLSXWriter<File> implements
 		FileWriter {
-
+	
+	@Override
+	boolean isValidOutput(File output) {
+		if (output == null || output.isDirectory()) {
+			return false;
+		}
+		return true;
+	}
+	
 	@Override
 	void write(File output, Workbook workbook) throws Exception {
 		FileOutputStream fos = new FileOutputStream(output);

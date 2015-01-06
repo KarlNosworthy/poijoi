@@ -52,6 +52,7 @@ public class XLSFileReaderTest {
 		PoijoiMetaData metaData = reader.read(new File(javaTmpDir), true);
 		assertTrue(metaData == null);
 	}
+	
 	/**
 	 * Test that the column names are correctly read using the headers
 	 */

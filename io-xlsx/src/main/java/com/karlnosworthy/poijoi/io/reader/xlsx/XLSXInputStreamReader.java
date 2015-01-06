@@ -1,5 +1,6 @@
 package com.karlnosworthy.poijoi.io.reader.xlsx;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -22,4 +23,17 @@ public class XLSXInputStreamReader extends AbstractXLSReader<InputStream>
 		return new XSSFWorkbook(source);
 	}
 
+	@Override
+	boolean isValidInput(InputStream input) {
+		if (input == null) {
+			return false;
+		} else {
+			try {
+				input.available();
+			} catch (IOException ioException) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

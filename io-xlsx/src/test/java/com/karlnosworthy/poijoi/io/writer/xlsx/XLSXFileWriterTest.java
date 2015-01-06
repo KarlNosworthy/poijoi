@@ -14,6 +14,8 @@ import java.util.Map;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
@@ -24,12 +26,59 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class XLSXFileWriterTest {
 
+	private XLSXFileWriter writer;
+	
+	@Before
+	public void onSetup() {
+		writer = new XLSXFileWriter();
+	}
+	
+	@After
+	public void onTeardown() {
+		writer = null;
+	}
+	
+	/**
+	 * Check that passing in a null file is handled safety.
+	 */
+	@Test
+	public void testWriteWithNullFile() throws Exception {
+		writer.write(null, null, WriteType.SCHEMA_ONLY);
+	}
+
+	/**
+	 * Check that passing in a file that references a directory is handled safely.
+	 */
+	@Test
+	public void testWriteWithDirectoryNotFile() throws Exception {
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		writer.write(new File(javaTmpDir), null, WriteType.SCHEMA_ONLY);
+	}
+	
+	/**
+	 * Check that passing in null meta-data is handled safely.
+	 */
+	@Test
+	public void testWriteWithNullMetadata() throws Exception {
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.ods");
+		writer.write(testOutputFile, null, WriteType.SCHEMA_ONLY);
+	}
+
+	@Test
+	public void testWriteWithInvalidMetadata() throws Exception {
+		String javaTmpDir = System.getProperty("java.io.tmpdir");
+		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.ods");
+		PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
+		writer.write(testOutputFile, metadata, WriteType.SCHEMA_ONLY);
+	}		
+
 	/**
 	 * Based on a mocked up Table structure and data set make sure the writer
 	 * correctly outputs a valid XLSX file
 	 */
 	@Test
-	public void testWrite() throws Exception {
+	public void testSuccessfulWrite() throws Exception {
 
 		Map<String, ColumnDefinition> columnDefinitions = new HashMap<String, ColumnDefinition>();
 		columnDefinitions.put("col1String", new ColumnDefinition("col1String",

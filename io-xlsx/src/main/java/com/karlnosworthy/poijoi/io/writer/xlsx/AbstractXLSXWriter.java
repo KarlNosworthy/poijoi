@@ -9,6 +9,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
@@ -27,6 +29,8 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
  */
 public abstract class AbstractXLSXWriter<T> {
 
+	abstract boolean isValidOutput(T output);
+	
 	/**
 	 * Write the generated {@link Workbook} to a given output
 	 * 
@@ -51,6 +55,10 @@ public abstract class AbstractXLSXWriter<T> {
 	 */
 	public final void write(T output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
 
+		if (!isValidOutput(output) || !isValidMetadata(metaData)) {
+			return;
+		}
+		
 		Workbook wb = new XSSFWorkbook();
 		
 		Map<String, TableDefinition> tableDefinitions = metaData.getTableDefinitions();
@@ -97,4 +105,17 @@ public abstract class AbstractXLSXWriter<T> {
 		write(output, wb);
 	}
 	
+	private boolean isValidMetadata(PoijoiMetaData metadata) {
+		if (metadata == null) {
+			return false;
+		} else {
+			if (metadata.getTableDefinitions() == null || metadata.getTableDefinitions().isEmpty()) {
+				return false;
+			} else if (metadata.isReadData() && metadata.getTableData() == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

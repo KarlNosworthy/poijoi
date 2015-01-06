@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.writer.xls;
+package com.karlnosworthy.poijoi.io.writer.xlsx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,13 +27,13 @@ import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
-public class XLSOutputStreamWriterTest {
+public class XLSXOutputStreamWriterTest {
 
-	private XLSOutputStreamWriter outputStreamWriter;
+	private XLSXOutputStreamWriter outputStreamWriter;
 	
 	@Before
 	public void onSetup() {
-		outputStreamWriter = new XLSOutputStreamWriter();
+		outputStreamWriter = new XLSXOutputStreamWriter();
 	}
 	
 	@After
@@ -53,7 +53,7 @@ public class XLSOutputStreamWriterTest {
 	public void testWriteWithClosedInputStream() throws Exception {
 		
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		File tempOutputFile = new File(javaTmpDir,"temp_spreadsheet.xls");
+		File tempOutputFile = new File(javaTmpDir,"temp_spreadsheet.xlsx");
 		OutputStream outputStream = new FileOutputStream(tempOutputFile);
 		outputStream.close();
 		
@@ -63,7 +63,7 @@ public class XLSOutputStreamWriterTest {
 	@Test
 	public void testWriteWithNullMetadata() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.xls");
+		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.xlsx");
 
 		OutputStream outputStream = null;
 		try {
@@ -77,7 +77,7 @@ public class XLSOutputStreamWriterTest {
 	@Test
 	public void testWriteWithInvalidMetadata() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.xls");
+		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.xlsx");
 
 		OutputStream outputStream = null;
 		try {
@@ -132,7 +132,7 @@ public class XLSOutputStreamWriterTest {
 
 
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		File testFile = new File(javaTmpDir, "temp_spreadsheet.xls");
+		File testFile = new File(javaTmpDir, "temp_spreadsheet.xlsx");
 		testFile.deleteOnExit();
 
 		OutputStream outputStream = new FileOutputStream(testFile);
@@ -140,7 +140,7 @@ public class XLSOutputStreamWriterTest {
 		outputStream.close();
 
 		// validate contents of the file
-		Workbook workbook = new HSSFWorkbook(new FileInputStream(testFile));
+		Workbook workbook = new XSSFWorkbook(new FileInputStream(testFile));
 		
 		assertEquals(1, workbook.getNumberOfSheets());
 

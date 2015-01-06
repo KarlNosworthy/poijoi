@@ -28,6 +28,8 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
  *            The source Type
  */
 public abstract class AbstractXLSReader<T> {
+	
+	abstract boolean isValidInput(T input);
 
 	/**
 	 * Get a {@link Workbook} based on the source type
@@ -39,16 +41,21 @@ public abstract class AbstractXLSReader<T> {
 	 * {@link PoijoiMetaData} object which holds the table structures and
 	 * optionally the database data.
 	 * 
-	 * @param source
-	 *            The source of the data (e.g. java.io.File etc)
+	 * @param input
+	 *            The input source of the data (e.g. java.io.File etc)
 	 * @param readData
 	 *            Whether or not to read the data or just the database structure
 	 * @return a {@link PoijoiMetaData} holding the table structures and
 	 *         optionally the table data
 	 */
-	public final PoijoiMetaData read(T source, boolean readData)
+	public final PoijoiMetaData read(T input, boolean readData)
 			throws Exception {
-		Workbook workbook = getWorkbook(source);
+		
+		if (!isValidInput(input)) {
+			return null;
+		}
+		
+		Workbook workbook = getWorkbook(input);
 		Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		int totalNumberOfSheets = workbook.getNumberOfSheets();
