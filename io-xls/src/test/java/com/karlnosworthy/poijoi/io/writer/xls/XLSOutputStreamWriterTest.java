@@ -1,4 +1,4 @@
-package com.karlnosworthy.poijoi.io.writer.ods;
+package com.karlnosworthy.poijoi.io.writer.xls;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,25 +14,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.odftoolkit.simple.SpreadsheetDocument;
-import org.odftoolkit.simple.table.Table;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
-import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
-public class ODSOutputStreamWriterTest {
-	
-	private ODSOutputStreamWriter outputStreamWriter;
+public class XLSOutputStreamWriterTest {
+
+	private XLSOutputStreamWriter outputStreamWriter;
 	
 	@Before
 	public void onSetup() {
-		outputStreamWriter = new ODSOutputStreamWriter();
+		outputStreamWriter = new XLSOutputStreamWriter();
 	}
 	
 	@After
@@ -139,13 +140,12 @@ public class ODSOutputStreamWriterTest {
 		outputStream.close();
 
 		// validate contents of the file
-		SpreadsheetDocument spreadsheet = SpreadsheetDocument
-				.loadDocument(new FileInputStream(testFile));
-		assertEquals(1, spreadsheet.getTableList().size());
+		Workbook workbook = new HSSFWorkbook(new FileInputStream(testFile));
+		
+		assertEquals(1, workbook.getNumberOfSheets());
 
-		Table table = spreadsheet.getTableByName("TableOne");
+		Sheet table = workbook.getSheet("TableOne");
 		assertNotNull(table);
-		assertEquals(2, table.getRowCount());
-		spreadsheet.close();
-	}
+		assertEquals(1, table.getLastRowNum());
+	}	
 }

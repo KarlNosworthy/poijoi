@@ -14,7 +14,7 @@ import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
  * @author john.bartlett
  *
  */
-public class XSLInputStreamReader extends AbstractXLSReader<InputStream> implements
+public class XLSInputStreamReader extends AbstractXLSReader<InputStream> implements
 		InputStreamReader {
 
 	@Override
