@@ -2,6 +2,7 @@ package com.karlnosworthy.poijoi.io.reader.sqlite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
@@ -18,6 +21,39 @@ import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class SQLiteDatabaseReaderTest {
+	
+	private SQLiteDatabaseReader reader;
+	
+	
+	@Before
+	public void onSetup() {
+		reader = new SQLiteDatabaseReader();
+	}
+	
+	@After
+	public void onTeardown() {
+		reader = null;
+	}
+	
+	@Test
+	public void testNullConnection() throws Exception {
+		PoijoiMetaData metadata = reader.read(null, false);
+		assertNull(metadata);
+	}
+	
+	@Test
+	public void testClosedConnection() throws Exception {
+		String path = getClass().getClassLoader().getResource("test.sqlite")
+				.getPath();
+
+		path = "jdbc:sqlite:" + path;
+
+		Connection connection = DriverManager.getConnection(path);
+		connection.close();
+		
+		PoijoiMetaData metadata = reader.read(connection, false);
+		assertNull(metadata);
+	}
 
 	/**
 	 * Test that the column names are correctly read using the headers
@@ -30,9 +66,8 @@ public class SQLiteDatabaseReaderTest {
 
 		path = "jdbc:sqlite:" + path;
 
-		SQLiteDatabaseReader reader = new SQLiteDatabaseReader();
-
 		Connection connection = null;
+		
 		try {
 			connection = DriverManager.getConnection(path);
 			PoijoiMetaData metaData = reader.read(connection, false);
@@ -73,9 +108,8 @@ public class SQLiteDatabaseReaderTest {
 
 		path = "jdbc:sqlite:" + path;
 
-		SQLiteDatabaseReader reader = new SQLiteDatabaseReader();
-
 		Connection connection = null;
+		
 		try {
 			connection = DriverManager.getConnection(path);
 			PoijoiMetaData metaData = reader.read(connection, true);

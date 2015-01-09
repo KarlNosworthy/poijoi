@@ -1,8 +1,6 @@
 package com.karlnosworthy.poijoi.io.writer.xls;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +44,7 @@ public class XLSOutputStreamWriterTest {
 	 */
 	@Test
 	public void testWriteWithNullOutputStream() throws Exception {
-		outputStreamWriter.write(null, null, WriteType.BOTH);
+		assertFalse(outputStreamWriter.write(null, null, WriteType.BOTH));
 	}
 	
 	@Test
@@ -57,7 +55,7 @@ public class XLSOutputStreamWriterTest {
 		OutputStream outputStream = new FileOutputStream(tempOutputFile);
 		outputStream.close();
 		
-		outputStreamWriter.write(outputStream, null, WriteType.BOTH);
+		assertFalse(outputStreamWriter.write(outputStream, null, WriteType.BOTH));
 	}
 	
 	@Test
@@ -68,7 +66,7 @@ public class XLSOutputStreamWriterTest {
 		OutputStream outputStream = null;
 		try {
 			outputStream = new FileOutputStream(testOutputFile);
-			outputStreamWriter.write(outputStream, null, WriteType.SCHEMA_ONLY);
+			assertFalse(outputStreamWriter.write(outputStream, null, WriteType.SCHEMA_ONLY));
 		} finally {
 			outputStream.close();
 		}
@@ -83,7 +81,7 @@ public class XLSOutputStreamWriterTest {
 		try {
 			outputStream = new FileOutputStream(testOutputFile);
 			PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
-			outputStreamWriter.write(outputStream, metadata, WriteType.SCHEMA_ONLY);
+			assertFalse(outputStreamWriter.write(outputStream, metadata, WriteType.SCHEMA_ONLY));
 		} finally {
 			outputStream.close();
 		}
@@ -136,7 +134,7 @@ public class XLSOutputStreamWriterTest {
 		testFile.deleteOnExit();
 
 		OutputStream outputStream = new FileOutputStream(testFile);
-		outputStreamWriter.write(outputStream, metaData, WriteType.BOTH);
+		assertTrue(outputStreamWriter.write(outputStream, metaData, WriteType.BOTH));
 		outputStream.close();
 
 		// validate contents of the file

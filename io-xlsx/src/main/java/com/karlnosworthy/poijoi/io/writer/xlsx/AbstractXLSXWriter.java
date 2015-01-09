@@ -9,8 +9,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
@@ -39,7 +37,7 @@ public abstract class AbstractXLSXWriter<T> {
 	 * @param workbook
 	 *            The workbook to output
 	 */
-	abstract void write(T output, Workbook workbook) throws Exception;
+	abstract boolean write(T output, Workbook workbook) throws Exception;
 	
 	/**
 	 * Writes out an XLSX File to reflect the table structures and optionally the
@@ -53,10 +51,10 @@ public abstract class AbstractXLSXWriter<T> {
 	 * @param writeType
 	 *            Rules around what to write
 	 */
-	public final void write(T output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
+	public final boolean write(T output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
 
 		if (!isValidOutput(output) || !isValidMetadata(metaData)) {
-			return;
+			return false;
 		}
 		
 		Workbook wb = new XSSFWorkbook();
@@ -102,7 +100,7 @@ public abstract class AbstractXLSXWriter<T> {
 			}
 			
 		}
-		write(output, wb);
+		return write(output, wb);
 	}
 	
 	private boolean isValidMetadata(PoijoiMetaData metadata) {

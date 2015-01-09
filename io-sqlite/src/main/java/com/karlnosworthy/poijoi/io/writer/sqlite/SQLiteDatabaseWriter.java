@@ -29,7 +29,7 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 			.getLogger(SQLiteDatabaseReader.class);
 
 	private PoiJoiOptions options;
-
+	
 	/**
 	 * Writes an SQLite Database (and optionally the data) based on the contents
 	 * of a {@link PoijoiMetaData}.
@@ -41,28 +41,37 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 	 *            optionally the table data
 	 * @param writeType
 	 *            Control over what gets written
+	 *            
+	 * @return True if the write was successful otherwise false
 	 */
 	@Override
-	public final void write(Connection connection, PoijoiMetaData metaData,
+	public final boolean write(Connection connection, PoijoiMetaData metaData,
 			WriteType writeType) throws Exception {
-		Class.forName("org.sqlite.JDBC");
-		JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator();
-
-		if (options != null && options.hasValue("--version")) {
-			Integer versionNumber = Integer.parseInt(options
-					.getValue("--version"));
-			setVersionNumber(connection, versionNumber);
-		}
-
-		if (writeType != WriteType.DATA_ONLY) {
-			int numberOfTablesCreated = databaseCreator.createTables(
-					connection, metaData);
-			logger.info("Created {} tables....", numberOfTablesCreated);
-		}
-
-		if (writeType != WriteType.SCHEMA_ONLY) {
-			int inserts = databaseCreator.writeData(connection, metaData);
-			logger.info("Inserted {} row(s)....", inserts);
+		
+		if (isValidConnection(connection) && isValidMetadata(metaData)) {
+			
+			Class.forName("org.sqlite.JDBC");
+			JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator();
+	
+			if (options != null && options.hasValue("--version")) {
+				Integer versionNumber = Integer.parseInt(options
+						.getValue("--version"));
+				setVersionNumber(connection, versionNumber);
+			}
+	
+			if (writeType != WriteType.DATA_ONLY) {
+				int numberOfTablesCreated = databaseCreator.createTables(
+						connection, metaData);
+				logger.info("Created {} tables....", numberOfTablesCreated);
+			}
+	
+			if (writeType != WriteType.SCHEMA_ONLY) {
+				int inserts = databaseCreator.writeData(connection, metaData);
+				logger.info("Inserted {} row(s)....", inserts);
+			}
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -83,4 +92,34 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 	public void setOptions(PoiJoiOptions options) {
 		this.options = options;
 	}
+	
+	@Override
+	public boolean isValidConnection(Connection connection) {
+		if (connection == null) {
+			return false;
+		} else {
+			try {
+				if (connection.isClosed() || connection.isReadOnly()) {
+					return false;
+				}
+			} catch (SQLException sqlException) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	boolean isValidMetadata(PoijoiMetaData metadata) {
+		if (metadata == null) {
+			return false;
+		} else {
+			if (metadata.getTableDefinitions() == null || metadata.getTableDefinitions().isEmpty()) {
+				return false;
+			} else if (metadata.isReadData() && metadata.getTableData() == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 }

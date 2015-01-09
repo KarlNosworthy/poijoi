@@ -28,10 +28,11 @@ public class XLSXFileWriter extends AbstractXLSXWriter<File> implements
 	}
 	
 	@Override
-	void write(File output, Workbook workbook) throws Exception {
+	boolean write(File output, Workbook workbook) throws Exception {
 		FileOutputStream fos = new FileOutputStream(output);
 		workbook.write(fos);
 		fos.close();
+		return true;
 	}
 
 }

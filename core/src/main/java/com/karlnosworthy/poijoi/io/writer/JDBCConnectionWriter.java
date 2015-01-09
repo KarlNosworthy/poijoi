@@ -9,4 +9,6 @@ import java.sql.Connection;
  */
 public interface JDBCConnectionWriter extends Writer<Connection> {
 
+	abstract boolean isValidConnection(Connection connection);
+	
 }

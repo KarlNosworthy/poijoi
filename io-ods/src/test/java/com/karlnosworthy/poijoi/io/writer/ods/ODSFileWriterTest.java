@@ -1,8 +1,6 @@
 package com.karlnosworthy.poijoi.io.writer.ods;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +44,7 @@ public class ODSFileWriterTest {
 	 */
 	@Test
 	public void testWriteWithNullFile() throws Exception {
-		writer.write(null, null, WriteType.SCHEMA_ONLY);
+		assertFalse(writer.write(null, null, WriteType.SCHEMA_ONLY));
 	}
 
 	/**
@@ -55,7 +53,7 @@ public class ODSFileWriterTest {
 	@Test
 	public void testWriteWithDirectoryNotFile() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		writer.write(new File(javaTmpDir), null, WriteType.SCHEMA_ONLY);
+		assertFalse(writer.write(new File(javaTmpDir), null, WriteType.SCHEMA_ONLY));
 	}
 	
 	/**
@@ -65,7 +63,7 @@ public class ODSFileWriterTest {
 	public void testWriteWithNullMetadata() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
 		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.ods");
-		writer.write(testOutputFile, null, WriteType.SCHEMA_ONLY);
+		assertFalse(writer.write(testOutputFile, null, WriteType.SCHEMA_ONLY));
 	}
 
 	@Test
@@ -73,8 +71,8 @@ public class ODSFileWriterTest {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
 		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.ods");
 		PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
-		writer.write(testOutputFile, metadata, WriteType.SCHEMA_ONLY);
-	}	
+		assertFalse(writer.write(testOutputFile, metadata, WriteType.SCHEMA_ONLY));
+	}
 
 	/**
 	 * Based on a mocked up Table structure and data set make sure the writer
@@ -121,7 +119,7 @@ public class ODSFileWriterTest {
 		File file = new File(tempDir, "test.xls");
 		file.deleteOnExit();
 
-		writer.write(file, metaData, WriteType.BOTH);
+		assertTrue(writer.write(file, metaData, WriteType.BOTH));
 
 		// validate contents of the file
 		SpreadsheetDocument spreadsheet = SpreadsheetDocument

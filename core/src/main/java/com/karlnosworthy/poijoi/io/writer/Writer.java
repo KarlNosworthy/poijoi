@@ -27,7 +27,9 @@ public interface Writer<T> {
 	 *            The database details (e.g. structure and optionally the data)
 	 * @param writeType
 	 *            Whether to write the Data and/or the Schema
+	 *            
+	 * @return True if the write was successful otherwise false
 	 */
-	void write(T output, PoijoiMetaData metaData, WriteType writeType)
+	boolean write(T output, PoijoiMetaData metaData, WriteType writeType)
 			throws Exception;
 }

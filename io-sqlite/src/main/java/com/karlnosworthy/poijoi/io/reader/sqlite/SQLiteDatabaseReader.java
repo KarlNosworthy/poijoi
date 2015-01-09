@@ -30,6 +30,23 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 @SupportsFormat(type = FormatType.SQLITE)
 public class SQLiteDatabaseReader implements JDBCConnectionReader {
 
+	@Override
+	public boolean isValidConnection(Connection connection) {
+		
+		if (connection == null) {
+			return false;
+		} else {
+			try {
+				if (connection.isClosed()) {
+					return false;
+				}
+			} catch (SQLException sqlException) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Builds a {@link PoijoiMetaData} object representing an SQLite Database
 	 * structure and optionally the data itself using a {@link Connection}.
@@ -44,14 +61,20 @@ public class SQLiteDatabaseReader implements JDBCConnectionReader {
 	@Override
 	public PoijoiMetaData read(Connection connection, boolean readData)
 			throws Exception {
-		Class.forName("org.sqlite.JDBC");
-		Map<String, TableDefinition> tableDefinitions = parseDatabaseMetaData(connection
-				.getMetaData());
-		Map<String, List<HashMap<String, Object>>> tableData = null;
-		if (readData) {
-			tableData = readData(connection, tableDefinitions);
+		
+		if (isValidConnection(connection)) {
+			
+			Class.forName("org.sqlite.JDBC");
+			Map<String, TableDefinition> tableDefinitions = parseDatabaseMetaData(connection
+					.getMetaData());
+			Map<String, List<HashMap<String, Object>>> tableData = null;
+			if (readData) {
+				tableData = readData(connection, tableDefinitions);
+			}
+			return new PoijoiMetaData(readData, tableDefinitions, tableData);
+		} else {
+			return null;
 		}
-		return new PoijoiMetaData(readData, tableDefinitions, tableData);
 	}
 
 	private Map<String, TableDefinition> parseDatabaseMetaData(

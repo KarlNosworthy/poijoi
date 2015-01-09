@@ -38,7 +38,7 @@ public abstract class AbstractODSWriter<T> {
 	 * @param spreadsheetDocument
 	 *            The spreadsheet to output
 	 */
-	abstract void write(T output, SpreadsheetDocument spreadsheetDocument)
+	abstract boolean write(T output, SpreadsheetDocument spreadsheetDocument)
 			throws Exception;
 
 	/**
@@ -53,11 +53,11 @@ public abstract class AbstractODSWriter<T> {
 	 * @param writeType
 	 *            Rules around what to write
 	 */
-	public final void write(T output, PoijoiMetaData metaData,
+	public final boolean write(T output, PoijoiMetaData metaData,
 			WriteType writeType) throws Exception {
 		
 		if (!isValidOutput(output) || !isValidMetadata(metaData)) {
-			return;
+			return false;
 		}
 
 		// create a new spreadsheet document ready to write out to the output
@@ -140,7 +140,7 @@ public abstract class AbstractODSWriter<T> {
 		}
 
 		// write out the spreadsheet
-		write(output, spreadsheetDocument);
+		return write(output, spreadsheetDocument);
 	}
 	
 	private boolean isValidMetadata(PoijoiMetaData metadata) {

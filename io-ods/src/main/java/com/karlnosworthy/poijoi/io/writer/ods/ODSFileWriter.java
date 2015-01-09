@@ -26,7 +26,8 @@ public class ODSFileWriter extends AbstractODSWriter<File> implements FileWriter
 	}
 	
 	@Override
-	void write(File output, SpreadsheetDocument spreadsheetDocument) throws Exception {
+	boolean write(File output, SpreadsheetDocument spreadsheetDocument) throws Exception {
 		spreadsheetDocument.save(output);
+		return true;
 	}
 }

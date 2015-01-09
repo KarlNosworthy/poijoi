@@ -31,9 +31,9 @@ public class ODSOutputStreamWriter extends AbstractODSWriter<OutputStream>
 	}
 	
 	@Override
-	void write(OutputStream output, SpreadsheetDocument spreadsheetDocument)
+	boolean write(OutputStream output, SpreadsheetDocument spreadsheetDocument)
 			throws Exception {
 		spreadsheetDocument.save(output);
+		return true;
 	}
-
 }

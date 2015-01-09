@@ -1,7 +1,6 @@
 package com.karlnosworthy.poijoi.io.writer.sqlite;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.sql.Connection;
@@ -15,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
@@ -24,9 +25,77 @@ import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class SQLiteDatabaseWriterTest {
-
+	
+	private SQLiteDatabaseWriter writer;
+	
+	@Before
+	public void onSetup() {
+		writer = new SQLiteDatabaseWriter();
+	}
+	
+	@After
+	public void onTeardown() {
+		writer = null;
+	}
+	
 	@Test
-	public void testWrite() throws Exception {
+	public void testNullConnection() throws Exception {
+		assertFalse(writer.write(null, null, WriteType.BOTH));
+	}
+	
+	@Test
+	public void testClosedConnection() throws Exception {
+		String path = getClass().getClassLoader().getResource("test.sqlite")
+				.getPath();
+
+		path = "jdbc:sqlite:" + path;
+
+		Connection connection = DriverManager.getConnection(path);
+		connection.close();
+		
+		assertFalse(writer.write(connection, null, WriteType.BOTH));
+	}
+
+	/**
+	 * Check that passing in null meta-data is handled safely.
+	 */
+	@Test
+	public void testWriteWithNullMetadata() throws Exception {
+		String path = getClass().getClassLoader().getResource("test.sqlite").getPath();
+			   path = "jdbc:sqlite:" + path;		
+		
+		Connection connection = null;
+
+		try {
+			connection = DriverManager.getConnection(path);
+			assertFalse(writer.write(connection, null, WriteType.BOTH));
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+	}
+	
+	@Test
+	public void testWriteWithInvalidMetadata() throws Exception {
+		String path = getClass().getClassLoader().getResource("test.sqlite").getPath();
+		   path = "jdbc:sqlite:" + path;		
+	
+		Connection connection = null;
+	
+		try {
+			connection = DriverManager.getConnection(path);
+			PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
+			assertFalse(writer.write(connection, metadata, WriteType.SCHEMA_ONLY));
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+		}
+	}		
+	
+	@Test
+	public void testSuccessfulWrite() throws Exception {
 		Map<String, ColumnDefinition> columnDefinitions = new HashMap<String, ColumnDefinition>();
 		columnDefinitions.put("col1String", new ColumnDefinition("col1String",
 				0, ColumnType.STRING));
@@ -61,7 +130,6 @@ public class SQLiteDatabaseWriterTest {
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);
 
-		SQLiteDatabaseWriter writer = new SQLiteDatabaseWriter();
 		String temp = System.getProperty("java.io.tmpdir");
 		File file = new File(temp, "test.sqlite");
 		file.deleteOnExit();
@@ -73,7 +141,7 @@ public class SQLiteDatabaseWriterTest {
 			connection = DriverManager.getConnection("jdbc:sqlite:"
 					+ file.getAbsolutePath());
 
-			writer.write(connection, metaData, WriteType.BOTH);
+			assertTrue(writer.write(connection, metaData, WriteType.BOTH));
 
 			DatabaseMetaData databaseMetaData = connection.getMetaData();
 			ResultSet tablesResultSet = databaseMetaData.getTables(null, null,

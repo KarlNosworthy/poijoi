@@ -1,6 +1,5 @@
 package com.karlnosworthy.poijoi.io.reader;
 
-import java.io.File;
 import java.sql.Connection;
 
 /**
@@ -9,5 +8,7 @@ import java.sql.Connection;
  * @author john.bartlett
  */
 public interface JDBCConnectionReader extends Reader<Connection> {
+	
+	public abstract boolean isValidConnection(Connection connection);
 
 }

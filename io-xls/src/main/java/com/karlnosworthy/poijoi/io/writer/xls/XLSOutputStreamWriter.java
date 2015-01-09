@@ -30,8 +30,8 @@ public class XLSOutputStreamWriter extends AbstractXLSWriter<OutputStream> imple
 	}
 	
 	@Override
-	void write(OutputStream output, Workbook workbook) throws Exception {
+	boolean write(OutputStream output, Workbook workbook) throws Exception {
 		workbook.write(output);
+		return true;
 	}
-
 }

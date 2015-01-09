@@ -37,7 +37,7 @@ public abstract class AbstractXLSWriter<T> {
 	 * @param workbook
 	 *            The workbook to output
 	 */
-	abstract void write(T output, Workbook workbook) throws Exception;
+	abstract boolean write(T output, Workbook workbook) throws Exception;
 
 	/**
 	 * Writes out an XLS File to reflect the table structures and optionally the
@@ -51,11 +51,11 @@ public abstract class AbstractXLSWriter<T> {
 	 * @param writeType
 	 *            Rules around what to write
 	 */
-	public final void write(T output, PoijoiMetaData metaData,
+	public final boolean write(T output, PoijoiMetaData metaData,
 			WriteType writeType) throws Exception {
 
 		if (!isValidOutput(output) || !isValidMetadata(metaData)) {
-			return;
+			return false;
 		}
 		
 		HSSFWorkbook wb = new HSSFWorkbook();
@@ -108,7 +108,7 @@ public abstract class AbstractXLSWriter<T> {
 			}
 
 		}
-		write(output, wb);
+		return write(output, wb);
 	}
 	
 	private boolean isValidMetadata(PoijoiMetaData metadata) {
