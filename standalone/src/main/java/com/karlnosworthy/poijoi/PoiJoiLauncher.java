@@ -22,13 +22,15 @@ import com.karlnosworthy.poijoi.model.PoijoiMetaData;
  * @author Karl Nosworthy
  * @since 1.0
  */
-public class PoiJoiLauncher {
+public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 
 	private static final Logger logger = LoggerFactory.getLogger(PoiJoiLauncher.class);
 	private String inputQualifier;
 	private String outputQualifier;
 	private Map<String, String> options;
-
+	private int numberOfExtensionsAvailable;
+	
+	
 	/**
 	 * Constructs a new PoiJoi instance.
 	 */
@@ -71,47 +73,73 @@ public class PoiJoiLauncher {
 	}
 
 	public void process() throws Exception {
-		PoiJoi poiJoiManager = new PoiJoi(new PoiJoiOptions(options));
-
-		String inputFormat = determineFormatType(inputQualifier);
-
-		Object inputSource = null;
 		
-		if (isJdbcURL(inputQualifier)) {
-			String connectionURL = makeAnyFilePathAbsolute(inputQualifier);
-			inputSource = DriverManager.getConnection(connectionURL);
+		PoiJoi poiJoi = null;
+
+		PoiJoiOptions poiJoiOptions = new PoiJoiOptions(options);
+		
+		if (poiJoiOptions.hasValue(PoiJoiOptions.OPTION_INFO)) {
+			poiJoi = new PoiJoi(poiJoiOptions, this);
 		} else {
-			inputSource = new File(inputQualifier);
-		}
+			poiJoi = new PoiJoi(poiJoiOptions);
 		
-		logger.info("Input Format: {}, Input Source: {} ", inputFormat, inputSource);
+			String inputFormat = determineFormatType(inputQualifier);
+	
+			Object inputSource = null;
+			
+			if (isJdbcURL(inputQualifier)) {
+				String connectionURL = makeAnyFilePathAbsolute(inputQualifier);
+				inputSource = DriverManager.getConnection(connectionURL);
+			} else {
+				inputSource = new File(inputQualifier);
+			}
+			
+			logger.info("Input Format: {}, Input Source: {} ", inputFormat, inputSource);
+	
+			String outputFormat = determineFormatType(outputQualifier);
+			
+			Object output = null;
+			if (isJdbcURL(outputQualifier)) {
+				String connectionURL = makeAnyFilePathAbsolute(outputQualifier);
+				output = DriverManager.getConnection(connectionURL);
+			} else {
+				output = new File(outputQualifier);
+			}
+	
+			logger.info("Output Format: {}, output:  {}", outputFormat, output);
+			
+			Reader<Object> reader = poiJoi.findReader(inputSource, inputFormat);
+			
+			if (reader == null) {
+				logger.info("No Reader Found for Format {} and input source {}", inputFormat, inputSource);
+			}
+			
+			Writer<Object> writer = poiJoi.findWriter(output, outputFormat);
+			
+			if (writer == null) {
+				logger.info("No Writer Found for Format {} and input source {}", outputFormat, output);
+			}
+	
+			PoijoiMetaData metaData = reader.read(inputSource, true);
+			writer.write(output, metaData, WriteType.BOTH);
+		}
+	}
 
-		String outputFormat = determineFormatType(outputQualifier);
-		
-		Object output = null;
-		if (isJdbcURL(outputQualifier)) {
-			String connectionURL = makeAnyFilePathAbsolute(outputQualifier);
-			output = DriverManager.getConnection(connectionURL);
-		} else {
-			output = new File(outputQualifier);
-		}
+	@Override
+	public void registrationStarted() {
+		System.out.println("");
+	}
 
-		logger.info("Output Format: {}, output:  {}", outputFormat, output);
-		
-		Reader<Object> reader = poiJoiManager.findReader(inputSource, inputFormat);
-		
-		if (reader == null) {
-			logger.info("No Reader Found for Format {} and input source {}", inputFormat, inputSource);
-		}
-		
-		Writer<Object> writer = poiJoiManager.findWriter(output, outputFormat);
-		
-		if (writer == null) {
-			logger.info("No Writer Found for Format {} and input source {}", outputFormat, output);
-		}
-
-		PoijoiMetaData metaData = reader.read(inputSource, true);
-		writer.write(output, metaData, WriteType.BOTH);
+	@Override
+	public void registeredExtension(String className, String packageName, String formatType,
+			ExtensionType extensionType) {
+		System.out.println(" > "+className+" [FOUND - "+extensionType.name()+"]");
+		numberOfExtensionsAvailable += 1;
+	}
+	
+	@Override
+	public void registrationFinished() {
+		System.out.println("\n" + numberOfExtensionsAvailable+" extension(s) available.\n");
 	}
 
 	/**
@@ -126,6 +154,7 @@ public class PoiJoiLauncher {
 		if (args.length == 0) {
 			System.out.println(PoiJoiLauncher.getUsageString());
 		} else {
+			System.out.println("\nPoiJoiLauncher");
 			PoiJoiLauncher poiJoiInstance = new PoiJoiLauncher();
 			try {
 				if (args.length > 2) {
@@ -151,7 +180,7 @@ public class PoiJoiLauncher {
 	 */
 	public static String getUsageString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("PoiJoi [options] <path to datafile> [outputpath]");
+		builder.append("PoiJoiLauncher [options] <path to datafile> [outputpath]");
 		return builder.toString();
 	}
 
@@ -159,10 +188,16 @@ public class PoiJoiLauncher {
 		Map<String, String> parsedOptions = new HashMap<String, String>();
 
 		String[] optionsItems = optionsArgsString.split("=");
-		for (int optionItemIndex = 0; optionItemIndex < optionsItems.length; optionItemIndex += 2) {
-			parsedOptions.put(optionsItems[optionItemIndex],
-					optionsItems[1 + optionItemIndex]);
+		
+		if (optionsItems.length > 1) {
+			for (int optionItemIndex = 0; optionItemIndex < optionsItems.length; optionItemIndex += 2) {
+				parsedOptions.put(optionsItems[optionItemIndex],
+						optionsItems[1 + optionItemIndex]);
+			}
+		} else {
+			parsedOptions.put(optionsItems[0], "");
 		}
+		
 		return parsedOptions;
 	}
 

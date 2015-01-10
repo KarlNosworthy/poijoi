@@ -20,6 +20,7 @@ import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.karlnosworthy.poijoi.PoiJoiRegistrationListener.ExtensionType;
 import com.karlnosworthy.poijoi.io.OptionAware;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.FileReader;
@@ -52,6 +53,7 @@ public class PoiJoi {
 	
 	private final String CUSTOM_PACKAGE_NAME_OPTION = "package";
 	
+	private PoiJoiRegistrationListener registrationListener;
 	private Set<Class<?>> readerClassCache;
 	private HashMap<String, Reader<?>> readerInstanceCache;
 	private Set<Class<?>> writerClassCache;
@@ -65,7 +67,7 @@ public class PoiJoi {
 	 * Creates an instance of PoiJoi which is configured using the standard options.
 	 */
 	public PoiJoi() {
-		this(null);
+		this(null, null);
 	}
 	
 	/**
@@ -74,8 +76,13 @@ public class PoiJoi {
 	 * @param options The options to use when configuring
 	 */
 	public PoiJoi(PoiJoiOptions options) {
+		this(options, null);
+	}
+	
+	public PoiJoi(PoiJoiOptions options, PoiJoiRegistrationListener registrationListener) {
 		super();
 		this.options = options;
+		this.registrationListener = registrationListener;
 		this.rootReaderPackageName = Reader.class.getPackage().getName();
 		this.rootWriterPackageName = Writer.class.getPackage().getName();
 		this.readerClassCache = new HashSet<Class<?>>();
@@ -231,10 +238,14 @@ public class PoiJoi {
 			rootPackageNamesList.add(options.getValue(CUSTOM_PACKAGE_NAME_OPTION));
 		}
 		
+		if (registrationListener != null) {
+			registrationListener.registrationStarted();
+		}
+		
 		for (String rootPackageName: rootPackageNamesList) {
 			String resourcePath = createResourceName(rootPackageName);
 			
-			logger.info("Checking for classes on resource path {} ", resourcePath);
+//			logger.info("Checking for classes on resource path {} ", resourcePath);
 			
 			Set<Class<?>> classes = new HashSet<Class<?>>();
 			
@@ -274,10 +285,16 @@ public class PoiJoi {
 					
 					for (Class<?> _class : classes) {
 						if (isValidReaderImplementation(_class)) {
-							logger.info("Found Reader implementation {} ", _class.getCanonicalName());
+//							logger.info("Found Reader implementation {} ", _class.getCanonicalName());
+							if (registrationListener != null) {
+								registrationListener.registeredExtension(_class.getSimpleName(), _class.getPackage().getName(), "", ExtensionType.READER);
+							}
 							readerClassCache.add(_class);
 						} else if (isValidWriterImplementation(_class)) {
-							logger.info("Found Writer implementation {} ", _class.getCanonicalName());
+//							logger.info("Found Writer implementation {} ", _class.getCanonicalName());
+							if (registrationListener != null) {
+								registrationListener.registeredExtension(_class.getSimpleName(), _class.getPackage().getName(), "", ExtensionType.WRITER);
+							}
 							writerClassCache.add(_class);
 						}
 					}				
@@ -285,6 +302,10 @@ public class PoiJoi {
 			} catch (IOException ioException) {
 				logger.debug("", ioException);
 			}
+		}
+		
+		if (registrationListener != null) {
+			registrationListener.registrationFinished();
 		}
 	}
 	

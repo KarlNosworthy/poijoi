@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PoiJoiOptions {
-
+	
+	public static final String OPTION_INFO = "--info";
+	
 	private Map<String,String> options;
 	
 	public PoiJoiOptions() {
