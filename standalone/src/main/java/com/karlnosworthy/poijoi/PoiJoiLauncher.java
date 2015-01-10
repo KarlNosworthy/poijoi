@@ -76,8 +76,9 @@ public class PoiJoiLauncher {
 		String inputFormat = determineFormatType(inputQualifier);
 
 		Object inputSource = null;
-		if (inputFormat.equals("sqlite")) {
-			String connectionURL = makeSqliteFilePathAbsolute(inputQualifier);
+		
+		if (isJdbcURL(inputQualifier)) {
+			String connectionURL = makeAnyFilePathAbsolute(inputQualifier);
 			inputSource = DriverManager.getConnection(connectionURL);
 		} else {
 			inputSource = new File(inputQualifier);
@@ -88,8 +89,8 @@ public class PoiJoiLauncher {
 		String outputFormat = determineFormatType(outputQualifier);
 		
 		Object output = null;
-		if (outputFormat.equals("sqlite")) {
-			String connectionURL = makeSqliteFilePathAbsolute(outputQualifier);
+		if (isJdbcURL(outputQualifier)) {
+			String connectionURL = makeAnyFilePathAbsolute(outputQualifier);
 			output = DriverManager.getConnection(connectionURL);
 		} else {
 			output = new File(outputQualifier);
@@ -208,7 +209,7 @@ public class PoiJoiLauncher {
 		return false;
 	}
 	
-	private String makeSqliteFilePathAbsolute(String jdbcUrl) {
+	private String makeAnyFilePathAbsolute(String jdbcUrl) {
 		int pathSeparator = jdbcUrl.lastIndexOf(":");
 		String path = jdbcUrl.substring(1 + pathSeparator);
 		
