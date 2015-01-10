@@ -77,7 +77,8 @@ public class PoiJoiLauncher {
 
 		Object inputSource = null;
 		if (inputFormat.equals("sqlite")) {
-			inputSource = DriverManager.getConnection(inputQualifier);
+			String connectionURL = makeSqliteFilePathAbsolute(inputQualifier);
+			inputSource = DriverManager.getConnection(connectionURL);
 		} else {
 			inputSource = new File(inputQualifier);
 		}
@@ -88,7 +89,8 @@ public class PoiJoiLauncher {
 		
 		Object output = null;
 		if (outputFormat.equals("sqlite")) {
-			output = DriverManager.getConnection(outputQualifier);
+			String connectionURL = makeSqliteFilePathAbsolute(outputQualifier);
+			output = DriverManager.getConnection(connectionURL);
 		} else {
 			output = new File(outputQualifier);
 		}
@@ -204,5 +206,17 @@ public class PoiJoiLauncher {
 			return true;
 		}
 		return false;
+	}
+	
+	private String makeSqliteFilePathAbsolute(String jdbcUrl) {
+		int pathSeparator = jdbcUrl.lastIndexOf(":");
+		String path = jdbcUrl.substring(1 + pathSeparator);
+		
+		if (path.startsWith("~")) {
+			path = path.replace("~", System.getProperty("user.home"));
+		}
+		
+		File filePath = new File(path);
+		return jdbcUrl.substring(0,1 + pathSeparator).concat(filePath.getAbsolutePath());
 	}
 }
