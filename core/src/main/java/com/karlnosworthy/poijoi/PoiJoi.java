@@ -126,31 +126,27 @@ public class PoiJoi {
 	private <T> Reader<T> getCachedReader(T input, String formatType) {
 		Reader<T> reader = null;
 		
-		if (readerInstanceCache != null && !readerInstanceCache.isEmpty()) {
-			if (readerInstanceCache.containsKey(formatType + input.getClass().getName())) {
-				reader = (Reader<T>) readerInstanceCache.get(formatType);
-			}
+		if (readerInstanceCache != null && readerInstanceCache.containsKey(formatType + input.getClass().getName())) {
+			reader = (Reader<T>) readerInstanceCache.get(formatType);
 		}
 		
-		if (reader == null) {
-			if (readerClassCache != null && !readerClassCache.isEmpty()) {
+		if (reader == null && readerClassCache != null && !readerClassCache.isEmpty()) {
 				
-				Iterator<Class<?>> readerClassIterator = readerClassCache.iterator();
-				while (readerClassIterator.hasNext()) {
-					Class<?> readerClass =  (Class<?>) readerClassIterator.next();
-					
-					if (supportsFormat(readerClass, formatType)) {
-						try {
-							reader = (Reader<T>) readerClass.newInstance();
-							if (readerInstanceCache == null) {
-								readerInstanceCache = new HashMap<String,Reader<?>>();
-							}
-							readerInstanceCache.put(formatType + input.getClass().getName(), reader);
-						} catch (InstantiationException instantiationException) {
-							instantiationException.printStackTrace();
-						} catch (IllegalAccessException illegalAccessException) {
-							illegalAccessException.printStackTrace();
+			Iterator<Class<?>> readerClassIterator = readerClassCache.iterator();
+			while (readerClassIterator.hasNext()) {
+				Class<?> readerClass =  (Class<?>) readerClassIterator.next();
+				
+				if (supportsFormat(readerClass, formatType)) {
+					try {
+						reader = (Reader<T>) readerClass.newInstance();
+						if (readerInstanceCache == null) {
+							readerInstanceCache = new HashMap<String,Reader<?>>();
 						}
+						readerInstanceCache.put(formatType + input.getClass().getName(), reader);
+					} catch (InstantiationException instantiationException) {
+						instantiationException.printStackTrace();
+					} catch (IllegalAccessException illegalAccessException) {
+						illegalAccessException.printStackTrace();
 					}
 				}
 			}
@@ -171,35 +167,31 @@ public class PoiJoi {
 	private <T> Writer<T> getCachedWriter(T output, String formatType) {
 		Writer<T> writer = null;
 		
-		if (writerInstanceCache != null && !writerInstanceCache.isEmpty()) {
-			if (writerInstanceCache.containsKey(formatType)) {
-				writer = (Writer<T>) writerInstanceCache.get(formatType + output.getClass().getName());
-			}
+		if (writerInstanceCache != null && writerInstanceCache.containsKey(formatType)) {
+			writer = (Writer<T>) writerInstanceCache.get(formatType + output.getClass().getName());
 		}
 		
-		if (writer == null) {
-			if (writerClassCache != null && !writerClassCache.isEmpty()) {
+		if (writer == null && writerClassCache != null && !writerClassCache.isEmpty()) {
 				
-				Iterator<Class<?>> writerClassIterator = writerClassCache.iterator();
+			Iterator<Class<?>> writerClassIterator = writerClassCache.iterator();
+			
+			while (writerClassIterator.hasNext()) {
+				Class<?> writerClass =  (Class<?>) writerClassIterator.next();
 				
-				while (writerClassIterator.hasNext()) {
-					Class<?> writerClass =  (Class<?>) writerClassIterator.next();
-					
-					if (supportsFormat(writerClass, formatType)) {
-						try {
-							writer = (Writer<T>) writerClass.newInstance();
-							if (writerInstanceCache == null) {
-								writerInstanceCache = new HashMap<String,Writer<?>>();
-							}
-							writerInstanceCache.put(formatType + output.getClass().getName(), writer);
-						} catch (InstantiationException instantiationException) {
-							instantiationException.printStackTrace();
-						} catch (IllegalAccessException illegalAccessException) {
-							illegalAccessException.printStackTrace();
+				if (supportsFormat(writerClass, formatType)) {
+					try {
+						writer = (Writer<T>) writerClass.newInstance();
+						if (writerInstanceCache == null) {
+							writerInstanceCache = new HashMap<String,Writer<?>>();
 						}
+						writerInstanceCache.put(formatType + output.getClass().getName(), writer);
+					} catch (InstantiationException instantiationException) {
+						instantiationException.printStackTrace();
+					} catch (IllegalAccessException illegalAccessException) {
+						illegalAccessException.printStackTrace();
 					}
 				}
-			}		
+			}
 		}
 		return writer;
 	}
@@ -331,9 +323,9 @@ public class PoiJoi {
 	 * @return True if class implements one of the know Reader interfaces and its not an interface itself otherwise false.
 	 */
 	private boolean isValidReaderImplementation(Class<?> _class) {
-		if ((Reader.class.isAssignableFrom(_class) && !_class.isInterface()) ||
-		    (FileReader.class.isAssignableFrom(_class)  && !_class.isInterface()) ||
-		    (JDBCConnectionReader.class.isAssignableFrom(_class) && !_class.isInterface())) {
+		if (Reader.class.isAssignableFrom(_class) && !_class.isInterface() ||
+		    FileReader.class.isAssignableFrom(_class)  && !_class.isInterface() ||
+		    JDBCConnectionReader.class.isAssignableFrom(_class) && !_class.isInterface()) {
 			return true;
 		}
 		return false;
@@ -346,9 +338,9 @@ public class PoiJoi {
 	 * @return True if class implements one of the know Writer interfaces and its not an interface itself otherwise false.
 	 */
 	private boolean isValidWriterImplementation(Class<?> _class) {
-		if ((Writer.class.isAssignableFrom(_class) && !_class.isInterface()) ||
-			(FileWriter.class.isAssignableFrom(_class) && !_class.isInterface()) ||
-			(JDBCConnectionWriter.class.isAssignableFrom(_class) && !_class.isInterface())) {
+		if (Writer.class.isAssignableFrom(_class) && !_class.isInterface() ||
+			FileWriter.class.isAssignableFrom(_class) && !_class.isInterface() ||
+			JDBCConnectionWriter.class.isAssignableFrom(_class) && !_class.isInterface()) {
 			return true;
 		}
 		return false;
@@ -361,7 +353,7 @@ public class PoiJoi {
 	 * @return The resource name element for the given package name.
 	 */
 	private String createResourceName(String packageName) {
-		return (packageName.replace('.', '/') + '/');
+		return packageName.replace('.', '/') + '/';
 	}
 
 	/**

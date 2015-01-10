@@ -98,7 +98,7 @@ public abstract class AbstractODSWriter<T> {
 							.values()) {
 						Cell dataCell = table.getCellByPosition(
 								columnDefinition.getColumnIndex(),
-								(1 + rowIndex));
+								1 + rowIndex);
 						HashMap<String, Object> columnData = rowData
 								.get(rowIndex);
 						Object val = columnData.get(columnDefinition

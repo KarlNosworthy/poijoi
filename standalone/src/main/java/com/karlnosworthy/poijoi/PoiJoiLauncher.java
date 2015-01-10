@@ -179,7 +179,7 @@ public class PoiJoiLauncher {
 				formatType = "ods";
 			}
 		} else if (isJdbcURL(qualifier)) {
-			int procotolEndIndex = (1 + qualifier.indexOf(":"));
+			int procotolEndIndex = 1 + qualifier.indexOf(":");
 			int subProtocolEndIndex = qualifier.indexOf(":", procotolEndIndex);
 
 			String subProtocol = qualifier.substring(procotolEndIndex,

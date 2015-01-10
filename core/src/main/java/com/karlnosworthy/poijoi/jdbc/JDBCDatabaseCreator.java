@@ -7,10 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.karlnosworthy.poijoi.PoiJoi;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class JDBCDatabaseCreator {
+	
+	private static final Logger logger = LoggerFactory.getLogger(JDBCDatabaseCreator.class);
+	
 	
 	private JDBCSQLCreator sqlCreator;
 	
@@ -39,7 +46,8 @@ public class JDBCDatabaseCreator {
 		} finally {
 			try {
 				statement.close();
-			} catch (SQLException e) {
+			} catch (SQLException sqlException) {
+				logger.debug("", sqlException);
 			}
 		}
 		return numberOfTablesCreated;
@@ -68,7 +76,8 @@ public class JDBCDatabaseCreator {
 				} finally {
 					try {
 						statement.close();
-					} catch (SQLException e) {
+					} catch (SQLException sqlException) {
+						logger.debug("", sqlException);
 					}
 				}
 			}
