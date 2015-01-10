@@ -9,7 +9,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.reader.Reader;
 import com.karlnosworthy.poijoi.io.writer.Writer;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
@@ -74,10 +73,10 @@ public class PoiJoiLauncher {
 	public void process() throws Exception {
 		PoiJoi poiJoiManager = new PoiJoi(new PoiJoiOptions(options));
 
-		FormatType inputFormat = determineFormatType(inputQualifier);
+		String inputFormat = determineFormatType(inputQualifier);
 
 		Object inputSource = null;
-		if (inputFormat == FormatType.SQLITE) {
+		if (inputFormat.equals("sqlite")) {
 			inputSource = DriverManager.getConnection(inputQualifier);
 		} else {
 			inputSource = new File(inputQualifier);
@@ -85,10 +84,10 @@ public class PoiJoiLauncher {
 		
 		logger.info("Input Format: {}, Input Source: {} ", inputFormat, inputSource);
 
-		FormatType outputFormat = determineFormatType(outputQualifier);
+		String outputFormat = determineFormatType(outputQualifier);
 		
 		Object output = null;
-		if (outputFormat == FormatType.SQLITE) {
+		if (outputFormat.equals("sqlite")) {
 			output = DriverManager.getConnection(outputQualifier);
 		} else {
 			output = new File(outputQualifier);
@@ -164,22 +163,20 @@ public class PoiJoiLauncher {
 		return parsedOptions;
 	}
 
-	private FormatType determineFormatType(String qualifier) {
-		FormatType formatType = null;
+	private String determineFormatType(String qualifier) {
+		String formatType = null;
 
 		if (isFile(qualifier)) {
 			File qualifierFile = new File(qualifier);
 
 			String qualifierFilePath = qualifierFile.getAbsolutePath();
 
-			if (qualifierFilePath.endsWith(FormatType.XLS.name().toLowerCase())) {
-				formatType = FormatType.XLS;
-			} else if (qualifierFilePath.endsWith(FormatType.XLSX.name()
-					.toLowerCase())) {
-				formatType = FormatType.XLSX;
-			} else if (qualifierFilePath.endsWith(FormatType.ODS.name()
-					.toLowerCase())) {
-				formatType = FormatType.ODS;
+			if (qualifierFilePath.endsWith(".xls")) {
+				formatType = "xls";
+			} else if (qualifierFilePath.endsWith(".xlsx")) {
+				formatType = "xlsx";
+			} else if (qualifierFilePath.endsWith(".ods")) {
+				formatType = "ods";
 			}
 		} else if (isJdbcURL(qualifier)) {
 			int procotolEndIndex = (1 + qualifier.indexOf(":"));
@@ -188,8 +185,8 @@ public class PoiJoiLauncher {
 			String subProtocol = qualifier.substring(procotolEndIndex,
 					subProtocolEndIndex);
 
-			if (subProtocol.equalsIgnoreCase(FormatType.SQLITE.name())) {
-				formatType = FormatType.SQLITE;
+			if (subProtocol.equalsIgnoreCase("sqlite")) {
+				formatType = "sqlite";
 			}
 		}
 

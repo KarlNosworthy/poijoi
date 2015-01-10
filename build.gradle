@@ -43,10 +43,6 @@ subprojects {
 		classifier = 'withdependencies'
 		from project.configurations.compile, project.sourceSets.main.output.classesDir
 	}
-	
-	artifacts {
-		archives jarWithDependencies, javadocJar, sourceJar
-	}
 }
 
 task testReport(type: TestReport) {

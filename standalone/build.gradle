@@ -9,9 +9,12 @@ dependencies {
 	compile project(':io-xls')
 	compile project(':io-xlsx')
 	compile project(':io-sqlite')
+	compile 'org.slf4j:slf4j-api:1.7.9'
+	compile 'ch.qos.logback:logback-core:1.1.2'
+	compile 'ch.qos.logback:logback-classic:1.1.2'
 }
 
-task commandLineJar(type:Jar) {
+task commandLineJar(type:Jar, dependsOn:jar) {
 	manifest {
 		attributes 'Implementation-Title': 'Poijoi',
 			'Implementation-Version': version,
@@ -19,7 +22,7 @@ task commandLineJar(type:Jar) {
 	}
 	baseName = 'poijoi-standalone'
 	
-	from configurations.compile
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	with jar
 }
 

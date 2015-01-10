@@ -14,3 +14,7 @@ buildscript {
 		jcenter()
 	}
 }
+
+artifacts {
+	archives jarWithDependencies, javadocJar, sourceJar
+}

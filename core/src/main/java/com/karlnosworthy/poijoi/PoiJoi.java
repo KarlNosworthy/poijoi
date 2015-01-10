@@ -20,7 +20,6 @@ import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.OptionAware;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.FileReader;
@@ -91,7 +90,7 @@ public class PoiJoi {
 	 * @param formatType The format type of the data that the reader will be reading.
 	 * @return An instance of an applicable reader (may be null).
 	 */
-	public <T> Reader<T> findReader(T input, FormatType formatType) {
+	public <T> Reader<T> findReader(T input, String formatType) {
 		Reader<T> reader = getCachedReader(input, formatType);
 		if (reader instanceof OptionAware) {
 			((OptionAware) reader).setOptions(options);
@@ -106,7 +105,7 @@ public class PoiJoi {
 	 * @param formatType The format type of the data that the reader will be reading.
 	 * @return An instance of an applicable reader (may be null).
 	 */
-	public <T> Writer<T> findWriter(T output, FormatType formatType) {
+	public <T> Writer<T> findWriter(T output, String formatType) {
 		Writer<T> writer = getCachedWriter(output, formatType);
 		if (writer instanceof OptionAware) {
 			((OptionAware) writer).setOptions(options);
@@ -124,11 +123,11 @@ public class PoiJoi {
 	 * @return An instance of an applicable reader or null.
 	 */
 	@SuppressWarnings("unchecked")
-	private <T> Reader<T> getCachedReader(T input, FormatType formatType) {
+	private <T> Reader<T> getCachedReader(T input, String formatType) {
 		Reader<T> reader = null;
 		
 		if (readerInstanceCache != null && !readerInstanceCache.isEmpty()) {
-			if (readerInstanceCache.containsKey(formatType.name() + input.getClass().getName())) {
+			if (readerInstanceCache.containsKey(formatType + input.getClass().getName())) {
 				reader = (Reader<T>) readerInstanceCache.get(formatType);
 			}
 		}
@@ -146,7 +145,7 @@ public class PoiJoi {
 							if (readerInstanceCache == null) {
 								readerInstanceCache = new HashMap<String,Reader<?>>();
 							}
-							readerInstanceCache.put(formatType.name() + input.getClass().getName(), reader);
+							readerInstanceCache.put(formatType + input.getClass().getName(), reader);
 						} catch (InstantiationException instantiationException) {
 							instantiationException.printStackTrace();
 						} catch (IllegalAccessException illegalAccessException) {
@@ -169,12 +168,12 @@ public class PoiJoi {
 	 * @return An instance of an applicable writer or null.
 	 */
 	@SuppressWarnings("unchecked")
-	private <T> Writer<T> getCachedWriter(T output, FormatType formatType) {
+	private <T> Writer<T> getCachedWriter(T output, String formatType) {
 		Writer<T> writer = null;
 		
 		if (writerInstanceCache != null && !writerInstanceCache.isEmpty()) {
 			if (writerInstanceCache.containsKey(formatType)) {
-				writer = (Writer<T>) writerInstanceCache.get(formatType.name() + output.getClass().getName());
+				writer = (Writer<T>) writerInstanceCache.get(formatType + output.getClass().getName());
 			}
 		}
 		
@@ -192,7 +191,7 @@ public class PoiJoi {
 							if (writerInstanceCache == null) {
 								writerInstanceCache = new HashMap<String,Writer<?>>();
 							}
-							writerInstanceCache.put(formatType.name() + output.getClass().getName(), writer);
+							writerInstanceCache.put(formatType + output.getClass().getName(), writer);
 						} catch (InstantiationException instantiationException) {
 							instantiationException.printStackTrace();
 						} catch (IllegalAccessException illegalAccessException) {
@@ -213,11 +212,11 @@ public class PoiJoi {
 	 * @param formatType The format type to check against.
 	 * @return True if the class contains a 'SupportsFormat' annotation which matches the format type otherwise false.
 	 */
-	private boolean supportsFormat(Class<?> _class, FormatType formatType) {
+	private boolean supportsFormat(Class<?> _class, String formatType) {
 		Annotation annotation = (Annotation) _class.getAnnotation(SupportsFormat.class);
 		if (annotation instanceof SupportsFormat) {
 			SupportsFormat supportsFormatAnnotation = (SupportsFormat) annotation;
-			if (supportsFormatAnnotation.type() == formatType) {
+			if (supportsFormatAnnotation.type().equalsIgnoreCase(formatType)) {
 				return true;
 			}
 		}

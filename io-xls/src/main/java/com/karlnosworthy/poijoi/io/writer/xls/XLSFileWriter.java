@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.FileWriter;
 
@@ -15,7 +14,7 @@ import com.karlnosworthy.poijoi.io.writer.FileWriter;
  * @author john.bartlett
  *
  */
-@SupportsFormat(type = FormatType.XLS)
+@SupportsFormat(type = "XLS")
 public class XLSFileWriter extends AbstractXLSWriter<File> implements
 		FileWriter {
 

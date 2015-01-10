@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.odftoolkit.simple.SpreadsheetDocument;
 
-import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.FileReader;
 
@@ -14,7 +13,7 @@ import com.karlnosworthy.poijoi.io.reader.FileReader;
  * @author john.bartlett
  *
  */
-@SupportsFormat(type = FormatType.ODS)
+@SupportsFormat(type = "ODS")
 public class ODSFileReader extends AbstractODSReader<File> implements
 		FileReader {
 

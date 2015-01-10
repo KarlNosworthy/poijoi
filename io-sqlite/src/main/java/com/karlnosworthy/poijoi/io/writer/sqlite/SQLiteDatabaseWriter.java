@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
 
 import com.karlnosworthy.poijoi.PoiJoiOptions;
-import com.karlnosworthy.poijoi.io.FormatType;
 import com.karlnosworthy.poijoi.io.OptionAware;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.sqlite.SQLiteDatabaseReader;
@@ -22,7 +21,7 @@ import com.karlnosworthy.poijoi.model.PoijoiMetaData;
  * @author john.bartlett
  *
  */
-@SupportsFormat(type = FormatType.SQLITE)
+@SupportsFormat(type = "SQLITE")
 public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 
 	private static final Logger logger = LoggerFactory
