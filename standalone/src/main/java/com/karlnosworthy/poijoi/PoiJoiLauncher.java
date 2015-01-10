@@ -168,16 +168,9 @@ public class PoiJoiLauncher {
 
 		if (isFile(qualifier)) {
 			File qualifierFile = new File(qualifier);
-
 			String qualifierFilePath = qualifierFile.getAbsolutePath();
-
-			if (qualifierFilePath.endsWith(".xls")) {
-				formatType = "xls";
-			} else if (qualifierFilePath.endsWith(".xlsx")) {
-				formatType = "xlsx";
-			} else if (qualifierFilePath.endsWith(".ods")) {
-				formatType = "ods";
-			}
+			int fileExtensionIndex = qualifierFilePath.lastIndexOf(".");
+			formatType = qualifierFilePath.substring(1 + fileExtensionIndex);
 		} else if (isJdbcURL(qualifier)) {
 			int procotolEndIndex = 1 + qualifier.indexOf(":");
 			int subProtocolEndIndex = qualifier.indexOf(":", procotolEndIndex);
@@ -185,9 +178,7 @@ public class PoiJoiLauncher {
 			String subProtocol = qualifier.substring(procotolEndIndex,
 					subProtocolEndIndex);
 
-			if (subProtocol.equalsIgnoreCase("sqlite")) {
-				formatType = "sqlite";
-			}
+			formatType = subProtocol;
 		}
 
 		return formatType;
