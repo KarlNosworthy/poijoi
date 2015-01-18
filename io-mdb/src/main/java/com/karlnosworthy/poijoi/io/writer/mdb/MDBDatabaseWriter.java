@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.karlnosworthy.poijoi.PoiJoiOptions;
 import com.karlnosworthy.poijoi.io.OptionAware;
+import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.jdbc.JDBCDatabaseCreator;
 import com.karlnosworthy.poijoi.jdbc.SQLStatementCreator;
@@ -21,6 +22,7 @@ import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
+@SupportsFormat(type = "MDB")
 public class MDBDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 	
 	private static final Logger logger = LoggerFactory

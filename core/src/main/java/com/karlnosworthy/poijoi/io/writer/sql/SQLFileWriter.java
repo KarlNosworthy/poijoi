@@ -17,6 +17,12 @@ public class SQLFileWriter implements Writer<File> {
 	@Override
 	public boolean write(File output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
 		
+		if (output == null || output.isDirectory() || output.exists()) { 
+			return false;
+		} else if (metaData == null || metaData.isEmpty()) {
+			return false;
+		}
+		
 		SQLStatementCreator sqlStatementWriter = new SQLStatementCreator();
 		
 		StringBuffer buffer = new StringBuffer();

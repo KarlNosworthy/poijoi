@@ -19,7 +19,6 @@ import com.karlnosworthy.poijoi.jdbc.JDBCMetaDataReader;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
-
 @SupportsFormat(type = "MDB")
 public class MDBDatabaseReader implements JDBCConnectionReader {
 

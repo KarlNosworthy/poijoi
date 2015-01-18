@@ -38,6 +38,16 @@ public class PoijoiMetaData {
 	public boolean isReadData() {
 		return readData;
 	}
+	
+	public boolean isEmpty() {
+		if (tableDefinitions == null || tableDefinitions.isEmpty()) {
+			return true;
+		} else if (readData && (tableData == null || tableData.isEmpty())) {
+			return true;
+		}
+		
+		return false;
+	}
 
 	public Map<String, TableDefinition> getTableDefinitions() {
 		return tableDefinitions;
