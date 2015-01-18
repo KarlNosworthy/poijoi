@@ -85,16 +85,16 @@ public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 		
 			String inputFormat = determineFormatType(inputQualifier);
 	
-			Object inputSource = null;
+			Object input = null;
 			
 			if (isJdbcURL(inputQualifier)) {
 				String connectionURL = makeAnyFilePathAbsolute(inputQualifier);
-				inputSource = DriverManager.getConnection(connectionURL);
+				input = DriverManager.getConnection(connectionURL);
 			} else {
-				inputSource = new File(inputQualifier);
+				input = new File(inputQualifier);
 			}
 			
-			logger.info("Input Format: {}, Input Source: {} ", inputFormat, inputSource);
+			logger.info("Input Format: {}, Input Source: {} ", inputFormat, input);
 	
 			String outputFormat = determineFormatType(outputQualifier);
 			
@@ -105,23 +105,9 @@ public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 			} else {
 				output = new File(outputQualifier);
 			}
-	
-			logger.info("Output Format: {}, output:  {}", outputFormat, output);
 			
-			Reader<Object> reader = poiJoi.findReader(inputSource, inputFormat);
-			
-			if (reader == null) {
-				logger.info("No Reader Found for Format {} and input source {}", inputFormat, inputSource);
-			}
-			
-			Writer<Object> writer = poiJoi.findWriter(output, outputFormat);
-			
-			if (writer == null) {
-				logger.info("No Writer Found for Format {} and input source {}", outputFormat, output);
-			}
-	
-			PoijoiMetaData metaData = reader.read(inputSource, true);
-			writer.write(output, metaData, WriteType.BOTH);
+			PoijoiMetaData metadata = poiJoi.read(input, inputFormat, true);
+			poiJoi.write(metadata, output, outputFormat, WriteType.BOTH);
 		}
 	}
 

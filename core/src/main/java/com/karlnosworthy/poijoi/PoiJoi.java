@@ -29,6 +29,8 @@ import com.karlnosworthy.poijoi.io.reader.Reader;
 import com.karlnosworthy.poijoi.io.writer.FileWriter;
 import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.io.writer.Writer;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
+import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 
 /**
  * The central access to PoiJoi functionality where readers and writers are loaded and can be obtained.
@@ -63,6 +65,7 @@ public class PoiJoi {
 	private PoiJoiOptions options;
 	
 	
+	
 	/**
 	 * Creates an instance of PoiJoi which is configured using the standard options.
 	 */
@@ -88,6 +91,22 @@ public class PoiJoi {
 		this.readerClassCache = new HashSet<Class<?>>();
 		this.writerClassCache = new HashSet<Class<?>>();
 		findAndCacheReadersAndWriters();
+	}
+	
+	public <T> PoijoiMetaData read(T input, String formatType, boolean readData) throws Exception {
+		Reader<T> reader = findReader(input, formatType);
+		if (reader != null) {
+			return reader.read(input, readData);
+		}
+		return null;
+	}
+	
+	public <T> boolean write(PoijoiMetaData metaData, T output, String formatType, WriteType writeType) throws Exception {
+		Writer<T> writer = findWriter(output, formatType);
+		if (writer != null) {
+			return writer.write(output, metaData, writeType);
+		}
+		return false;
 	}
 	
 	/**

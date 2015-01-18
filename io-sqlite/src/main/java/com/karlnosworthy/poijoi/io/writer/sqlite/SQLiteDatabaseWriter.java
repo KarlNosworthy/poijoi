@@ -2,6 +2,7 @@ package com.karlnosworthy.poijoi.io.writer.sqlite;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import com.karlnosworthy.poijoi.io.reader.sqlite.SQLiteDatabaseReader;
 import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.jdbc.JDBCDatabaseCreator;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.TableDefinition;
 
 /**
  * Write an SQLite Database from the contents of a {@link PoijoiMetaData}.
@@ -57,18 +59,8 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 						.getValue("--version"));
 				setVersionNumber(connection, versionNumber);
 			}
-	
-			if (writeType != WriteType.DATA_ONLY) {
-				int numberOfTablesCreated = databaseCreator.createTables(
-						connection, metaData);
-				logger.info("Created {} tables....", numberOfTablesCreated);
-			}
-	
-			if (writeType != WriteType.SCHEMA_ONLY) {
-				int inserts = databaseCreator.writeData(connection, metaData);
-				logger.info("Inserted {} row(s)....", inserts);
-			}
-			return true;
+			
+			return databaseCreator.create(connection, metaData, writeType);
 		} else {
 			return false;
 		}

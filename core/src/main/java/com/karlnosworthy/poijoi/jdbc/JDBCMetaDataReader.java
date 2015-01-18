@@ -142,6 +142,7 @@ public class JDBCMetaDataReader {
 		case Types.DECIMAL:
 		case Types.REAL:
 		case Types.FLOAT:
+		case Types.DOUBLE:
 			columnType = ColumnType.DECIMAL_NUMBER;
 			break;
 		case Types.INTEGER:
@@ -152,6 +153,8 @@ public class JDBCMetaDataReader {
 		case Types.BLOB:
 		case Types.CHAR:
 		case Types.VARCHAR:
+		case Types.TIME:
+		case Types.TIMESTAMP:
 			columnType = ColumnType.STRING;
 			break;
 		default:

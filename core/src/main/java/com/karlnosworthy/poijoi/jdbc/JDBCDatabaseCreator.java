@@ -10,39 +10,77 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.karlnosworthy.poijoi.PoiJoi;
+import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class JDBCDatabaseCreator {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JDBCDatabaseCreator.class);
-	
-	
-	private JDBCSQLCreator sqlCreator;
+		
+	private SQLStatementCreator sqlStatementCreator;
 	
 	public JDBCDatabaseCreator() {
-		super();
-		this.sqlCreator = new JDBCSQLCreator();
+		this(new SQLStatementCreator());
 	}
-
-	public int createTables(Connection connection, PoijoiMetaData metaData) {
+	
+	public JDBCDatabaseCreator(SQLStatementCreator sqlStatementCreator) {
+		super();
+		this.sqlStatementCreator = sqlStatementCreator;
+	}
+	
+	public boolean create(Connection connection, PoijoiMetaData metaData, WriteType writeType) throws Exception {
 		int numberOfTablesCreated = 0;
 
 		Statement statement = null;
+		
 		try {
+			// Create tables
 			statement = connection.createStatement();
-			Map<String, TableDefinition> tableDefinitions = metaData
-					.getTableDefinitions();
+			Map<String, TableDefinition> tableDefinitions = metaData.getTableDefinitions();
 			
 			for (String tableName : tableDefinitions.keySet()) {
 				TableDefinition tableDefinition = tableDefinitions.get(tableName);
-				String sql = sqlCreator.buildCreateTableSQL(tableDefinition);
-				statement.execute(sql);
+				String createTableSQL = sqlStatementCreator.buildCreateTableSQL(tableDefinition);
+				System.out.println("Table '"+tableName+" SQL:"+createTableSQL);
+				statement.execute(createTableSQL);
 				numberOfTablesCreated++;
 			}
+			
+			if (writeType != WriteType.SCHEMA_ONLY) {
+				int numberOfRowsInserted = 0;
+				
+				for (String tableName : tableDefinitions.keySet()) {
+					List<HashMap<String, Object>> tableData = metaData
+							.getTableData(tableName);
+					
+					if (tableData != null) {
+						try {
+							statement = connection.createStatement();
+							
+							List<String> insertSQLStatements = sqlStatementCreator.buildInsertTableSQL(tableName, tableData, tableDefinitions.get(tableName)
+																				  .getColumnDefinitions());
+							
+							for (String sqlString : insertSQLStatements) {
+								System.out.println("Insert Statement:"+sqlString);
+								
+								statement.execute(sqlString);
+								numberOfRowsInserted++;
+							}
+						} finally {
+							try {
+								statement.close();
+							} catch (SQLException sqlException) {
+								logger.debug("", sqlException);
+							}
+						}
+					}
+				}
+			}
+			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		} finally {
 			try {
 				statement.close();
@@ -50,38 +88,5 @@ public class JDBCDatabaseCreator {
 				logger.debug("", sqlException);
 			}
 		}
-		return numberOfTablesCreated;
-	}
-
-	public int writeData(Connection connection, PoijoiMetaData metaData)
-			throws SQLException {
-		
-		int numberOfRowsInserted = 0;
-		Map<String, TableDefinition> tableDefinitions = metaData
-				.getTableDefinitions();
-		for (String tableName : tableDefinitions.keySet()) {
-			List<HashMap<String, Object>> tableData = metaData
-					.getTableData(tableName);
-			if (tableData != null) {
-				Statement statement = null;
-				try {
-					statement = connection.createStatement();
-					List<String> sqlStrings = sqlCreator.buildInsertTableSQL(tableName,
-							tableData, tableDefinitions.get(tableName)
-									.getColumnDefinitions());
-					for (String sqlString : sqlStrings) {
-						statement.execute(sqlString);
-						numberOfRowsInserted++;
-					}
-				} finally {
-					try {
-						statement.close();
-					} catch (SQLException sqlException) {
-						logger.debug("", sqlException);
-					}
-				}
-			}
-		}
-		return numberOfRowsInserted;
 	}
 }

@@ -1,16 +1,10 @@
 
 jar {
-	appendix = 'io-ods'
-}
-
-configurations {
-	provided
-	compile.extendsFrom provided
+	appendix = 'io-mdb'
 }
 
 dependencies {
-	provided project(':core')
-	compile 'org.apache.odftoolkit:simple-odf:0.7-incubating'
+	compile fileTree(dir: 'libs', include: '*.jar')
 	compile 'org.slf4j:slf4j-api:1.7.9'
 	compile 'ch.qos.logback:logback-core:1.1.2'
 	compile 'ch.qos.logback:logback-classic:1.1.2'
