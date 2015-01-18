@@ -14,8 +14,6 @@ public class SQLStatementCreator {
 	
 	public String buildCreateTableSQL(TableDefinition tableDefinition) {
 
-		System.out.println("Hmmm, this one is getting called as well?!");
-		
 		StringBuilder builder = new StringBuilder();
 
 		builder.append("CREATE TABLE ");

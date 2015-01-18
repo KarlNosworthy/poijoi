@@ -39,8 +39,13 @@ public class SQLFileWriter implements Writer<File> {
 			for (String tableName : metaData.getTableDefinitions().keySet()) {
 				TableDefinition tableDefinition = metaData.getTableDefinition(tableName);
 				List<HashMap<String, Object>> tableData = metaData.getTableData(tableName);
-				buffer.append(sqlStatementWriter.buildInsertTableSQL(tableName, tableData, tableDefinition.getColumnDefinitions()));
-				buffer.append("\n");
+				
+				List<String> sqlInserts = sqlStatementWriter.buildInsertTableSQL(tableName, tableData, tableDefinition.getColumnDefinitions());				
+				
+				for (String sqlInsert : sqlInserts) {
+					buffer.append(sqlInsert);
+					buffer.append("\n");
+				}
 			}
 		}
 		

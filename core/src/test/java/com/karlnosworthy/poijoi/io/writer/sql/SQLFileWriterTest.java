@@ -114,6 +114,7 @@ public class SQLFileWriterTest {
 		assertTrue(metaData.getTableDefinitions().size() == 1);
 
 		String tempDir = System.getProperty("java.io.tmpdir");
+		tempDir = "/Users/karlnosworthy/Desktop/";
 		File file = new File(tempDir, "test.sql");
 		file.deleteOnExit();
 
@@ -121,9 +122,16 @@ public class SQLFileWriterTest {
 
 		LineNumberReader lineReader = new LineNumberReader(new FileReader(file));
 		
-		// Iterate through the lines where checking their content and format..
-
-		
+		List<String> sqlLines = new ArrayList<String>();
+		String line = lineReader.readLine();
+		while (line != null && !line.isEmpty()) {
+			sqlLines.add(line);
+			line = lineReader.readLine();
+		}
 		lineReader.close();
+		
+		assertTrue(sqlLines.size() == 2);
+		assertTrue(sqlLines.get(0).equals("CREATE TABLE TableOne (id INTEGER PRIMARY KEY AUTOINCREMENT,\"col1String\" TEXT,\"col2Date\" DATE,\"col3Integer\" INTEGER,\"col4Decimal\" REAL);"));
+		assertTrue(sqlLines.get(1).equals("INSERT INTO 'TableOne' (\"col1String\",\"col2Date\",\"col3Integer\",\"col4Decimal\") VALUES ('hello','2015-01-31 00:00:00.000',19,1.5);"));
 	}	
 }
