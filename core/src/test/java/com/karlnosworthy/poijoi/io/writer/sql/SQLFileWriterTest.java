@@ -114,7 +114,6 @@ public class SQLFileWriterTest {
 		assertTrue(metaData.getTableDefinitions().size() == 1);
 
 		String tempDir = System.getProperty("java.io.tmpdir");
-		tempDir = "/Users/karlnosworthy/Desktop/";
 		File file = new File(tempDir, "test.sql");
 		file.deleteOnExit();
 
