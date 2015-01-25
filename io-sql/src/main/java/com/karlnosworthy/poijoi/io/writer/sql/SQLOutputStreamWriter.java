@@ -5,11 +5,18 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
+import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.Writer;
 import com.karlnosworthy.poijoi.jdbc.SQLStatementCreator;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
+/**
+ * 
+ * @author Karl Nosworthy
+ * @since 1.0
+ */
+@SupportsFormat(type = "SQL")
 public class SQLOutputStreamWriter implements Writer<OutputStream> {
 
 	@Override

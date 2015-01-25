@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.OutputStreamWriter;
 
 /**
@@ -13,6 +14,7 @@ import com.karlnosworthy.poijoi.io.writer.OutputStreamWriter;
  * @author john.bartlett
  *
  */
+@SupportsFormat(type = "XLSX")
 public class XLSXOutputStreamWriter extends AbstractXLSXWriter<OutputStream> implements
 		OutputStreamWriter {
 

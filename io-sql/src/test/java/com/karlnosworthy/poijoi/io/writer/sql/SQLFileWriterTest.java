@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
@@ -35,6 +36,11 @@ public class SQLFileWriterTest {
 	@After
 	public void onTeardown() {
 		writer = null;
+	}
+	
+	@Test
+	public void testHasAnnotation() {
+		assertTrue(writer.getClass().isAnnotationPresent(SupportsFormat.class));
 	}
 	
 	/**

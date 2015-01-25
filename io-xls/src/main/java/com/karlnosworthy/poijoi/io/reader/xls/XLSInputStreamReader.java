@@ -6,6 +6,7 @@ import java.io.InputStream;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
 
 /**
@@ -14,6 +15,7 @@ import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
  * @author john.bartlett
  *
  */
+@SupportsFormat(type = "XLS")
 public class XLSInputStreamReader extends AbstractXLSReader<InputStream> implements
 		InputStreamReader {
 

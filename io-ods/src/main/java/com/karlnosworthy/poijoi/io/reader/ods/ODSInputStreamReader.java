@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import org.odftoolkit.simple.SpreadsheetDocument;
 
+import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
 
 /**
@@ -13,6 +14,7 @@ import com.karlnosworthy.poijoi.io.reader.InputStreamReader;
  * @author john.bartlett
  *
  */
+@SupportsFormat(type = "ODS")
 public class ODSInputStreamReader extends AbstractODSReader<InputStream> implements
 		InputStreamReader {
 

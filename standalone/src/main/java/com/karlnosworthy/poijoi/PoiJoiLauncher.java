@@ -1,6 +1,7 @@
 package com.karlnosworthy.poijoi;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.util.HashMap;
@@ -9,8 +10,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.karlnosworthy.poijoi.io.reader.Reader;
-import com.karlnosworthy.poijoi.io.writer.Writer;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 
@@ -106,7 +105,12 @@ public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 				output = new File(outputQualifier);
 			}
 			
+			logger.info("Output Format: {}, Output Source: {} ", outputFormat, output);
+			
 			PoijoiMetaData metadata = poiJoi.read(input, inputFormat, true);
+			
+			logger.info("Metadata: {} ",metadata);
+			
 			poiJoi.write(metadata, output, outputFormat, WriteType.BOTH);
 		}
 	}

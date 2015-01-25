@@ -11,6 +11,13 @@ import com.karlnosworthy.poijoi.jdbc.SQLStatementCreator;
 import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
+/**
+ * 
+ * @author Karl Nosworthy
+ * @since 1.0
+ */
+
+
 @SupportsFormat(type = "SQL")
 public class SQLFileWriter implements Writer<File> {
 

@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry exported="true" kind="src" path="/core"/>
+	<classpathentry exported="true" kind="src" path="/io-mdb"/>
 	<classpathentry exported="true" kind="src" path="/io-ods"/>
 	<classpathentry exported="true" kind="src" path="/io-sqlite"/>
 	<classpathentry exported="true" kind="src" path="/io-xls"/>
