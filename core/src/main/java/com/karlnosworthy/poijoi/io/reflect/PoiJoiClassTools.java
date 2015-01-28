@@ -115,20 +115,6 @@ public class PoiJoiClassTools {
 		return supportedFormat;
 	}
 	
-	/**
-	 * 
-	 * @param formatType
-	 * @param genericTypeClass
-	 * @return
-	 */
-	public String makeKey(String formatType, Class<?> genericTypeClass) {
-		if (formatType != null && formatType.trim().length() > 0 && genericTypeClass != null) {
-			return formatType.toUpperCase() + genericTypeClass.getCanonicalName();
-		}
-		return null;
-	}
-	
-	
 	public Type getReaderGenericType(Class<?> _class) {
 		
 		Type readerGenericType = null;
@@ -205,20 +191,5 @@ public class PoiJoiClassTools {
 		
 		return writerGenericType;
 	}	
-			
-			
-/*
- * Start at a class and check what interfaces it implements
- *   Check if any of those are the correct one
- *      if so get the generic type from there
- *         and return it
- *      if not check what each interface in turn implements
- *         if one of those extend the correct one
- *            get the generic type and return it
- *      if not obtain the superclass of the current class and start again...
- * 			
- */
-			
-	
 }
 

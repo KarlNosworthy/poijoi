@@ -52,6 +52,10 @@ public class PoiJoiClasspathScanner {
 		this.rootPackageNames.add(rootPackageName);
 	}
 	
+	public List<String> getRootPackageNames() {
+		return rootPackageNames;
+	}
+	
 	public boolean hasReaderCache() {
 		return readerClassCache != null && !readerClassCache.isEmpty();
 	}

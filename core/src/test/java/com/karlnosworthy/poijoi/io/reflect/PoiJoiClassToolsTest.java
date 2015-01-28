@@ -76,13 +76,6 @@ public class PoiJoiClassToolsTest {
 	}
 	
 	@Test
-	public void testMakeKey() {
-		assertNull(classTools.makeKey(null, null));
-		assertNull(classTools.makeKey("", null));
-		assertEquals("DUMMYjava.io.File", classTools.makeKey("DUMMY", File.class));
-	}
-	
-	@Test
 	public void testGetReaderGenericType() {
 		assertNull(null, classTools.getReaderGenericType(null));
 		assertEquals(File.class, classTools.getReaderGenericType(SimpleReader.class));
