@@ -55,5 +55,24 @@ public class TableDefinition {
 		return null;
 	}
 	
+	public boolean isSameAs(TableDefinition tableDefinition) {
+		if (tableDefinition != null) {
+			if (tableName != null && tableDefinition.tableName != null) {
+				if (columnDefinitions != null && tableDefinition.columnDefinitions != null &&
+					columnDefinitions.size() == tableDefinition.columnDefinitions.size()) {
+					
+					for (int columnDefinitionIndex = 0; columnDefinitionIndex < columnDefinitions.size(); columnDefinitionIndex++) {
+						ColumnDefinition columnDefinition = getColumnDefinition(columnDefinitionIndex);
+						if (columnDefinition == null || !columnDefinition.isSameAs(tableDefinition.getColumnDefinition(columnDefinitionIndex))) {
+							return false;
+						}
+					}
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 
 }

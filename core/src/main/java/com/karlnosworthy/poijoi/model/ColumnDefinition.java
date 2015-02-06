@@ -37,5 +37,17 @@ public class ColumnDefinition {
 	public ColumnType getColumnType() {
 		return columnType;
 	}
-
+	
+	public boolean isSameAs(ColumnDefinition columnDefinition) {
+		if (columnDefinition != null) {
+			if (columnName != null && columnDefinition.columnName != null) {
+				if (columnName.equals(columnDefinition.columnName) && 
+					columnType == columnDefinition.columnType &&
+					columnIndex == columnDefinition.columnIndex) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
