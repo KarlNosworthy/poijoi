@@ -124,10 +124,10 @@ public class PoiJoiClassTools {
 			for (Type genericInterfaceType : genericInterfaces) {
 				if (genericInterfaceType instanceof ParameterizedType) {
 					ParameterizedType parameterizedType = (ParameterizedType) genericInterfaceType;
-					if (parameterizedType.getRawType() == Reader.class) {
+					if (parameterizedType.getRawType().equals(Reader.class)) {
 						readerGenericType = parameterizedType.getActualTypeArguments()[0];
+						return readerGenericType;
 					}
-					break;
 				}
 			}
 			
@@ -135,13 +135,18 @@ public class PoiJoiClassTools {
 				for (Type genericInterfaceType : genericInterfaces) {
 					if (genericInterfaceType instanceof ParameterizedType) {
 						ParameterizedType parameterizedType = (ParameterizedType) genericInterfaceType;
-						readerGenericType = getReaderGenericType((Class<?>)parameterizedType.getRawType());
+						Type returnedType = getReaderGenericType((Class<?>)parameterizedType.getRawType());
 						
-						if (readerGenericType != null) {
+						if (returnedType != null) {
+							readerGenericType = returnedType;
 							break;
 						}
 					} else {
-						readerGenericType = getReaderGenericType((Class<?>)genericInterfaceType);
+						Type returnedType = getReaderGenericType((Class<?>)genericInterfaceType);
+						if (returnedType != null) {
+							readerGenericType = returnedType;
+							break;
+						}
 					}
 				}
 				if (readerGenericType == null) {
@@ -163,10 +168,10 @@ public class PoiJoiClassTools {
 			for (Type genericInterfaceType : genericInterfaces) {
 				if (genericInterfaceType instanceof ParameterizedType) {
 					ParameterizedType parameterizedType = (ParameterizedType) genericInterfaceType;
-					if (parameterizedType.getRawType() == Writer.class) {
+					if (parameterizedType.getRawType().equals(Writer.class)) {
 						writerGenericType = parameterizedType.getActualTypeArguments()[0];
+						return writerGenericType;
 					}
-					break;
 				}
 			}
 			
@@ -174,13 +179,20 @@ public class PoiJoiClassTools {
 				for (Type genericInterfaceType : genericInterfaces) {
 					if (genericInterfaceType instanceof ParameterizedType) {
 						ParameterizedType parameterizedType = (ParameterizedType) genericInterfaceType;
-						writerGenericType = getWriterGenericType((Class<?>)parameterizedType.getRawType());
 						
-						if (writerGenericType != null) {
-							break;
+						if (parameterizedType.getRawType().equals(Writer.class)) {
+							Type returnedType = getWriterGenericType((Class<?>)parameterizedType.getRawType());
+							if (returnedType != null) {
+								writerGenericType = returnedType;
+								break;
+							}
 						}
 					} else {
-						writerGenericType = getWriterGenericType((Class<?>)genericInterfaceType);
+						Type returnedType = getWriterGenericType((Class<?>)genericInterfaceType);
+						if (returnedType != null) {
+							writerGenericType = returnedType;
+							break;
+						}
 					}
 				}
 				if (writerGenericType == null) {

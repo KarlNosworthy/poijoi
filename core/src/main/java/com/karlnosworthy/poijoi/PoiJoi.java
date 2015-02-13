@@ -123,7 +123,6 @@ public class PoiJoi {
 	private <T> Reader<T> getCachedReader(T input, String formatType) {
 		Reader<T> reader = null;
 		
-		System.out.println("CachedReader: "+input.getClass()+" / "+formatType);
 		Class<?> readerClass = classpathScanner.getCachedReaderClass(input.getClass(), formatType);
 		
 		if (readerClass != null) {

@@ -42,7 +42,6 @@ public class JDBCDatabaseCreator {
 			for (String tableName : tableDefinitions.keySet()) {
 				TableDefinition tableDefinition = tableDefinitions.get(tableName);
 				String createTableSQL = sqlStatementCreator.buildCreateTableSQL(tableDefinition);
-				System.out.println("Table '"+tableName+" SQL:"+createTableSQL);
 				statement.execute(createTableSQL);
 				numberOfTablesCreated++;
 			}
@@ -62,8 +61,6 @@ public class JDBCDatabaseCreator {
 																				  .getColumnDefinitions());
 							
 							for (String sqlString : insertSQLStatements) {
-								System.out.println("Insert Statement:"+sqlString);
-								
 								statement.execute(sqlString);
 								numberOfRowsInserted++;
 							}

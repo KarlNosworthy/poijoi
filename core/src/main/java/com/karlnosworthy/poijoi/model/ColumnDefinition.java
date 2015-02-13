@@ -39,14 +39,12 @@ public class ColumnDefinition {
 	}
 	
 	public boolean isSameAs(ColumnDefinition columnDefinition) {
-		if (columnDefinition != null) {
-			if (columnName != null && columnDefinition.columnName != null) {
-				if (columnName.equals(columnDefinition.columnName) && 
-					columnType == columnDefinition.columnType &&
-					columnIndex == columnDefinition.columnIndex) {
-					return true;
-				}
-			}
+		if (columnDefinition != null && columnName != null &&
+			columnDefinition.columnName != null &&
+			columnName.equals(columnDefinition.columnName) && 
+			columnType == columnDefinition.columnType &&
+			columnIndex == columnDefinition.columnIndex) {
+				return true;
 		}
 		return false;
 	}

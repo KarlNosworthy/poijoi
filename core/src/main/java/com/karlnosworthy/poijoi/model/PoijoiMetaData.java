@@ -81,64 +81,58 @@ public class PoijoiMetaData {
 
 	public boolean isSameAs(PoijoiMetaData metaData) {
 		
-		if (metaData != null) {
-			
-			if (readData == metaData.readData) {
+		if (metaData != null && readData == metaData.readData) {
 				
-				if (tableDefinitions != null && metaData.tableDefinitions != null &&
-					tableDefinitions.size() == metaData.tableDefinitions.size()) {
+			if (tableDefinitions != null && metaData.tableDefinitions != null &&
+				tableDefinitions.size() == metaData.tableDefinitions.size()) {
+				
+				for (String tableName : tableDefinitions.keySet()) {
 					
-					for (String tableName : tableDefinitions.keySet()) {
-						
-						TableDefinition tableDefinition = tableDefinitions.get(tableName);
-						TableDefinition tableDefinitionToCompare = metaData.tableDefinitions.get(tableName);
-						
-						if (tableDefinition != null && tableDefinitionToCompare != null) {
-							if (!tableDefinition.isSameAs(tableDefinitionToCompare)) {
-								return false;
-							}
-						}
+					TableDefinition tableDefinition = tableDefinitions.get(tableName);
+					TableDefinition tableDefinitionToCompare = metaData.tableDefinitions.get(tableName);
+					
+					if (tableDefinition != null && tableDefinitionToCompare != null &&
+						!tableDefinition.isSameAs(tableDefinitionToCompare)) {
+						return false;
 					}
 				}
-				
-				if (tableData == metaData.tableData) {
-					if (tableData != null && metaData.tableData != null &&
-						tableData.size() == metaData.tableData.size()) {
+			}
+			
+			if (tableData == metaData.tableData) {
+				if (tableData != null && metaData.tableData != null &&
+					tableData.size() == metaData.tableData.size()) {
+					
+					for (String tableName : tableDefinitions.keySet()) {
+						List<HashMap<String, Object>> tableDataRows = tableData.get(tableName);
+						List<HashMap<String, Object>> tableDataRowsToCompare = metaData.tableData.get(tableName);
 						
-						for (String tableName : tableDefinitions.keySet()) {
-							List<HashMap<String, Object>> tableDataRows = tableData.get(tableName);
-							List<HashMap<String, Object>> tableDataRowsToCompare = metaData.tableData.get(tableName);
+						if (tableDataRows != null && tableDataRowsToCompare != null &&
+							tableDataRows.size() == tableDataRowsToCompare.size()) {
 							
-							if (tableDataRows != null && tableDataRowsToCompare != null &&
-								tableDataRows.size() == tableDataRowsToCompare.size()) {
+							for (int tableRowIndex = 0; tableRowIndex < tableDataRows.size(); tableRowIndex ++) {
+							
+								HashMap<String, Object> tableRowData = tableDataRows.get(tableRowIndex);
+								HashMap<String, Object> tableRowDataToCompare = tableDataRowsToCompare.get(tableRowIndex);
 								
-								for (int tableRowIndex = 0; tableRowIndex < tableDataRows.size(); tableRowIndex ++) {
-								
-									HashMap<String, Object> tableRowData = tableDataRows.get(tableRowIndex);
-									HashMap<String, Object> tableRowDataToCompare = tableDataRowsToCompare.get(tableRowIndex);
+								if (tableRowData != null && tableRowDataToCompare != null &&
+									tableRowData.size() == tableRowDataToCompare.size()) {
 									
-									if (tableRowData != null && tableRowDataToCompare != null &&
-										tableRowData.size() == tableRowDataToCompare.size()) {
+									for (String columnName : tableRowData.keySet()) {
 										
-										for (String columnName : tableRowData.keySet()) {
-											
-											Object tableColumnData = tableRowData.get(columnName);
-											Object tableColumnDataToCompare = tableRowDataToCompare.get(columnName);
-											
-											if (tableColumnData != null && tableColumnDataToCompare != null) {
-												if (!tableColumnData.equals(tableColumnDataToCompare)) {
-													return false;
-												}
-											}
+										Object tableColumnData = tableRowData.get(columnName);
+										Object tableColumnDataToCompare = tableRowDataToCompare.get(columnName);
+										
+										if (tableColumnData != null && tableColumnDataToCompare != null &&
+											!tableColumnData.equals(tableColumnDataToCompare)) {
+											return false;
 										}
 									}
 								}
 							}
-							return true;
 						}
 					}
-					return true;
 				}
+				return true;
 			}
 		}
 		return false;

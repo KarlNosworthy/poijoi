@@ -164,6 +164,7 @@ public class PoiJoiClasspathScanner {
 							Class<?> writerClass = _class;
 							
 							Type genericType = classTools.getWriterGenericType(writerClass);
+							
 							CacheEntry cacheEntry = new CacheEntry(writerClass, supportedFormatType, genericType);
 							writerClassCache.add(cacheEntry);
 							
