@@ -98,6 +98,7 @@ public class SQLStatementCreator {
 					}
 					ColumnType columnType = columnDefinitions.get(columnName)
 							.getColumnType();
+					
 					Object val = columnData.get(columnName);
 					if (columnType == ColumnType.DATE) {
 						SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -107,7 +108,7 @@ public class SQLStatementCreator {
 						builder.append("'");
 					} else if (columnType == ColumnType.STRING) {
 						builder.append("'");
-						builder.append(val);
+						builder.append(val.toString().replace("'", "''"));
 						builder.append("'");
 					} else {
 						builder.append(columnData.get(columnName));
