@@ -128,8 +128,10 @@ public class PoiJoi {
 		if (readerClass != null) {
 			try {
 				reader = classTools.createReaderInstance(input, readerClass);
-			} catch (IllegalAccessException | InstantiationException e) {
-				e.printStackTrace();
+			} catch (IllegalAccessException illegalAccessException) {
+				illegalAccessException.printStackTrace();
+			} catch (InstantiationException instantiationException) {
+				instantiationException.printStackTrace();
 			}
 		}
 		return reader;
@@ -152,8 +154,10 @@ public class PoiJoi {
 		if (writerClass != null) {
 			try {
 				writer = classTools.createWriterInstance(output, writerClass);
-			} catch (IllegalAccessException | InstantiationException e) {
-				e.printStackTrace();
+			} catch (IllegalAccessException illegalAccessException) {
+				illegalAccessException.printStackTrace();
+			} catch (InstantiationException instantiationException) {
+				instantiationException.printStackTrace();
 			}
 		}
 		return writer;
