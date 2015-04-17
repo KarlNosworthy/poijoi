@@ -69,6 +69,16 @@ public class TableDefinition {
 		return false;
 	}
 
+	public boolean isLastColumnDefinition(ColumnDefinition columnDefinition) {
+		if (columnDefinition != null && !columnDefinitions.isEmpty()) {
+			int index = columnDefinitions.indexOf(columnDefinition);
+			if (index > 0 && index == (columnDefinitions.size() - 1)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean isSameAs(TableDefinition tableDefinition) {
 		if (tableDefinition != null && tableName != null && tableDefinition.tableName != null && 
 			columnDefinitions != null && tableDefinition.columnDefinitions != null &&

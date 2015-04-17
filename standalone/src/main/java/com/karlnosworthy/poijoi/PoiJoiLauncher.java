@@ -111,9 +111,7 @@ public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 				PoiJoiMetaData secondaryMetaData = poiJoi.read(secondaryQualifierHandle, secondaryQualifier, true);
 
 				if (primaryMetaData.isSameAs(secondaryMetaData)) {
-					System.out.println("Woohoo!");
-				} else {
-					System.out.println("Boooo!");
+					logger.info("Match");
 				}
 			} else { // Normal I/O
 				PoiJoiMetaData metadata = poiJoi.read(primaryQualifierHandle, primaryFormat, true);

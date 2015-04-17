@@ -65,17 +65,14 @@ public abstract class AbstractODSReader<T> {
 			document = getDocument(input);
 			int totalNumberOfSheets = document.getSheetCount();
 			
-			System.out.println("Document contains "+totalNumberOfSheets+" sheets!");
-			
 			for (int sheetIndex = 0; sheetIndex < totalNumberOfSheets; sheetIndex++) {
 				Table sheet = document.getSheetByIndex(sheetIndex);
 				
-				System.out.println("About to process sheet '"+sheet.getTableName()+"'");
 				TableDefinition tableDefinition = parseSheetMeta(sheet);
 				if (tableDefinition == null) {
 					continue; // couldn't read table definition
 				}
-				System.out.println("Storing the definition...");
+
 				tables.put(tableDefinition.getTableName(), tableDefinition);
 				if (readData) {
 					tableData.put(tableDefinition.getTableName(),
@@ -97,16 +94,9 @@ public abstract class AbstractODSReader<T> {
 
 		String tableName = sheet.getTableName();
 
-		System.out.println("This sheet has "+sheet.getColumnCount()+" columns.");
-		System.out.println("...and has "+sheet.getHeaderColumnCount()+" header columns.");
-		System.out.println("...and has "+sheet.getRowCount()+" rows.");
-		
-		
 		// Find header column
 		Row headerRow = sheet.getRowByIndex(0);
 		
-		System.out.println("Just obtained row 0.");
-
 		// If we don't have a valid header skip
 		if (!validHeader(headerRow)) {
 			logger.warn("Couldn't find valid header row on {}, so skipping",
@@ -114,8 +104,6 @@ public abstract class AbstractODSReader<T> {
 			return null;
 		}
 		
-		System.out.println("About to read data row...");
-
 		// first row of data
 		Row dataRow = sheet.getRowByIndex(1);
 		if (dataRow == null) {
@@ -123,8 +111,6 @@ public abstract class AbstractODSReader<T> {
 			return null;
 		}
 		
-		System.out.println("About to start working through the columns...");
-
 		// iterate over all columns of first row and work out types based on
 		// the data
 		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
@@ -135,9 +121,6 @@ public abstract class AbstractODSReader<T> {
 			Cell typedRowCell = dataRow.getCellByIndex(cellIndex);
 			ColumnType columnType = ColumnType.STRING;
 			String cellType = typedRowCell.getValueType();
-			
-			System.out.println("Found column '"+typedRowCell+"'");
-			System.out.println("It has a cell type of '"+cellType+"'");
 			
 			if (typedRowCell.getDisplayText().endsWith(".id")) {
 				columnType = ColumnType.INTEGER_NUMBER;

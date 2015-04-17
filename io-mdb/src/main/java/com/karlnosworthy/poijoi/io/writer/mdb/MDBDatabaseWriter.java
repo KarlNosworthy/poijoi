@@ -85,8 +85,6 @@ class MDBSQLStatementCreator extends SQLStatementCreator {
 	@Override
 	public String buildCreateTableSQL(TableDefinition tableDefinition) {
 		
-		System.out.println("MDBSqlStatementCreator is getting used.");
-
 		StringBuilder builder = new StringBuilder();
 
 		builder.append("CREATE TABLE ");
@@ -123,8 +121,6 @@ class MDBSQLStatementCreator extends SQLStatementCreator {
 		builder.append(");");
 		
 		String sqlString = builder.toString();
-		
-		System.out.println("Returning '"+sqlString+"'");
 		return sqlString;
 	}
 	

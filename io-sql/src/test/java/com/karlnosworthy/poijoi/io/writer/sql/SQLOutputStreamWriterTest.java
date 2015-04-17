@@ -141,8 +141,6 @@ public class SQLOutputStreamWriterTest {
 		}
 		lineReader.close();
 		
-		System.out.println("Lines = "+sqlLines.size());
-		
 		assertTrue(sqlLines.size() == 2);
 		assertTrue(sqlLines.get(0).equals("CREATE TABLE TableOne (id INTEGER PRIMARY KEY AUTOINCREMENT,\"col1String\" TEXT,\"col2Date\" DATE,\"col3Integer\" INTEGER,\"col4Decimal\" REAL);"));
 		assertTrue(sqlLines.get(1).equals("INSERT INTO 'TableOne' (\"col1String\",\"col2Date\",\"col3Integer\",\"col4Decimal\") VALUES ('hello','2015-01-31 00:00:00.000',19,1.5);"));

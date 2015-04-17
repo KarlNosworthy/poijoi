@@ -85,7 +85,6 @@ public abstract class AbstractXLSReader<T> {
 		
 		// If we don't have any columns then there's nothing we can do
 		if (headerRow != null) {
-			System.out.println("Finding definitions for sheet = "+tableName);
 			Row dataRow = sheet.getRow(1 + sheet.getFirstRowNum());
 			
 			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
@@ -93,8 +92,6 @@ public abstract class AbstractXLSReader<T> {
 				Cell headerRowCell = headerRow.getCell(cellIndex);
 				String cellName = headerRowCell.getStringCellValue();
 				
-				System.out.println("Assembling definition for '"+cellName+"'.");
-
 				Cell typedRowCell = null;
 				if (dataRow != null) {
 					typedRowCell = dataRow.getCell(cellIndex);
@@ -138,12 +135,8 @@ public abstract class AbstractXLSReader<T> {
 				}
 
 				columns.add(new ColumnDefinition(cellName, cellIndex, columnType));
-
-				System.out.println(tableName + "|" + cellName + "(" + columnType + ")");
 			}
 			return new TableDefinition(tableName, columns);
-		} else {
-			System.out.println("Header row was blank for table = "+tableName);
 		}
 		return null;
 	}
@@ -151,16 +144,15 @@ public abstract class AbstractXLSReader<T> {
 	private List<HashMap<String, Object>> readData(Sheet sheet,
 			TableDefinition tableDefinition) {
 		List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String, Object>>();
+
 		if (sheet.getLastRowNum() > 1) {
-			System.out.println("Handling data for sheet='"+sheet.getSheetName()+"'.");
 			for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 				Row dataRow = sheet.getRow(rowIndex);
 
 				HashMap<String, Object> columnData = new HashMap<String, Object>();
 				for (int cellIndex = dataRow.getFirstCellNum(); cellIndex <= (dataRow
 						.getLastCellNum() - 1); cellIndex++) {
-					System.out.println("Obtaining column definition for row = "+rowIndex+", column = "+cellIndex+".");
-					
+
 					ColumnDefinition columnDefinition = tableDefinition
 							.getColumnDefinition(cellIndex);
 					String colName = columnDefinition.getColumnName();
@@ -181,8 +173,6 @@ public abstract class AbstractXLSReader<T> {
 								columnData.put(colName, d);
 							}
 						}
-					} else {
-						System.out.println("Skipping R="+rowIndex+":C="+cellIndex+":N='"+colName+"' as it contains no data.");
 					}
 				}
 				rowData.add(columnData);

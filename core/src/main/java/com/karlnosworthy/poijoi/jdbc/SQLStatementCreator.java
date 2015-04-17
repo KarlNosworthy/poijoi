@@ -19,14 +19,18 @@ public class SQLStatementCreator {
 		builder.append("CREATE TABLE ");
 		builder.append(tableDefinition.getTableName());
 		builder.append(" (");
-		builder.append("id INTEGER PRIMARY KEY AUTOINCREMENT");
+
+		if (!tableDefinition.containsDefinitionForColumn("id")) {
+			builder.append("id INTEGER PRIMARY KEY AUTOINCREMENT");
+			builder.append(",");
+		}
 
 		for (ColumnDefinition columnDefinition : tableDefinition.getColumnDefinitions()) {
 
 			String columnName = columnDefinition.getColumnName();
 			ColumnType columnType = columnDefinition.getColumnType();
 
-			builder.append(",\"");
+			builder.append("\"");
 
 			if (columnName.indexOf(".") >= 0) {
 				builder.append(columnName.replace('.', '_'));
@@ -48,6 +52,10 @@ public class SQLStatementCreator {
 				case DATE:
 					builder.append(" DATE");
 					break;
+			}
+
+			if (!tableDefinition.isLastColumnDefinition(columnDefinition)) {
+				builder.append(",");
 			}
 		}
 		builder.append(");");
