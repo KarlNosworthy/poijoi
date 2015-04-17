@@ -1,6 +1,7 @@
 package com.karlnosworthy.poijoi.jdbc;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -17,58 +18,96 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 public class JDBCDatabaseCreator {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JDBCDatabaseCreator.class);
-		
+
+	private Connection connection;
 	private SQLStatementCreator sqlStatementCreator;
+	private JDBCPreparedStatementCreator preparedStatementCreator;
 	
-	public JDBCDatabaseCreator() {
-		this(new SQLStatementCreator());
+	public JDBCDatabaseCreator(Connection connection) {
+		super();
+		this.connection = connection;
+		this.preparedStatementCreator = new JDBCPreparedStatementCreator(connection);
 	}
-	
-	public JDBCDatabaseCreator(SQLStatementCreator sqlStatementCreator) {
+
+	public JDBCDatabaseCreator(SQLStatementCreator sqlStatementCreator, Connection connection) {
 		super();
 		this.sqlStatementCreator = sqlStatementCreator;
+		this.connection = connection;
 	}
 	
-	public boolean create(Connection connection, PoiJoiMetaData metaData, WriteType writeType) throws Exception {
+	public boolean create(PoiJoiMetaData metaData, WriteType writeType) throws Exception {
 		int numberOfTablesCreated = 0;
 
-		Statement statement = null;
-		
 		try {
 			// Create tables
-			statement = connection.createStatement();
 			Map<String, TableDefinition> tableDefinitions = metaData.getTableDefinitions();
 			
 			for (String tableName : tableDefinitions.keySet()) {
 				TableDefinition tableDefinition = tableDefinitions.get(tableName);
-				String createTableSQL = sqlStatementCreator.buildCreateTableSQL(tableDefinition);
-				statement.execute(createTableSQL);
-				numberOfTablesCreated++;
+
+				if (preparedStatementCreator != null) {
+					PreparedStatement preparedStatement = preparedStatementCreator.buildCreateTableStatement(tableDefinition);
+					if (preparedStatement.execute()) {
+						numberOfTablesCreated++;
+					}
+					preparedStatement.close();
+				} else {
+					String sqlStatement = sqlStatementCreator.buildCreateTableStatement(tableDefinition);
+					Statement statement = connection.createStatement();
+					statement.execute(sqlStatement);
+					statement.close();
+				}
 			}
 			
 			if (writeType != WriteType.SCHEMA_ONLY) {
 				int numberOfRowsInserted = 0;
-				
-				for (String tableName : tableDefinitions.keySet()) {
+
+				PreparedStatement preparedStatement = null;
+
+				for (TableDefinition tableDefinition : tableDefinitions.values()) {
+
 					List<HashMap<String, Object>> tableData = metaData
-							.getTableData(tableName);
+							.getTableData(tableDefinition.getTableName());
 					
 					if (tableData != null) {
-						try {
-							statement = connection.createStatement();
-							
-							List<String> insertSQLStatements = sqlStatementCreator.buildInsertTableSQL(tableDefinitions.get(tableName),tableData);
 
-							for (String sqlString : insertSQLStatements) {
-								statement.execute(sqlString);
-								numberOfRowsInserted++;
-							}
-						} finally {
+						if (preparedStatementCreator != null) {
 							try {
-								statement.close();
-							} catch (SQLException sqlException) {
-								logger.debug("", sqlException);
+								preparedStatement = preparedStatementCreator.createInsertPreparedStatement(tableDefinition, connection);
+
+								for (int dataToInsertRowIndex = 0; dataToInsertRowIndex < tableData.size(); dataToInsertRowIndex++) {
+									Map<String, Object> dataToInsert = tableData.get(dataToInsertRowIndex);
+
+									preparedStatementCreator.populatePreparedStatement(preparedStatement, tableDefinition, dataToInsert);
+
+									if (preparedStatement.execute()) {
+										numberOfRowsInserted++;
+									}
+								}
+
+								preparedStatement.close();
+
+							} finally {
+								try {
+									if (!preparedStatement.isClosed()) {
+										preparedStatement.close();
+									}
+								} catch (SQLException sqlException) {
+									logger.debug("", sqlException);
+								}
 							}
+						} else {
+
+							Statement statement = connection.createStatement();
+							for (int dataToInsertRowIndex = 0; dataToInsertRowIndex < tableData.size(); dataToInsertRowIndex++) {
+								Map<String, Object> dataToInsert = tableData.get(dataToInsertRowIndex);
+
+								String sql = sqlStatementCreator.buildInsertTableStatement(tableDefinition, dataToInsert);
+								if (statement.execute(sql)) {
+									numberOfRowsInserted++;
+								}
+							}
+							statement.close();
 						}
 					}
 				}
@@ -77,12 +116,6 @@ public class JDBCDatabaseCreator {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
-		} finally {
-			try {
-				statement.close();
-			} catch (SQLException sqlException) {
-				logger.debug("", sqlException);
-			}
 		}
 	}
 }

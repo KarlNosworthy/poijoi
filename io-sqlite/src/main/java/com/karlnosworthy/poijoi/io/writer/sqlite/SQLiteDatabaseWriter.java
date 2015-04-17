@@ -50,7 +50,7 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 		if (isValidConnection(connection) && isValidMetadata(metaData)) {
 			
 			Class.forName("org.sqlite.JDBC");
-			JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator();
+			JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator(connection);
 	
 			if (options != null && options.hasValue("--version")) {
 				Integer versionNumber = Integer.parseInt(options
@@ -58,7 +58,7 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 				setVersionNumber(connection, versionNumber);
 			}
 			
-			return databaseCreator.create(connection, metaData, writeType);
+			return databaseCreator.create(metaData, writeType);
 		} else {
 			return false;
 		}

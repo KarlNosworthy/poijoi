@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.Writer;
@@ -31,7 +32,7 @@ public class SQLOutputStreamWriter implements Writer<OutputStream> {
 			if (writeType != WriteType.DATA_ONLY) {
 				for (String tableName : metaData.getTableDefinitions().keySet()) {
 					TableDefinition tableDefinition = metaData.getTableDefinition(tableName);
-					buffer.append(sqlStatementWriter.buildCreateTableSQL(tableDefinition));
+					buffer.append(sqlStatementWriter.buildCreateTableStatement(tableDefinition));
 					buffer.append("\n");
 				}
 			}
@@ -40,11 +41,10 @@ public class SQLOutputStreamWriter implements Writer<OutputStream> {
 				for (String tableName : metaData.getTableDefinitions().keySet()) {
 					TableDefinition tableDefinition = metaData.getTableDefinition(tableName);
 					List<HashMap<String, Object>> tableData = metaData.getTableData(tableName);
-					
-					List<String> sqlInserts = sqlStatementWriter.buildInsertTableSQL(tableDefinition, tableData);
-					
-					for (String sqlInsert : sqlInserts) {
-						buffer.append(sqlInsert);
+
+					for (int tableDataRowIndex = 0; tableDataRowIndex < tableData.size(); tableDataRowIndex ++) {
+						Map<String,Object> rowDataToInsert = tableData.get(tableDataRowIndex);
+						buffer.append(sqlStatementWriter.buildInsertTableStatement(tableDefinition, rowDataToInsert));
 						buffer.append("\n");
 					}
 				}

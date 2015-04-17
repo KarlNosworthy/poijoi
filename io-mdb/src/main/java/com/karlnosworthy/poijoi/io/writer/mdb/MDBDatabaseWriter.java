@@ -36,8 +36,10 @@ public class MDBDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 		if (isValidConnection(connection) && isValidMetadata(metadata)) {
 			
 			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
-			JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator(new MDBSQLStatementCreator());
-			databaseCreator.create(connection, metadata, writeType);
+			JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator(new MDBSQLStatementCreator(), connection);
+			databaseCreator.create(metadata, writeType);
+//			JDBCDatabaseCreator databaseCreator = new JDBCDatabaseCreator(connection);
+//			databaseCreator.create(metadata, writeType);
 			return true;
 		} else {
 			return false;
@@ -83,7 +85,7 @@ public class MDBDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 class MDBSQLStatementCreator extends SQLStatementCreator {
 	
 	@Override
-	public String buildCreateTableSQL(TableDefinition tableDefinition) {
+	public String buildCreateTableStatement(TableDefinition tableDefinition) {
 		
 		StringBuilder builder = new StringBuilder();
 
@@ -123,70 +125,67 @@ class MDBSQLStatementCreator extends SQLStatementCreator {
 		String sqlString = builder.toString();
 		return sqlString;
 	}
-	
-	public List<String> buildInsertTableSQL(TableDefinition tableDefinition, List<HashMap<String, Object>> dataToImport) {
+
+	public String buildInsertTableStatement(TableDefinition tableDefinition, Map<String, Object> dataToInsert) {
 
 		List<String> insertSqlStrings = new ArrayList<String>();
 
-		StringBuilder builder = null;
-		for (HashMap<String, Object> columnData : dataToImport) {
-			builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 
-			builder.append("INSERT INTO ");
-			builder.append(tableDefinition.getTableName());
-			builder.append(" (");
+		builder.append("INSERT INTO ");
+		builder.append(tableDefinition.getTableName());
+		builder.append(" (");
 
-			boolean first = true;
-			for (String columnName : columnData.keySet()) {
-				if (!columnName.endsWith(".id")) {
-					if (first) {
-						first = false;
-					} else {
-						builder.append(",");
-					}
-					builder.append("");
-					builder.append(columnName);
-					builder.append("");
+		boolean first = true;
+		for (String columnName : dataToInsert.keySet()) {
+			if (!columnName.endsWith(".id")) {
+				if (first) {
+					first = false;
+				} else {
+					builder.append(",");
 				}
+				builder.append("");
+				builder.append(columnName);
+				builder.append("");
 			}
-
-			builder.append(")");
-			builder.append(" VALUES (");
-
-			first = true;
-
-			ColumnDefinition columnDefinition = null;
-
-			for (String columnName : columnData.keySet()) {
-
-				columnDefinition = tableDefinition.getColumnDefinition(columnName);
-
-				if (!columnName.endsWith(".id")) {
-					if (first) {
-						first = false;
-					} else {
-						builder.append(",");
-					}
-
-					Object val = columnData.get(columnName);
-					if (columnDefinition.getColumnType() == ColumnType.DATE) {
-						SimpleDateFormat dateFormat = new SimpleDateFormat(
-								"yyyy-MM-dd HH:mm:ss.SSS");
-						builder.append("'");
-						builder.append(dateFormat.format(val));
-						builder.append("'");
-					} else if (columnDefinition.getColumnType() == ColumnType.STRING) {
-						builder.append("'");
-						builder.append(val);
-						builder.append("'");
-					} else {
-						builder.append(columnData.get(columnName));
-					}
-				}
-			}
-			builder.append(");");
-			insertSqlStrings.add(builder.toString());
 		}
-		return insertSqlStrings;
+
+		builder.append(")");
+		builder.append(" VALUES (");
+
+		first = true;
+
+		ColumnDefinition columnDefinition = null;
+
+		for (String columnName : dataToInsert.keySet()) {
+
+			columnDefinition = tableDefinition.getColumnDefinition(columnName);
+
+			if (!columnName.endsWith(".id")) {
+				if (first) {
+					first = false;
+				} else {
+					builder.append(",");
+				}
+
+				Object val = dataToInsert.get(columnName);
+				if (columnDefinition.getColumnType() == ColumnType.DATE) {
+					SimpleDateFormat dateFormat = new SimpleDateFormat(
+							"yyyy-MM-dd HH:mm:ss.SSS");
+					builder.append("'");
+					builder.append(dateFormat.format(val));
+					builder.append("'");
+				} else if (columnDefinition.getColumnType() == ColumnType.STRING) {
+					builder.append("'");
+					builder.append(val);
+					builder.append("'");
+				} else {
+					builder.append(dataToInsert.get(columnName));
+				}
+			}
+		}
+		builder.append(");");
+
+		return builder.toString();
 	}
 }
