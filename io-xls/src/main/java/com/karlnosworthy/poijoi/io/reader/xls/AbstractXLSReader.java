@@ -88,7 +88,7 @@ public abstract class AbstractXLSReader<T> {
 			System.out.println("Finding definitions for sheet = "+tableName);
 			Row dataRow = sheet.getRow(1 + sheet.getFirstRowNum());
 			
-			HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
+			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
 			for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
 				Cell headerRowCell = headerRow.getCell(cellIndex);
 				String cellName = headerRowCell.getStringCellValue();
@@ -136,11 +136,10 @@ public abstract class AbstractXLSReader<T> {
 					}
 					break;
 				}
-				ColumnDefinition cd = new ColumnDefinition(cellName, cellIndex,
-						columnType);
-				columns.put(cellName, cd);
-				
-				System.out.println(tableName + "|"+cellName+"("+columnType+")");
+
+				columns.add(new ColumnDefinition(cellName, cellIndex, columnType));
+
+				System.out.println(tableName + "|" + cellName + "(" + columnType + ")");
 			}
 			return new TableDefinition(tableName, columns);
 		} else {

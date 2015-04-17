@@ -94,18 +94,14 @@ class MDBSQLStatementCreator extends SQLStatementCreator {
 		builder.append(" (");
 		builder.append("id COUNTER");
 
-		for (String columnName : tableDefinition.getColumnDefinitions()
-				.keySet()) {
+		for (ColumnDefinition columnDefinition : tableDefinition.getColumnDefinitions()) {
 			builder.append(",");
 
-			if (columnName.indexOf(".") >= 0) {
-				builder.append(columnName.replace('.', '_'));
+			if (columnDefinition.getColumnName().indexOf(".") >= 0) {
+				builder.append(columnDefinition.getColumnName().replace('.', '_'));
 			} else {
-				builder.append(columnName);
+				builder.append(columnDefinition.getColumnName());
 			}
-
-			ColumnDefinition columnDefinition = tableDefinition
-					.getColumnDefinition(columnName);
 
 			ColumnType columnType = columnDefinition.getColumnType();
 
@@ -132,9 +128,7 @@ class MDBSQLStatementCreator extends SQLStatementCreator {
 		return sqlString;
 	}
 	
-	public List<String> buildInsertTableSQL(String tableName,
-			List<HashMap<String, Object>> dataToImport,
-			Map<String, ColumnDefinition> columnDefinitions) {
+	public List<String> buildInsertTableSQL(TableDefinition tableDefinition, List<HashMap<String, Object>> dataToImport) {
 
 		List<String> insertSqlStrings = new ArrayList<String>();
 
@@ -143,7 +137,7 @@ class MDBSQLStatementCreator extends SQLStatementCreator {
 			builder = new StringBuilder();
 
 			builder.append("INSERT INTO ");
-			builder.append(tableName);
+			builder.append(tableDefinition.getTableName());
 			builder.append(" (");
 
 			boolean first = true;
@@ -164,23 +158,28 @@ class MDBSQLStatementCreator extends SQLStatementCreator {
 			builder.append(" VALUES (");
 
 			first = true;
+
+			ColumnDefinition columnDefinition = null;
+
 			for (String columnName : columnData.keySet()) {
+
+				columnDefinition = tableDefinition.getColumnDefinition(columnName);
+
 				if (!columnName.endsWith(".id")) {
 					if (first) {
 						first = false;
 					} else {
 						builder.append(",");
 					}
-					ColumnType columnType = columnDefinitions.get(columnName)
-							.getColumnType();
+
 					Object val = columnData.get(columnName);
-					if (columnType == ColumnType.DATE) {
+					if (columnDefinition.getColumnType() == ColumnType.DATE) {
 						SimpleDateFormat dateFormat = new SimpleDateFormat(
 								"yyyy-MM-dd HH:mm:ss.SSS");
 						builder.append("'");
 						builder.append(dateFormat.format(val));
 						builder.append("'");
-					} else if (columnType == ColumnType.STRING) {
+					} else if (columnDefinition.getColumnType() == ColumnType.STRING) {
 						builder.append("'");
 						builder.append(val);
 						builder.append("'");

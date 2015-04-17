@@ -93,15 +93,11 @@ public class ODSOutputStreamWriterTest {
 	@Test
 	public void testSuccessfulWrite() throws Exception {
 
-		Map<String, ColumnDefinition> columnDefinitions = new HashMap<String, ColumnDefinition>();
-		columnDefinitions.put("col1String", new ColumnDefinition("col1String",
-				0, ColumnType.STRING));
-		columnDefinitions.put("col2Date", new ColumnDefinition("col2Date", 1,
-				ColumnType.DATE));
-		columnDefinitions.put("col3Integer", new ColumnDefinition(
-				"col3Integer", 2, ColumnType.INTEGER_NUMBER));
-		columnDefinitions.put("col4Decimal", new ColumnDefinition(
-				"col4Decimal", 3, ColumnType.DECIMAL_NUMBER));
+		List<ColumnDefinition> columnDefinitions = new ArrayList<ColumnDefinition>();
+		columnDefinitions.add(new ColumnDefinition("col1String", 0, ColumnType.STRING));
+		columnDefinitions.add(new ColumnDefinition("col2Date", 1, ColumnType.DATE));
+		columnDefinitions.add(new ColumnDefinition("col3Integer", 2, ColumnType.INTEGER_NUMBER));
+		columnDefinitions.add(new ColumnDefinition("col4Decimal", 3, ColumnType.DECIMAL_NUMBER));
 
 		Map<String, TableDefinition> tableDefinitions = new HashMap<String, TableDefinition>();
 		tableDefinitions.put("TableOne", new TableDefinition("TableOne",

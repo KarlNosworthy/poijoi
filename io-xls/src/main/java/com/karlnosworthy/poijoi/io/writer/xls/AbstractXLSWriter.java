@@ -65,13 +65,12 @@ public abstract class AbstractXLSWriter<T> {
 		for (String tableName : tableDefinitions.keySet()) {
 			HSSFSheet sheet = wb.createSheet(tableName);
 			TableDefinition table = tableDefinitions.get(tableName);
-			Map<String, ColumnDefinition> columnDefinitions = table
-					.getColumnDefinitions();
+			List<ColumnDefinition> columnDefinitions = table.getColumnDefinitions();
 
 			// do headers
 			if (writeType != WriteType.DATA_ONLY) {
 				HSSFRow headerRow = sheet.createRow(0);
-				for (ColumnDefinition cd : columnDefinitions.values()) {
+				for (ColumnDefinition cd : columnDefinitions) {
 					HSSFCell cell = headerRow.createCell(cd.getColumnIndex());
 					cell.setCellValue(cd.getColumnName());
 				}

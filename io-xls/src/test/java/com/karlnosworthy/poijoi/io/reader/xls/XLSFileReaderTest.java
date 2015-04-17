@@ -71,13 +71,11 @@ public class XLSFileReaderTest {
 		assertNotNull(tableDefinition);
 
 		assertEquals(4, tableDefinition.getColumnCount());
-		Map<String, ColumnDefinition> columnDefinitions = tableDefinition
-				.getColumnDefinitions();
 
-		assertTrue(columnDefinitions.containsKey("col1String"));
-		assertTrue(columnDefinitions.containsKey("col2Date"));
-		assertTrue(columnDefinitions.containsKey("col3Integer"));
-		assertTrue(columnDefinitions.containsKey("col4Decimal"));
+		assertTrue(tableDefinition.containsDefinitionForColumn("col1String"));
+		assertTrue(tableDefinition.containsDefinitionForColumn("col2Date"));
+		assertTrue(tableDefinition.containsDefinitionForColumn("col3Integer"));
+		assertTrue(tableDefinition.containsDefinitionForColumn("col4Decimal"));
 	}
 
 	/**

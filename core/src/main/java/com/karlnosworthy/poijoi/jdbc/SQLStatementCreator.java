@@ -21,8 +21,11 @@ public class SQLStatementCreator {
 		builder.append(" (");
 		builder.append("id INTEGER PRIMARY KEY AUTOINCREMENT");
 
-		for (String columnName : tableDefinition.getColumnDefinitions()
-				.keySet()) {
+		for (ColumnDefinition columnDefinition : tableDefinition.getColumnDefinitions()) {
+
+			String columnName = columnDefinition.getColumnName();
+			ColumnType columnType = columnDefinition.getColumnType();
+
 			builder.append(",\"");
 
 			if (columnName.indexOf(".") >= 0) {
@@ -32,24 +35,19 @@ public class SQLStatementCreator {
 			}
 			builder.append("\"");
 
-			ColumnDefinition columnDefinition = tableDefinition
-					.getColumnDefinition(columnName);
-
-			ColumnType columnType = columnDefinition.getColumnType();
-
 			switch (columnType) {
-			case STRING:
-				builder.append(" TEXT");
-				break;
-			case INTEGER_NUMBER:
-				builder.append(" INTEGER");
-				break;
-			case DECIMAL_NUMBER:
-				builder.append(" REAL");
-				break;
-			case DATE:
-				builder.append(" DATE");
-				break;
+				case STRING:
+					builder.append(" TEXT");
+					break;
+				case INTEGER_NUMBER:
+					builder.append(" INTEGER");
+					break;
+				case DECIMAL_NUMBER:
+					builder.append(" REAL");
+					break;
+				case DATE:
+					builder.append(" DATE");
+					break;
 			}
 		}
 		builder.append(");");
@@ -57,18 +55,18 @@ public class SQLStatementCreator {
 		return builder.toString();
 	}
 	
-	public List<String> buildInsertTableSQL(String tableName,
-			List<HashMap<String, Object>> dataToImport,
-			Map<String, ColumnDefinition> columnDefinitions) {
+	public List<String> buildInsertTableSQL(TableDefinition tableDefinition,
+			List<HashMap<String, Object>> dataToImport) {
 
 		List<String> insertSqlStrings = new ArrayList<String>();
 
 		StringBuilder builder = null;
+
 		for (HashMap<String, Object> columnData : dataToImport) {
 			builder = new StringBuilder();
 
 			builder.append("INSERT INTO '");
-			builder.append(tableName);
+			builder.append(tableDefinition.getTableName());
 			builder.append("' (");
 
 			boolean first = true;
@@ -88,25 +86,27 @@ public class SQLStatementCreator {
 			builder.append(")");
 			builder.append(" VALUES (");
 
+			ColumnDefinition columnDefinition = null;
+
 			first = true;
 			for (String columnName : columnData.keySet()) {
+
+				columnDefinition = tableDefinition.getColumnDefinition(columnName);
+
 				if (!columnName.endsWith(".id")) {
 					if (first) {
 						first = false;
 					} else {
 						builder.append(",");
 					}
-					ColumnType columnType = columnDefinitions.get(columnName)
-							.getColumnType();
-					
 					Object val = columnData.get(columnName);
-					if (columnType == ColumnType.DATE) {
+					if (columnDefinition.getColumnType() == ColumnType.DATE) {
 						SimpleDateFormat dateFormat = new SimpleDateFormat(
 								"yyyy-MM-dd HH:mm:ss.SSS");
 						builder.append("'");
 						builder.append(dateFormat.format(val));
 						builder.append("'");
-					} else if (columnType == ColumnType.STRING) {
+					} else if (columnDefinition.getColumnType() == ColumnType.STRING) {
 						builder.append("'");
 						builder.append(val.toString().replace("'", "''"));
 						builder.append("'");

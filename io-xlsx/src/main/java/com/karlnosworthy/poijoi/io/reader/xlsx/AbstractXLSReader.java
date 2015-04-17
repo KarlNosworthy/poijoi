@@ -86,7 +86,8 @@ public abstract class AbstractXLSReader<T> {
 		if (headerRow != null) {
 			String tableName = sheet.getSheetName();
 			Row typedRow = sheet.getRow(1);
-			HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
+			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+
 			for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
 				Cell headerRowCell = headerRow.getCell(cellIndex);
 				String cellName = headerRowCell.getStringCellValue();
@@ -132,9 +133,9 @@ public abstract class AbstractXLSReader<T> {
 					}
 					break;
 				}
-				ColumnDefinition cd = new ColumnDefinition(cellName, cellIndex,
-						columnType);
-				columns.put(cellName, cd);
+
+				columns.add(new ColumnDefinition(cellName, cellIndex,
+						columnType));
 			}
 			return new TableDefinition(tableName, columns);
 		}

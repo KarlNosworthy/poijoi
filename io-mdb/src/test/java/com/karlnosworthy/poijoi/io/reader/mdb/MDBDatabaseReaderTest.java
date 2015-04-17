@@ -76,14 +76,11 @@ public class MDBDatabaseReaderTest {
 			assertNotNull(tableDefinition);
 
 			assertEquals(5, tableDefinition.getColumnCount());
-			Map<String, ColumnDefinition> columnDefinitions = tableDefinition
-					.getColumnDefinitions();
-
-			assertTrue(columnDefinitions.containsKey("ID"));
-			assertTrue(columnDefinitions.containsKey("COL1STRING"));
-			assertTrue(columnDefinitions.containsKey("COL2DATE"));
-			assertTrue(columnDefinitions.containsKey("COL3INTEGER"));
-			assertTrue(columnDefinitions.containsKey("COL4DECIMAL"));
+			assertTrue(tableDefinition.containsDefinitionForColumn("ID"));
+			assertTrue(tableDefinition.containsDefinitionForColumn("COL1STRING"));
+			assertTrue(tableDefinition.containsDefinitionForColumn("COL2DATE"));
+			assertTrue(tableDefinition.containsDefinitionForColumn("COL3INTEGER"));
+			assertTrue(tableDefinition.containsDefinitionForColumn("COL4DECIMAL"));
 
 		} finally {
 			if (connection != null) {

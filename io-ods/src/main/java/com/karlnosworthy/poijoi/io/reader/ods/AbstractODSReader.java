@@ -127,7 +127,8 @@ public abstract class AbstractODSReader<T> {
 
 		// iterate over all columns of first row and work out types based on
 		// the data
-		HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
+		List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+		
 		for (int cellIndex = 0; cellIndex < headerRow.getCellCount(); cellIndex++) {
 			Cell headerRowCell = headerRow.getCellByIndex(cellIndex);
 			String cellName = headerRowCell.getStringValue();
@@ -155,9 +156,8 @@ public abstract class AbstractODSReader<T> {
 					columnType = ColumnType.DATE;
 				}
 			}
-			ColumnDefinition cd = new ColumnDefinition(cellName, cellIndex,
-					columnType);
-			columns.put(cellName, cd);
+			columns.add(new ColumnDefinition(cellName, cellIndex,
+					columnType));
 		}
 		if (!columns.isEmpty()) {
 			return new TableDefinition(tableName, columns);

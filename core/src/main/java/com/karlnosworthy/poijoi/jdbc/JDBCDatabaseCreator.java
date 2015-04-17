@@ -57,9 +57,8 @@ public class JDBCDatabaseCreator {
 						try {
 							statement = connection.createStatement();
 							
-							List<String> insertSQLStatements = sqlStatementCreator.buildInsertTableSQL(tableName, tableData, tableDefinitions.get(tableName)
-																				  .getColumnDefinitions());
-							
+							List<String> insertSQLStatements = sqlStatementCreator.buildInsertTableSQL(tableDefinitions.get(tableName),tableData);
+
 							for (String sqlString : insertSQLStatements) {
 								statement.execute(sqlString);
 								numberOfRowsInserted++;

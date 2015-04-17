@@ -64,12 +64,12 @@ public abstract class AbstractXLSXWriter<T> {
 			
 			Sheet sheet = wb.createSheet(tableName);
 			TableDefinition table = tableDefinitions.get(tableName);
-			Map<String, ColumnDefinition> columnDefinitions = table.getColumnDefinitions();
+			List<ColumnDefinition> columnDefinitions = table.getColumnDefinitions();
 			
 			// do headers
 			if (writeType != WriteType.DATA_ONLY) {
 				Row headerRow = sheet.createRow(0);
-				for (ColumnDefinition cd : columnDefinitions.values()) {
+				for (ColumnDefinition cd : columnDefinitions) {
 					Cell cell = headerRow.createCell(cd.getColumnIndex());
 					cell.setCellValue(cd.getColumnName());
 				}

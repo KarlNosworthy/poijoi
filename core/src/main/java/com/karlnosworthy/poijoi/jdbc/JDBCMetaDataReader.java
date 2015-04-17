@@ -98,7 +98,7 @@ public class JDBCMetaDataReader {
 
 		for (String tableName : tableNames) {
 
-			Map<String, ColumnDefinition> columnDefinitions = new HashMap<String, ColumnDefinition>();
+			List<ColumnDefinition> columnDefinitions = new ArrayList<ColumnDefinition>();
 
 			ResultSet tableColumnsResultSet = null;
 
@@ -109,8 +109,8 @@ public class JDBCMetaDataReader {
 				while (tableColumnsResultSet.next()) {
 					ColumnDefinition columnDefinition = getColumnDefinition(
 							tableColumnsResultSet, tableName);
-					columnDefinitions.put(columnDefinition.getColumnName(),
-							columnDefinition);
+
+					columnDefinitions.add(columnDefinition);
 				}
 
 				tableDefinitions.put(tableName, new TableDefinition(tableName,

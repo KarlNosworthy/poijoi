@@ -1,5 +1,6 @@
 package com.karlnosworthy.poijoi.model;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,10 +13,9 @@ public class TableDefinition {
 
 	private String tableName;
 
-	private Map<String, ColumnDefinition> columnDefinitions;
+	private List<ColumnDefinition> columnDefinitions;
 
-	public TableDefinition(String tableName,
-			Map<String, ColumnDefinition> columnDefinitions) {
+	public TableDefinition(String tableName, List<ColumnDefinition> columnDefinitions) {
 		super();
 		this.tableName = tableName;
 		this.columnDefinitions = columnDefinitions;
@@ -25,7 +25,7 @@ public class TableDefinition {
 		return tableName;
 	}
 
-	public Map<String, ColumnDefinition> getColumnDefinitions() {
+	public List<ColumnDefinition> getColumnDefinitions() {
 		return columnDefinitions;
 	}
 
@@ -40,21 +40,35 @@ public class TableDefinition {
 	 * Get a {@link ColumnDefinition} based on it's name
 	 */
 	public ColumnDefinition getColumnDefinition(String columnName) {
-		return columnDefinitions.get(columnName);
-	}
-	
-	/**
-	 * Get a {@link ColumnDefinition} based on it's index
-	 */
-	public ColumnDefinition getColumnDefinition(int index) {
-		for (ColumnDefinition cd : columnDefinitions.values()) {
-			if (cd.getColumnIndex() == index) {
+		for (ColumnDefinition cd : columnDefinitions) {
+			if (cd.getColumnName().equals(columnName)) {
 				return cd;
 			}
 		}
 		return null;
 	}
 	
+	/**
+	 * Get a {@link ColumnDefinition} based on it's index
+	 */
+	public ColumnDefinition getColumnDefinition(int index) {
+		for (ColumnDefinition cd : columnDefinitions) {
+			if (cd.getColumnIndex() == index) {
+				return cd;
+			}
+		}
+		return null;
+	}
+
+	public boolean containsDefinitionForColumn(String columnName) {
+		for (ColumnDefinition cd : columnDefinitions) {
+			if (cd.getColumnName().equals(columnName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean isSameAs(TableDefinition tableDefinition) {
 		if (tableDefinition != null && tableName != null && tableDefinition.tableName != null && 
 			columnDefinitions != null && tableDefinition.columnDefinitions != null &&

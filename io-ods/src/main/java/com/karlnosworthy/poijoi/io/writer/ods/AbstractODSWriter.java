@@ -72,13 +72,12 @@ public abstract class AbstractODSWriter<T> {
 			table.setTableName(tableName);
 
 			TableDefinition tableDefinition = tableDefinitions.get(tableName);
-			Map<String, ColumnDefinition> columnDefinitions = tableDefinition
+			List<ColumnDefinition> columnDefinitions = tableDefinition
 					.getColumnDefinitions();
 
 			// create the header row using the column definitions
 			if (writeType != WriteType.DATA_ONLY) {
-				for (ColumnDefinition columnDefinition : columnDefinitions
-						.values()) {
+				for (ColumnDefinition columnDefinition : columnDefinitions) {
 					Cell headerCell = table.getCellByPosition(
 							columnDefinition.getColumnIndex(), 0);
 					headerCell.setStringValue(columnDefinition.getColumnName()
@@ -94,8 +93,7 @@ public abstract class AbstractODSWriter<T> {
 				List<HashMap<String, Object>> rowData = tableData
 						.get(tableName);
 				for (int rowIndex = 0; rowIndex < tableData.size(); rowIndex++) {
-					for (ColumnDefinition columnDefinition : columnDefinitions
-							.values()) {
+					for (ColumnDefinition columnDefinition : columnDefinitions) {
 						Cell dataCell = table.getCellByPosition(
 								columnDefinition.getColumnIndex(),
 								1 + rowIndex);
