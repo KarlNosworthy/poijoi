@@ -1,7 +1,6 @@
 package com.karlnosworthy.poijoi;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.util.HashMap;
@@ -11,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 /**
  * The main PoiJoi class which can be used inside a framework or as a
@@ -24,8 +23,8 @@ import com.karlnosworthy.poijoi.model.PoijoiMetaData;
 public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 
 	private static final Logger logger = LoggerFactory.getLogger(PoiJoiLauncher.class);
-	private String inputQualifier;
-	private String outputQualifier;
+	private String primaryQualifier;
+	private String secondaryQualifier;
 	private Map<String, String> options;
 	private int numberOfExtensionsAvailable;
 	
@@ -38,33 +37,33 @@ public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 		this.options = new HashMap<String, String>();
 	}
 
-	public String getSourceDataFile() {
-		return inputQualifier;
+	public String getPrimaryQualifier() {
+		return primaryQualifier;
 	}
 
-	public void setInputQualifier(String inputQualifier) throws IOException {
-		if (inputQualifier == null) {
+	public void setPrimaryQualifier(String primaryQualifier) throws IOException {
+		if (primaryQualifier == null) {
 			throw new IllegalArgumentException(
-					"The input qualifier cannot be null.");
+					"The primary/input qualifier cannot be null.");
 		}
 
-		this.inputQualifier = inputQualifier;
+		this.primaryQualifier = primaryQualifier;
 	}
 
 	/**
 	 */
-	public String getOutputQualifier() {
-		return this.outputQualifier;
+	public String getSecondaryQualifier() {
+		return this.secondaryQualifier;
 	}
 
 	/**
 	 */
-	public void setOutputQualifier(String outputQualifier) throws IOException {
-		if (outputQualifier == null) {
+	public void setSecondaryQualifier(String secondaryQualifier) throws IOException {
+		if (secondaryQualifier == null) {
 			throw new IllegalArgumentException(
-					"The output path file instance cannot be null.");
+					"The secondary/output path file instance cannot be null.");
 		}
-		this.outputQualifier = outputQualifier;
+		this.secondaryQualifier = secondaryQualifier;
 	}
 
 	public void setOptions(Map<String, String> options) {
@@ -81,37 +80,46 @@ public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 			poiJoi = new PoiJoi(poiJoiOptions, this);
 		} else {
 			poiJoi = new PoiJoi(poiJoiOptions);
-		
-			String inputFormat = determineFormatType(inputQualifier);
-	
-			Object input = null;
 			
-			if (isJdbcURL(inputQualifier)) {
-				String connectionURL = makeAnyFilePathAbsolute(inputQualifier);
-				input = DriverManager.getConnection(connectionURL);
+			String primaryFormat = determineFormatType(primaryQualifier);
+			String secondaryFormat = determineFormatType(secondaryQualifier);
+			
+			Object primaryQualifierHandle = null;
+			Object secondaryQualifierHandle = null;
+			
+			
+			if (isJdbcURL(primaryQualifier)) {
+				String connectionURL = makeAnyFilePathAbsolute(primaryQualifier);
+				primaryQualifierHandle = DriverManager.getConnection(connectionURL);
 			} else {
-				input = new File(inputQualifier);
+				primaryQualifierHandle = new File(primaryQualifier);
 			}
 			
-			logger.info("Input Format: {}, Input Source: {} ", inputFormat, input);
-	
-			String outputFormat = determineFormatType(outputQualifier);
+			logger.info("Input Format: {}, Input Source: {} ", primaryFormat, primaryQualifierHandle);
 			
-			Object output = null;
-			if (isJdbcURL(outputQualifier)) {
-				String connectionURL = makeAnyFilePathAbsolute(outputQualifier);
-				output = DriverManager.getConnection(connectionURL);
+			if (isJdbcURL(secondaryQualifier)) {
+				String connectionURL = makeAnyFilePathAbsolute(secondaryQualifier);
+				secondaryQualifierHandle = DriverManager.getConnection(connectionURL);
 			} else {
-				output = new File(outputQualifier);
+				secondaryQualifierHandle = new File(secondaryQualifier);
 			}
 			
-			logger.info("Output Format: {}, Output Source: {} ", outputFormat, output);
+			logger.info("Output Format: {}, Output Source: {} ", secondaryFormat, secondaryQualifierHandle);			
 			
-			PoijoiMetaData metadata = poiJoi.read(input, inputFormat, true);
-			
-			logger.info("Metadata: {} ",metadata);
-			
-			poiJoi.write(metadata, output, outputFormat, WriteType.BOTH);
+			if (poiJoiOptions.hasValue("--compare")) {
+				PoiJoiMetaData primaryMetaData = poiJoi.read(primaryQualifierHandle, primaryFormat, true);
+				PoiJoiMetaData secondaryMetaData = poiJoi.read(secondaryQualifierHandle, secondaryQualifier, true);
+
+				if (primaryMetaData.isSameAs(secondaryMetaData)) {
+					System.out.println("Woohoo!");
+				} else {
+					System.out.println("Boooo!");
+				}
+			} else { // Normal I/O
+				PoiJoiMetaData metadata = poiJoi.read(primaryQualifierHandle, primaryFormat, true);
+				logger.info("Metadata: {} ",metadata);
+				poiJoi.write(metadata, secondaryQualifierHandle, secondaryFormat, WriteType.BOTH);
+			}
 		}
 	}
 
@@ -149,11 +157,11 @@ public class PoiJoiLauncher implements PoiJoiRegistrationListener {
 			try {
 				if (args.length > 2) {
 					poiJoiInstance.setOptions(parseOptions(args[0]));
-					poiJoiInstance.setInputQualifier(args[1]);
-					poiJoiInstance.setOutputQualifier(args[2]);
+					poiJoiInstance.setPrimaryQualifier(args[1]);
+					poiJoiInstance.setSecondaryQualifier(args[2]);
 				} else if (args.length == 2) {
-					poiJoiInstance.setInputQualifier(args[0]);
-					poiJoiInstance.setOutputQualifier(args[1]);
+					poiJoiInstance.setPrimaryQualifier(args[0]);
+					poiJoiInstance.setSecondaryQualifier(args[1]);
 				} else {
 					poiJoiInstance.setOptions(parseOptions(args[0]));
 				}

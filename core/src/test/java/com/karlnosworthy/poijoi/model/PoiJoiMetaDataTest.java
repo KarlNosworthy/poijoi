@@ -20,8 +20,8 @@ public class PoiJoiMetaDataTest {
 		Map<String, TableDefinition> tableDefinitions = new HashMap<String, TableDefinition>();
 		tableDefinitions.put("TableOne", new TableDefinition("TableOne", columnDefinitions));
 		
-		PoijoiMetaData metaData = new PoijoiMetaData(false, tableDefinitions, null);
-		PoijoiMetaData metaDataToCompare = new PoijoiMetaData(false, tableDefinitions, null);
+		PoiJoiMetaData metaData = new PoiJoiMetaData(false, tableDefinitions, null);
+		PoiJoiMetaData metaDataToCompare = new PoiJoiMetaData(false, tableDefinitions, null);
 		
 		assertTrue(metaData.isSameAs(metaDataToCompare));
 		assertFalse(metaData.isSameAs(null));

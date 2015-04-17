@@ -17,15 +17,15 @@ import com.karlnosworthy.poijoi.io.writer.Writer;
  * @author john.bartlett
  *
  */
-public class PoijoiMetaData {
+public class PoiJoiMetaData {
 
 	private boolean readData;
 	private Map<String, TableDefinition> tableDefinitions;
 	private Map<String, List<HashMap<String, Object>>> tableData;
 
-	public PoijoiMetaData(boolean readData,
-			Map<String, TableDefinition> tableDefinitions,
-			Map<String, List<HashMap<String, Object>>> tableData) {
+	public PoiJoiMetaData(boolean readData,
+						  Map<String, TableDefinition> tableDefinitions,
+						  Map<String, List<HashMap<String, Object>>> tableData) {
 		super();
 		this.readData = readData;
 		this.tableDefinitions = tableDefinitions;
@@ -79,7 +79,12 @@ public class PoijoiMetaData {
 		return tableData.get(tableName);
 	}
 
-	public boolean isSameAs(PoijoiMetaData metaData) {
+	/**
+	 *
+	 * @param metaData
+	 * @return
+	 */
+	public boolean isSameAs(PoiJoiMetaData metaData) {
 		
 		if (metaData != null && readData == metaData.readData) {
 				

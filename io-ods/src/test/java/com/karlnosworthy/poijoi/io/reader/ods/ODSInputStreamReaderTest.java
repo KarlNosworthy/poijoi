@@ -8,7 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 public class ODSInputStreamReaderTest {
 	
@@ -29,7 +29,7 @@ public class ODSInputStreamReaderTest {
 	 */
 	@Test
 	public void testReaderWithNullInputStream() throws Exception {
-		PoijoiMetaData metaData = inputStreamReader.read(null, true);
+		PoiJoiMetaData metaData = inputStreamReader.read(null, true);
 		assertTrue(metaData == null);
 	}
 	
@@ -40,7 +40,7 @@ public class ODSInputStreamReaderTest {
 		
 		inputStream.close();
 		
-		PoijoiMetaData metaData = inputStreamReader.read(inputStream, true);
+		PoiJoiMetaData metaData = inputStreamReader.read(inputStream, true);
 		assertTrue(metaData == null);
 	}
 	
@@ -52,7 +52,7 @@ public class ODSInputStreamReaderTest {
 			inputStream = getClass().getClassLoader().getResourceAsStream("test1.ods");
 			assertTrue(inputStream != null);
 			
-			PoijoiMetaData metaData = inputStreamReader.read(inputStream, false);
+			PoiJoiMetaData metaData = inputStreamReader.read(inputStream, false);
 			assertNotNull(metaData);
 			assertTrue(metaData.isReadData() == false);
 			assertEquals(1, metaData.getTableDefinitions().size());

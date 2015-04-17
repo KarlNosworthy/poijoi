@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class JDBCDatabaseCreator {
@@ -29,7 +29,7 @@ public class JDBCDatabaseCreator {
 		this.sqlStatementCreator = sqlStatementCreator;
 	}
 	
-	public boolean create(Connection connection, PoijoiMetaData metaData, WriteType writeType) throws Exception {
+	public boolean create(Connection connection, PoiJoiMetaData metaData, WriteType writeType) throws Exception {
 		int numberOfTablesCreated = 0;
 
 		Statement statement = null;

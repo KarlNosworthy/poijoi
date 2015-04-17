@@ -1,6 +1,6 @@
 package com.karlnosworthy.poijoi.io.reader;
 
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 /**
  * Interface representing a way of reading in a database structure
@@ -20,6 +20,6 @@ public interface Reader<T> {
 	 * @param readData Whether or not to read the data or just the structure
 	 * 
 	 */
-	PoijoiMetaData read(T source, boolean readData) throws Exception;
+	PoiJoiMetaData read(T source, boolean readData) throws Exception;
 
 }

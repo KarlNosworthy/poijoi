@@ -14,7 +14,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 /**
@@ -38,17 +38,17 @@ public abstract class AbstractXLSReader<T> {
 
 	/**
 	 * Reads in a XLS representation of a database and converts it into a
-	 * {@link PoijoiMetaData} object which holds the table structures and
+	 * {@link PoiJoiMetaData} object which holds the table structures and
 	 * optionally the database data.
 	 * 
 	 * @param input
 	 *            The input source of the data (e.g. java.io.File etc)
 	 * @param readData
 	 *            Whether or not to read the data or just the database structure
-	 * @return a {@link PoijoiMetaData} holding the table structures and
+	 * @return a {@link PoiJoiMetaData} holding the table structures and
 	 *         optionally the table data
 	 */
-	public final PoijoiMetaData read(T input, boolean readData)
+	public final PoiJoiMetaData read(T input, boolean readData)
 			throws Exception {
 		
 		if (!isValidInput(input)) {
@@ -71,7 +71,7 @@ public abstract class AbstractXLSReader<T> {
 						readData(sheet, tableDefinition));
 			}
 		}
-		return new PoijoiMetaData(readData, tables, tableData);
+		return new PoiJoiMetaData(readData, tables, tableData);
 	}
 
 	private TableDefinition parseSheetMeta(Sheet sheet) {
@@ -79,16 +79,21 @@ public abstract class AbstractXLSReader<T> {
 		DataFormatter dataFormatter = new DataFormatter();
 
 		// Find header column
-		Row headerRow = sheet.getRow(0);
+		Row headerRow = sheet.getRow(sheet.getFirstRowNum());
 
+		String tableName = sheet.getSheetName();
+		
 		// If we don't have any columns then there's nothing we can do
 		if (headerRow != null) {
-			String tableName = sheet.getSheetName();
-			Row dataRow = sheet.getRow(1);
+			System.out.println("Finding definitions for sheet = "+tableName);
+			Row dataRow = sheet.getRow(1 + sheet.getFirstRowNum());
+			
 			HashMap<String, ColumnDefinition> columns = new HashMap<String, ColumnDefinition>();
 			for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
 				Cell headerRowCell = headerRow.getCell(cellIndex);
 				String cellName = headerRowCell.getStringCellValue();
+				
+				System.out.println("Assembling definition for '"+cellName+"'.");
 
 				Cell typedRowCell = null;
 				if (dataRow != null) {
@@ -134,8 +139,12 @@ public abstract class AbstractXLSReader<T> {
 				ColumnDefinition cd = new ColumnDefinition(cellName, cellIndex,
 						columnType);
 				columns.put(cellName, cd);
+				
+				System.out.println(tableName + "|"+cellName+"("+columnType+")");
 			}
 			return new TableDefinition(tableName, columns);
+		} else {
+			System.out.println("Header row was blank for table = "+tableName);
 		}
 		return null;
 	}
@@ -144,29 +153,37 @@ public abstract class AbstractXLSReader<T> {
 			TableDefinition tableDefinition) {
 		List<HashMap<String, Object>> rowData = new ArrayList<HashMap<String, Object>>();
 		if (sheet.getLastRowNum() > 1) {
+			System.out.println("Handling data for sheet='"+sheet.getSheetName()+"'.");
 			for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 				Row dataRow = sheet.getRow(rowIndex);
 
 				HashMap<String, Object> columnData = new HashMap<String, Object>();
 				for (int cellIndex = dataRow.getFirstCellNum(); cellIndex <= (dataRow
 						.getLastCellNum() - 1); cellIndex++) {
+					System.out.println("Obtaining column definition for row = "+rowIndex+", column = "+cellIndex+".");
+					
 					ColumnDefinition columnDefinition = tableDefinition
 							.getColumnDefinition(cellIndex);
 					String colName = columnDefinition.getColumnName();
 					Cell dataCell = dataRow.getCell(cellIndex);
 
-					if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
-						columnData.put(colName, dataCell.getStringCellValue()
-								.trim());
-					} else if (HSSFDateUtil.isCellDateFormatted(dataCell)) {
-						columnData.put(colName, dataCell.getDateCellValue());
-					} else {
-						Double d = new Double(dataCell.getNumericCellValue());
-						if (columnDefinition.getColumnType() == ColumnType.INTEGER_NUMBER) {
-							columnData.put(colName, d.intValue());
+
+					if (dataCell != null) {
+						if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
+							columnData.put(colName, dataCell.getStringCellValue()
+									.trim());
+						} else if (HSSFDateUtil.isCellDateFormatted(dataCell)) {
+							columnData.put(colName, dataCell.getDateCellValue());
 						} else {
-							columnData.put(colName, d);
+							Double d = new Double(dataCell.getNumericCellValue());
+							if (columnDefinition.getColumnType() == ColumnType.INTEGER_NUMBER) {
+								columnData.put(colName, d.intValue());
+							} else {
+								columnData.put(colName, d);
+							}
 						}
+					} else {
+						System.out.println("Skipping R="+rowIndex+":C="+cellIndex+":N='"+colName+"' as it contains no data.");
 					}
 				}
 				rowData.add(columnData);

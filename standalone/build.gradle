@@ -4,7 +4,6 @@ jar {
 }
 
 dependencies {
-	compile project(':core')
 	compile project(':io-ods')
 	compile project(':io-xls')
 	compile project(':io-xlsx')

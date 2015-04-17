@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class XLSFileReaderTest {
@@ -39,7 +39,7 @@ public class XLSFileReaderTest {
 	 */
 	@Test
 	public void testReaderWithNullFile() throws Exception {
-		PoijoiMetaData metaData = reader.read(null, true);
+		PoiJoiMetaData metaData = reader.read(null, true);
 		assertTrue(metaData == null);
 	}
 
@@ -49,7 +49,7 @@ public class XLSFileReaderTest {
 	@Test
 	public void testReaderWithDirectoryNotFile() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
-		PoijoiMetaData metaData = reader.read(new File(javaTmpDir), true);
+		PoiJoiMetaData metaData = reader.read(new File(javaTmpDir), true);
 		assertTrue(metaData == null);
 	}
 	
@@ -61,7 +61,7 @@ public class XLSFileReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 		
-		PoijoiMetaData metaData = reader.read(new File(path), false);
+		PoiJoiMetaData metaData = reader.read(new File(path), false);
 
 		Map<String, TableDefinition> tableDefinitions = metaData
 				.getTableDefinitions();
@@ -89,7 +89,7 @@ public class XLSFileReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 
-		PoijoiMetaData metaData = reader.read(new File(path), false);
+		PoiJoiMetaData metaData = reader.read(new File(path), false);
 
 		TableDefinition tableDefinition = metaData.getTableDefinition("Sheet1");
 		assertNotNull(tableDefinition);
@@ -114,7 +114,7 @@ public class XLSFileReaderTest {
 		String path = getClass().getClassLoader().getResource("test1.xls")
 				.getPath();
 
-		PoijoiMetaData metaData = reader.read(new File(path), true);
+		PoiJoiMetaData metaData = reader.read(new File(path), true);
 
 		// pull back sheet1 data
 		List<HashMap<String, Object>> tableData = metaData

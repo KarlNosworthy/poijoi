@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 /**
@@ -41,17 +41,17 @@ public abstract class AbstractODSReader<T> {
 
 	/**
 	 * Reads in a representation of a database and converts it into a
-	 * {@link PoijoiMetaData} object which holds the table structures and
+	 * {@link PoiJoiMetaData} object which holds the table structures and
 	 * optionally the database data.
 	 * 
 	 * @param input
 	 *            The input of the data (e.g. java.io.File etc)
 	 * @param readData
 	 *            Whether or not to read the data or just the database structure
-	 * @return a {@link PoijoiMetaData} holding the table structures and
+	 * @return a {@link PoiJoiMetaData} holding the table structures and
 	 *         optionally the table data
 	 */
-	public final PoijoiMetaData read(T input, boolean readData)
+	public final PoiJoiMetaData read(T input, boolean readData)
 			throws Exception {
 		
 		if (!isValidInput(input)) {
@@ -82,7 +82,7 @@ public abstract class AbstractODSReader<T> {
 							readData(sheet, tableDefinition));
 				}
 			}
-			return new PoijoiMetaData(readData, tables, tableData);
+			return new PoiJoiMetaData(readData, tables, tableData);
 		} finally {
 			if (document != null) {
 				document.close();

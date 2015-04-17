@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class XLSFileWriterTest {
@@ -67,7 +67,7 @@ public class XLSFileWriterTest {
 	public void testWriteWithInvalidMetadata() throws Exception {
 		String javaTmpDir = System.getProperty("java.io.tmpdir");
 		File testOutputFile = new File(javaTmpDir, "temp_spreadsheet.ods");
-		PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
+		PoiJoiMetaData metadata = new PoiJoiMetaData(false, null, null);
 		assertFalse(writer.write(testOutputFile, metadata, WriteType.SCHEMA_ONLY));
 	}		
 
@@ -106,7 +106,7 @@ public class XLSFileWriterTest {
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		tableData.put("TableOne", rowData);
 
-		PoijoiMetaData metaData = new PoijoiMetaData(true, tableDefinitions,
+		PoiJoiMetaData metaData = new PoiJoiMetaData(true, tableDefinitions,
 				tableData);
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);

@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class SQLiteDatabaseReaderTest {
@@ -37,7 +37,7 @@ public class SQLiteDatabaseReaderTest {
 	
 	@Test
 	public void testNullConnection() throws Exception {
-		PoijoiMetaData metadata = reader.read(null, false);
+		PoiJoiMetaData metadata = reader.read(null, false);
 		assertNull(metadata);
 	}
 	
@@ -51,7 +51,7 @@ public class SQLiteDatabaseReaderTest {
 		Connection connection = DriverManager.getConnection(path);
 		connection.close();
 		
-		PoijoiMetaData metadata = reader.read(connection, false);
+		PoiJoiMetaData metadata = reader.read(connection, false);
 		assertNull(metadata);
 	}
 
@@ -70,7 +70,7 @@ public class SQLiteDatabaseReaderTest {
 		
 		try {
 			connection = DriverManager.getConnection(path);
-			PoijoiMetaData metaData = reader.read(connection, false);
+			PoiJoiMetaData metaData = reader.read(connection, false);
 
 			Map<String, TableDefinition> tableDefinitions = metaData
 					.getTableDefinitions();
@@ -112,7 +112,7 @@ public class SQLiteDatabaseReaderTest {
 		
 		try {
 			connection = DriverManager.getConnection(path);
-			PoijoiMetaData metaData = reader.read(connection, true);
+			PoiJoiMetaData metaData = reader.read(connection, true);
 
 			// pull back sheet1 data
 			List<HashMap<String, Object>> tableData = metaData

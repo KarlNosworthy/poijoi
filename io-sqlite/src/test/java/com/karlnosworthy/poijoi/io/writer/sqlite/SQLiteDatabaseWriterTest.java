@@ -21,7 +21,7 @@ import org.junit.Test;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class SQLiteDatabaseWriterTest {
@@ -85,7 +85,7 @@ public class SQLiteDatabaseWriterTest {
 	
 		try {
 			connection = DriverManager.getConnection(path);
-			PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
+			PoiJoiMetaData metadata = new PoiJoiMetaData(false, null, null);
 			assertFalse(writer.write(connection, metadata, WriteType.SCHEMA_ONLY));
 		} finally {
 			if (connection != null) {
@@ -125,7 +125,7 @@ public class SQLiteDatabaseWriterTest {
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		tableData.put("TableOne", rowData);
 
-		PoijoiMetaData metaData = new PoijoiMetaData(true, tableDefinitions,
+		PoiJoiMetaData metaData = new PoiJoiMetaData(true, tableDefinitions,
 				tableData);
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);

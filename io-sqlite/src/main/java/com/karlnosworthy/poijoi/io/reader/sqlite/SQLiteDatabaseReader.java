@@ -16,12 +16,12 @@ import com.karlnosworthy.poijoi.UnsupportedMapping;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.JDBCConnectionReader;
 import com.karlnosworthy.poijoi.jdbc.JDBCMetaDataReader;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 /**
  * Read an SQLite Database and populate the content into a
- * {@link PoijoiMetaData}.
+ * {@link PoiJoiMetaData}.
  * 
  * @author john.bartlett
  *
@@ -47,18 +47,18 @@ public class SQLiteDatabaseReader implements JDBCConnectionReader {
 	}
 	
 	/**
-	 * Builds a {@link PoijoiMetaData} object representing an SQLite Database
+	 * Builds a {@link PoiJoiMetaData} object representing an SQLite Database
 	 * structure and optionally the data itself using a {@link Connection}.
 	 * 
 	 * @param connection
 	 *            The connection to the SQLite Database
 	 * @param readData
 	 *            Whether or not to read the data or just the database structure
-	 * @return a {@link PoijoiMetaData} holding the table structures and
+	 * @return a {@link PoiJoiMetaData} holding the table structures and
 	 *         optionally the table data
 	 */
 	@Override
-	public PoijoiMetaData read(Connection connection, boolean readData)
+	public PoiJoiMetaData read(Connection connection, boolean readData)
 			throws Exception {
 		
 		if (isValidConnection(connection)) {
@@ -70,7 +70,7 @@ public class SQLiteDatabaseReader implements JDBCConnectionReader {
 			if (readData) {
 				tableData = readData(connection, tableDefinitions);
 			}
-			return new PoijoiMetaData(readData, tableDefinitions, tableData);
+			return new PoiJoiMetaData(readData, tableDefinitions, tableData);
 		} else {
 			return null;
 		}

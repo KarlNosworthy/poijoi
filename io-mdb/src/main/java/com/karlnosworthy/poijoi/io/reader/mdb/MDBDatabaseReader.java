@@ -16,7 +16,7 @@ import com.karlnosworthy.poijoi.UnsupportedMapping;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.JDBCConnectionReader;
 import com.karlnosworthy.poijoi.jdbc.JDBCMetaDataReader;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 @SupportsFormat(type = "MDB")
@@ -38,9 +38,9 @@ public class MDBDatabaseReader implements JDBCConnectionReader {
 		}
 		return true;
 	}
-	
+
 	@Override
-	public PoijoiMetaData read(Connection connection, boolean readData) throws Exception {
+	public PoiJoiMetaData read(Connection connection, boolean readData) throws Exception {
 		if (isValidConnection(connection)) {
 			
 			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
@@ -51,7 +51,7 @@ public class MDBDatabaseReader implements JDBCConnectionReader {
 			if (readData) {
 				tableData = readData(connection, tableDefinitions);
 			}
-			return new PoijoiMetaData(readData, tableDefinitions, tableData);
+			return new PoiJoiMetaData(readData, tableDefinitions, tableData);
 		} else {
 			return null;
 		}

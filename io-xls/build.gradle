@@ -3,13 +3,7 @@ jar {
 	appendix = 'io-xls'
 }
 
-configurations {
-	provided
-	compile.extendsFrom provided
-}
-
 dependencies {
-	provided project(':core')
 	compile 'org.apache.poi:poi:3.10.1'
 	compile 'org.apache.poi:poi-ooxml:3.10.1'
 	compile 'org.slf4j:slf4j-api:1.7.9'

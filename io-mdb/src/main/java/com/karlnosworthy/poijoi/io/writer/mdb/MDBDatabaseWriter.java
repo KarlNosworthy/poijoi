@@ -19,7 +19,7 @@ import com.karlnosworthy.poijoi.jdbc.JDBCDatabaseCreator;
 import com.karlnosworthy.poijoi.jdbc.SQLStatementCreator;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 @SupportsFormat(type = "MDB")
@@ -32,7 +32,7 @@ public class MDBDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 
 
 	@Override
-	public boolean write(Connection connection, PoijoiMetaData metadata, WriteType writeType) throws Exception {
+	public boolean write(Connection connection, PoiJoiMetaData metadata, WriteType writeType) throws Exception {
 		if (isValidConnection(connection) && isValidMetadata(metadata)) {
 			
 			Class.forName("net.ucanaccess.jdbc.UcanaccessDriver");
@@ -64,7 +64,7 @@ public class MDBDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 		return true;
 	}
 	
-	boolean isValidMetadata(PoijoiMetaData metadata) {
+	boolean isValidMetadata(PoiJoiMetaData metadata) {
 		if (metadata == null) {
 			return false;
 		} else {

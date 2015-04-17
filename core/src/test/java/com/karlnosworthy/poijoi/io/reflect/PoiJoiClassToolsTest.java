@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.Reader;
 import com.karlnosworthy.poijoi.io.writer.Writer;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 public class PoiJoiClassToolsTest {
 	
@@ -92,7 +92,7 @@ public class PoiJoiClassToolsTest {
 class SimpleReader implements Reader<File> {
 
 	@Override
-	public PoijoiMetaData read(File input, boolean readData) throws Exception {
+	public PoiJoiMetaData read(File input, boolean readData) throws Exception {
 		return null;
 	}
 }
@@ -101,7 +101,7 @@ class SimpleReader implements Reader<File> {
 class SimpleWriter implements Writer<File> {
 
 	@Override
-	public boolean write(File output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
+	public boolean write(File output, PoiJoiMetaData metaData, WriteType writeType) throws Exception {
 		return false;
 	}
 }

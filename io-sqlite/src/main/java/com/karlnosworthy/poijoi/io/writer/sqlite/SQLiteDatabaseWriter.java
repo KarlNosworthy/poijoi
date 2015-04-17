@@ -2,7 +2,6 @@ package com.karlnosworthy.poijoi.io.writer.sqlite;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +13,10 @@ import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.reader.sqlite.SQLiteDatabaseReader;
 import com.karlnosworthy.poijoi.io.writer.JDBCConnectionWriter;
 import com.karlnosworthy.poijoi.jdbc.JDBCDatabaseCreator;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
-import com.karlnosworthy.poijoi.model.TableDefinition;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 /**
- * Write an SQLite Database from the contents of a {@link PoijoiMetaData}.
+ * Write an SQLite Database from the contents of a {@link PoiJoiMetaData}.
  * 
  * @author john.bartlett
  *
@@ -33,12 +31,12 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 	
 	/**
 	 * Writes an SQLite Database (and optionally the data) based on the contents
-	 * of a {@link PoijoiMetaData}.
+	 * of a {@link PoiJoiMetaData}.
 	 * 
 	 * @param connection
 	 *            The connection to the SQLite Database
 	 * @param metaData
-	 *            A {@link PoijoiMetaData} holding the table structures and
+	 *            A {@link PoiJoiMetaData} holding the table structures and
 	 *            optionally the table data
 	 * @param writeType
 	 *            Control over what gets written
@@ -46,7 +44,7 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 	 * @return True if the write was successful otherwise false
 	 */
 	@Override
-	public final boolean write(Connection connection, PoijoiMetaData metaData,
+	public final boolean write(Connection connection, PoiJoiMetaData metaData,
 			WriteType writeType) throws Exception {
 		
 		if (isValidConnection(connection) && isValidMetadata(metaData)) {
@@ -100,7 +98,7 @@ public class SQLiteDatabaseWriter implements JDBCConnectionWriter, OptionAware {
 		return true;
 	}
 	
-	boolean isValidMetadata(PoijoiMetaData metadata) {
+	boolean isValidMetadata(PoiJoiMetaData metadata) {
 		if (metadata == null) {
 			return false;
 		} else {

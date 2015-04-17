@@ -13,7 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 /**
@@ -41,17 +41,17 @@ public abstract class AbstractXLSXWriter<T> {
 	
 	/**
 	 * Writes out an XLSX File to reflect the table structures and optionally the
-	 * data stored in the {@link PoijoiMetaData}.
+	 * data stored in the {@link PoiJoiMetaData}.
 	 * 
 	 * @param output
 	 *            The mechanism for outputting the data (e.g. java.io.File etc)
 	 * @param metaData
-	 *            a {@link PoijoiMetaData} holding the table structures and
+	 *            a {@link PoiJoiMetaData} holding the table structures and
 	 *            optionally the table data
 	 * @param writeType
 	 *            Rules around what to write
 	 */
-	public final boolean write(T output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
+	public final boolean write(T output, PoiJoiMetaData metaData, WriteType writeType) throws Exception {
 
 		if (!isValidOutput(output) || !isValidMetadata(metaData)) {
 			return false;
@@ -103,7 +103,7 @@ public abstract class AbstractXLSXWriter<T> {
 		return write(output, wb);
 	}
 	
-	private boolean isValidMetadata(PoijoiMetaData metadata) {
+	private boolean isValidMetadata(PoiJoiMetaData metadata) {
 		if (metadata == null) {
 			return false;
 		} else {

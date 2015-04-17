@@ -9,7 +9,7 @@ import com.karlnosworthy.poijoi.io.reflect.PoiJoiClassTools;
 import com.karlnosworthy.poijoi.io.reflect.PoiJoiClasspathScanner;
 import com.karlnosworthy.poijoi.io.writer.Writer;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 /**
  * The central access to PoiJoi functionality where readers and writers are loaded and can be obtained.
@@ -65,7 +65,7 @@ public class PoiJoi {
 		this.classpathScanner.scan(registrationListener);
 	}
 	
-	public <T> PoijoiMetaData read(T input, String formatType, boolean readData) throws Exception {
+	public <T> PoiJoiMetaData read(T input, String formatType, boolean readData) throws Exception {
 		Reader<T> reader = findReader(input, formatType);
 		if (reader != null) {
 			return reader.read(input, readData);
@@ -73,7 +73,7 @@ public class PoiJoi {
 		return null;
 	}
 	
-	public <T> boolean write(PoijoiMetaData metaData, T output, String formatType, WriteType writeType) throws Exception {
+	public <T> boolean write(PoiJoiMetaData metaData, T output, String formatType, WriteType writeType) throws Exception {
 		Writer<T> writer = findWriter(output, formatType);
 		if (writer != null) {
 			return writer.write(output, metaData, writeType);

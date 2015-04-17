@@ -22,7 +22,7 @@ import org.junit.Test;
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class XLSXOutputStreamWriterTest {
@@ -80,7 +80,7 @@ public class XLSXOutputStreamWriterTest {
 		OutputStream outputStream = null;
 		try {
 			outputStream = new FileOutputStream(testOutputFile);
-			PoijoiMetaData metadata = new PoijoiMetaData(false, null, null);
+			PoiJoiMetaData metadata = new PoiJoiMetaData(false, null, null);
 			assertFalse(outputStreamWriter.write(outputStream, metadata, WriteType.SCHEMA_ONLY));
 		} finally {
 			outputStream.close();
@@ -123,7 +123,7 @@ public class XLSXOutputStreamWriterTest {
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
 		tableData.put("TableOne", rowData);
 
-		PoijoiMetaData metaData = new PoijoiMetaData(true, tableDefinitions,
+		PoiJoiMetaData metaData = new PoiJoiMetaData(true, tableDefinitions,
 				tableData);
 		assertTrue(metaData.getTableData().size() == 1);
 		assertTrue(metaData.getTableDefinitions().size() == 1);

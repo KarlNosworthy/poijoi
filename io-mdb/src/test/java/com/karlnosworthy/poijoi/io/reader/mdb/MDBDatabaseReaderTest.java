@@ -13,9 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.karlnosworthy.poijoi.io.reader.mdb.MDBDatabaseReader;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class MDBDatabaseReaderTest {
@@ -34,7 +33,7 @@ public class MDBDatabaseReaderTest {
 	
 	@Test
 	public void testNullConnection() throws Exception {
-		PoijoiMetaData metadata = reader.read(null, false);
+		PoiJoiMetaData metadata = reader.read(null, false);
 		assertNull(metadata);
 	}
 	
@@ -48,7 +47,7 @@ public class MDBDatabaseReaderTest {
 		Connection connection = DriverManager.getConnection(path);
 		connection.close();
 		
-		PoijoiMetaData metadata = reader.read(connection, false);
+		PoiJoiMetaData metadata = reader.read(connection, false);
 		assertNull(metadata);
 	}
 
@@ -67,7 +66,7 @@ public class MDBDatabaseReaderTest {
 		
 		try {
 			connection = DriverManager.getConnection(path);
-			PoijoiMetaData metaData = reader.read(connection, false);
+			PoiJoiMetaData metaData = reader.read(connection, false);
 
 			Map<String, TableDefinition> tableDefinitions = metaData
 					.getTableDefinitions();

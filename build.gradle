@@ -19,30 +19,68 @@ allprojects {
 	jar {
 		archivesBaseName = 'poijoi'
 	}
-}
 
-subprojects {
-    // Disable the test report for the individual test task
-    test {
-        reports.html.enabled = false
-    }
-	
+	task hello << {task -> println "I'm $task.project.name" }
+
+	task jarWithDependencies(type:Jar) {
+		appendix = project.name
+		classifier = 'withdependencies'
+		from project.configurations.compile, project.sourceSets.main.output.classesDir
+	}
+
 	task javadocJar(type: Jar, dependsOn: javadoc) {
 		appendix = project.name
 		classifier = 'javadoc'
 		from javadoc.destinationDir
 	}
-	
+
 	task sourceJar(type: Jar) {
 		appendix = project.name
 		classifier = 'source'
 		from sourceSets.main.allSource
 	}
-	
-	task jarWithDependencies(type:Jar) {
-		appendix = project.name
-		classifier = 'withdependencies'
-		from project.configurations.compile, project.sourceSets.main.output.classesDir
+}
+
+subprojects {
+	// Disable the test report for the individual test task
+	test {
+		reports.html.enabled = false
+	}
+}
+
+project(':io-mdb') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+project(':io-ods') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+project(':io-xls') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+project(':io-sql') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+project(':io-xlsx') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+project(':io-sqlite') {
+	dependencies {
+		compile project(':core')
 	}
 }
 

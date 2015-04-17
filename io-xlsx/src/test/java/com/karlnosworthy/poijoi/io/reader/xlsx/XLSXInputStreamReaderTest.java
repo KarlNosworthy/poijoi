@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 public class XLSXInputStreamReaderTest {
 private XLSXInputStreamReader inputStreamReader;
@@ -30,7 +30,7 @@ private XLSXInputStreamReader inputStreamReader;
 	 */
 	@Test
 	public void testReaderWithNullInputStream() throws Exception {
-		PoijoiMetaData metaData = inputStreamReader.read(null, true);
+		PoiJoiMetaData metaData = inputStreamReader.read(null, true);
 		assertTrue(metaData == null);
 	}
 	
@@ -41,7 +41,7 @@ private XLSXInputStreamReader inputStreamReader;
 		
 		inputStream.close();
 		
-		PoijoiMetaData metaData = inputStreamReader.read(inputStream, true);
+		PoiJoiMetaData metaData = inputStreamReader.read(inputStream, true);
 		assertTrue(metaData == null);
 	}
 	
@@ -53,7 +53,7 @@ private XLSXInputStreamReader inputStreamReader;
 			inputStream = getClass().getClassLoader().getResourceAsStream("test1.xlsx");
 			assertTrue(inputStream != null);
 			
-			PoijoiMetaData metaData = inputStreamReader.read(inputStream, false);
+			PoiJoiMetaData metaData = inputStreamReader.read(inputStream, false);
 			assertNotNull(metaData);
 			assertTrue(metaData.isReadData() == false);
 			assertEquals(1, metaData.getTableDefinitions().size());

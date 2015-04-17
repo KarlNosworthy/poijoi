@@ -3,13 +3,7 @@ jar {
 	appendix = 'io-sqlite'
 }
 
-configurations {
-	provided
-	compile.extendsFrom provided
-}
-
 dependencies {
-	provided project(':core')
 	compile 'org.xerial:sqlite-jdbc:3.8.7'
 	compile 'org.slf4j:slf4j-api:1.7.9'
 	compile 'ch.qos.logback:logback-core:1.1.2'

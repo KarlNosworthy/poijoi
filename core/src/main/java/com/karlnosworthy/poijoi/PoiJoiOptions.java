@@ -6,6 +6,7 @@ import java.util.Map;
 public class PoiJoiOptions {
 	
 	public static final String OPTION_INFO = "--info";
+	public static final String OPTION_COMPARE = "--compare";
 	
 	private Map<String,String> options;
 	

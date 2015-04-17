@@ -1,6 +1,6 @@
 package com.karlnosworthy.poijoi.io.writer;
 
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 
 /**
  * Interface representing a way of writing a database structure to a given
@@ -30,6 +30,6 @@ public interface Writer<T> {
 	 *            
 	 * @return True if the write was successful otherwise false
 	 */
-	boolean write(T output, PoijoiMetaData metaData, WriteType writeType)
+	boolean write(T output, PoiJoiMetaData metaData, WriteType writeType)
 			throws Exception;
 }

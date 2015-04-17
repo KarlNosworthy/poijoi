@@ -8,7 +8,7 @@ import java.util.List;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.Writer;
 import com.karlnosworthy.poijoi.jdbc.SQLStatementCreator;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 /**
@@ -22,7 +22,7 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 public class SQLFileWriter implements Writer<File> {
 
 	@Override
-	public boolean write(File output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
+	public boolean write(File output, PoiJoiMetaData metaData, WriteType writeType) throws Exception {
 		
 		if (output == null || output.isDirectory() || output.exists()) { 
 			return false;

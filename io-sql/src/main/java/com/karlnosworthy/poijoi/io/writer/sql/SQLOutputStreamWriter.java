@@ -8,7 +8,7 @@ import java.util.List;
 import com.karlnosworthy.poijoi.io.SupportsFormat;
 import com.karlnosworthy.poijoi.io.writer.Writer;
 import com.karlnosworthy.poijoi.jdbc.SQLStatementCreator;
-import com.karlnosworthy.poijoi.model.PoijoiMetaData;
+import com.karlnosworthy.poijoi.model.PoiJoiMetaData;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 /**
@@ -20,7 +20,7 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
 public class SQLOutputStreamWriter implements Writer<OutputStream> {
 
 	@Override
-	public boolean write(OutputStream output, PoijoiMetaData metaData, WriteType writeType) throws Exception {
+	public boolean write(OutputStream output, PoiJoiMetaData metaData, WriteType writeType) throws Exception {
 		
 		if (isValidOutput(output) && isValidMetadata(metaData)) {
 			
@@ -69,7 +69,7 @@ public class SQLOutputStreamWriter implements Writer<OutputStream> {
 		return true;
 	}
 	
-	boolean isValidMetadata(PoijoiMetaData metadata) {
+	boolean isValidMetadata(PoiJoiMetaData metadata) {
 		if (metadata == null) {
 			return false;
 		} else {
