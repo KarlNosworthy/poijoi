@@ -48,4 +48,36 @@ public class ColumnDefinition {
 		}
 		return false;
 	}
+
+	public boolean isIDColumn() {
+		if (columnName != null && !columnName.isEmpty() &&
+			(columnName.equalsIgnoreCase("id") ||
+			 columnName.toLowerCase().endsWith(".id"))) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isRelationshipIDColumn() {
+		if (columnName != null && !columnName.isEmpty() &&
+			columnName.toLowerCase().endsWith(".ids")) {
+			return true;
+		}
+		return false;
+	}
+
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("name:");
+		stringBuilder.append(columnName);
+		stringBuilder.append(",index:");
+		stringBuilder.append(columnIndex);
+		stringBuilder.append(",type:");
+		stringBuilder.append(columnType.name());
+		stringBuilder.append(",id:");
+		stringBuilder.append(isIDColumn());
+		stringBuilder.append(",link id(s):");
+		stringBuilder.append(isRelationshipIDColumn());
+		return stringBuilder.toString();
+	}
 }

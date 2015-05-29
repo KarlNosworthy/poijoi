@@ -30,7 +30,6 @@ public class JDBCPreparedStatementCreator extends AbstractStatementCreator<Prepa
         String createTableSQL = generateCreateTableSQL(tableDefinition);
 
         try {
-            System.out.println("Create Table SQL = "+createTableSQL);
             PreparedStatement preparedStatement = connection.prepareStatement(createTableSQL);
             return preparedStatement;
         } catch (SQLException sqlException) {

@@ -79,6 +79,17 @@ public class TableDefinition {
 		return false;
 	}
 
+	public boolean providesIDColumn() {
+		if (columnDefinitions != null && !columnDefinitions.isEmpty()) {
+			for (ColumnDefinition columnDefinition : columnDefinitions) {
+				if (columnDefinition.isIDColumn()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public boolean isSameAs(TableDefinition tableDefinition) {
 		if (tableDefinition != null && tableName != null && tableDefinition.tableName != null && 
 			columnDefinitions != null && tableDefinition.columnDefinitions != null &&

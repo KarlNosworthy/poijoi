@@ -20,7 +20,7 @@ public abstract class AbstractStatementCreator<T> {
         builder.append(tableDefinition.getTableName());
         builder.append(" (");
 
-        if (!tableDefinition.containsDefinitionForColumn("id")) {
+        if (!tableDefinition.providesIDColumn()) {
             builder.append("id INTEGER PRIMARY KEY AUTOINCREMENT");
             builder.append(",");
         }

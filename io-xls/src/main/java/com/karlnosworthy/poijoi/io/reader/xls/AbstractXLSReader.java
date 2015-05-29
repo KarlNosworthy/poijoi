@@ -155,9 +155,9 @@ public abstract class AbstractXLSReader<T> {
 
 					ColumnDefinition columnDefinition = tableDefinition
 							.getColumnDefinition(cellIndex);
+
 					String colName = columnDefinition.getColumnName();
 					Cell dataCell = dataRow.getCell(cellIndex);
-
 
 					if (dataCell != null) {
 						if (dataCell.getCellType() == Cell.CELL_TYPE_STRING) {
