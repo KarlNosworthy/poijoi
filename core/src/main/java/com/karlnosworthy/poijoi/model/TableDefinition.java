@@ -12,14 +12,21 @@ import java.util.Map;
 public class TableDefinition {
 
 	private String tableName;
-
 	private List<ColumnDefinition> columnDefinitions;
+	private List<IndexDefinition> indexDefinitions;
+
 
 	public TableDefinition(String tableName, List<ColumnDefinition> columnDefinitions) {
+		this(tableName, columnDefinitions, null);
+	}
+
+	public TableDefinition(String tableName, List<ColumnDefinition> columnDefinitions, List<IndexDefinition> indexDefinitions) {
 		super();
 		this.tableName = tableName;
 		this.columnDefinitions = columnDefinitions;
+		this.indexDefinitions = indexDefinitions;
 	}
+
 
 	public String getTableName() {
 		return tableName;
@@ -77,6 +84,24 @@ public class TableDefinition {
 			}
 		}
 		return false;
+	}
+
+	public boolean hasIndexDefinitions() {
+		if (indexDefinitions !=null && !indexDefinitions.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+
+	public List<IndexDefinition> getIndexDefinitions() {
+		return indexDefinitions;
+	}
+
+	public IndexDefinition getIndexDefinition(int index) {
+		if (index >= 0 && index < indexDefinitions.size()) {
+			return indexDefinitions.get(index);
+		}
+		return null;
 	}
 
 	public boolean providesIDColumn() {

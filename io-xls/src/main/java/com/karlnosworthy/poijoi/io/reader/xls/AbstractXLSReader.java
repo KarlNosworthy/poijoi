@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -23,11 +24,23 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
  * loaded.
  * 
  * @author john.bartlett
+ * @author Karl Nosworthy
  *
  * @param <T>
  *            The source Type
  */
 public abstract class AbstractXLSReader<T> {
+
+	protected IndexDefinitionReader indexDefinitionReader;
+	protected TableDefinitionReader tableDefinitionReader;
+
+
+	protected AbstractXLSReader() {
+		super();
+		this.indexDefinitionReader = new IndexDefinitionReader();
+		this.tableDefinitionReader = new TableDefinitionReader();
+	}
+
 
 	abstract boolean isValidInput(T input);
 	
@@ -55,90 +68,37 @@ public abstract class AbstractXLSReader<T> {
 			return null;
 		}
 		
-		Workbook workbook = getWorkbook(input);
 		Map<String, TableDefinition> tables = new HashMap<String, TableDefinition>();
 		Map<String, List<HashMap<String, Object>>> tableData = new HashMap<String, List<HashMap<String, Object>>>();
-		int totalNumberOfSheets = workbook.getNumberOfSheets();
-		for (int sheetIndex = 0; sheetIndex < totalNumberOfSheets; sheetIndex++) {
-			Sheet sheet = workbook.getSheetAt(sheetIndex);
-			TableDefinition tableDefinition = parseSheetMeta(sheet);
-			if (tableDefinition == null) {
-				continue; // couldn't read table definition
-			}
-			tables.put(tableDefinition.getTableName(), tableDefinition);
-			if (readData) {
-				tableData.put(tableDefinition.getTableName(),
-						readData(sheet, tableDefinition));
+		Map<String, List<IndexDefinition>> indexDefinitions = new HashMap<String, List<IndexDefinition>>();
+
+		Workbook workbook = getWorkbook(input);
+
+		String[] nonInternalSheetNames = determineNonInternalSheetNames(workbook);
+
+		// INDEXES/INDICES
+		Sheet indexDefinitionSheet = indexDefinitionReader.findIndexDefinitionSheet(workbook);
+		if (indexDefinitionSheet != null) {
+			indexDefinitions = indexDefinitionReader.readDefinitions(indexDefinitionSheet);
+		}
+
+		// DATA TABLES
+		if (nonInternalSheetNames != null && nonInternalSheetNames.length > 0) {
+			for (String sheetName : nonInternalSheetNames) {
+				Sheet sheet = workbook.getSheet(sheetName);
+
+				TableDefinition tableDefinition = tableDefinitionReader.read(sheet, indexDefinitions);
+				if (tableDefinition != null) {
+					tables.put(tableDefinition.getTableName(), tableDefinition);
+					if (readData) {
+						tableData.put(tableDefinition.getTableName(),
+								readData(sheet, tableDefinition));
+					}
+				}
 			}
 		}
+
 		return new PoiJoiMetaData(readData, tables, tableData);
-	}
-
-	private TableDefinition parseSheetMeta(Sheet sheet) {
-
-		DataFormatter dataFormatter = new DataFormatter();
-
-		// Find header column
-		Row headerRow = sheet.getRow(sheet.getFirstRowNum());
-
-		String tableName = sheet.getSheetName();
-		
-		// If we don't have any columns then there's nothing we can do
-		if (headerRow != null) {
-			Row dataRow = sheet.getRow(1 + sheet.getFirstRowNum());
-			
-			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
-			for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
-				Cell headerRowCell = headerRow.getCell(cellIndex);
-				String cellName = headerRowCell.getStringCellValue();
-				
-				Cell typedRowCell = null;
-				if (dataRow != null) {
-					typedRowCell = dataRow.getCell(cellIndex);
-				}
-
-				ColumnType columnType = ColumnType.STRING;
-
-				int cellType = Cell.CELL_TYPE_BLANK;
-				if (typedRowCell != null) {
-					cellType = typedRowCell.getCellType();
-				}
-
-				switch (cellType) {
-				case Cell.CELL_TYPE_BLANK:
-					if (cellName.endsWith(".id")) {
-						columnType = ColumnType.INTEGER_NUMBER;
-					} else {
-						columnType = ColumnType.STRING;
-					}
-					break;
-				case Cell.CELL_TYPE_BOOLEAN:
-				case Cell.CELL_TYPE_ERROR:
-				case Cell.CELL_TYPE_STRING:
-					columnType = ColumnType.STRING;
-					break;
-				case Cell.CELL_TYPE_FORMULA:
-				case Cell.CELL_TYPE_NUMERIC:
-					if (HSSFDateUtil.isCellDateFormatted(typedRowCell)) {
-						columnType = ColumnType.DATE;
-					} else {
-						String formattedValue = dataFormatter
-								.formatCellValue(typedRowCell);
-
-						if (formattedValue.contains(".")) {
-							columnType = ColumnType.DECIMAL_NUMBER;
-						} else {
-							columnType = ColumnType.INTEGER_NUMBER;
-						}
-					}
-					break;
-				}
-
-				columns.add(new ColumnDefinition(cellName, cellIndex, columnType));
-			}
-			return new TableDefinition(tableName, columns);
-		}
-		return null;
 	}
 
 	private List<HashMap<String, Object>> readData(Sheet sheet,
@@ -181,4 +141,195 @@ public abstract class AbstractXLSReader<T> {
 		return rowData;
 	}
 
+	private String[] determineNonInternalSheetNames(Workbook workbook) {
+		List<String> nonInternalSheetNamesList = new ArrayList<String>();
+
+		for (int sheetNumber = 0; sheetNumber < workbook.getNumberOfSheets(); sheetNumber++) {
+			String sheetName = workbook.getSheetName(sheetNumber);
+
+			if (!indexDefinitionReader.isIndexSheet(sheetName)) {
+				nonInternalSheetNamesList.add(sheetName);
+			}
+		}
+
+		if (!nonInternalSheetNamesList.isEmpty()) {
+			return nonInternalSheetNamesList.toArray(new String[nonInternalSheetNamesList.size()]);
+		}
+		return null;
+	}
+}
+
+class IndexDefinitionReader {
+
+	private final int CELL_TABLE_NAME = 0;
+	private final int CELL_TABLE_COLUMNS = 1;
+	private final int CELL_UNIQUE_FLAG = 2;
+
+
+	IndexDefinitionReader() {
+		super();
+	}
+
+	public boolean isIndexSheet(String sheetName) {
+		if (sheetName.equalsIgnoreCase("indexes") ||
+			sheetName.equalsIgnoreCase("indices")) {
+			return true;
+		}
+		return false;
+	}
+
+	public Sheet findIndexDefinitionSheet(Workbook workbook) {
+
+		if (workbook != null && workbook.getNumberOfSheets() > 0) {
+			for (int sheetNumber = 0; sheetNumber < workbook.getNumberOfSheets(); sheetNumber++) {
+				String sheetName = workbook.getSheetName(sheetNumber);
+				if (isIndexSheet(sheetName)) {
+					return workbook.getSheetAt(sheetNumber);
+				}
+			}
+		}
+		return null;
+	}
+
+	public Map<String, List<IndexDefinition>> readDefinitions(Sheet sheet) {
+		Map<String, List<IndexDefinition>> tableIndexDefinitions = new HashMap<String, List<IndexDefinition>>();
+
+		if (sheet.getFirstRowNum() == sheet.getLastRowNum()) {
+			IndexDefinition indexDefinition = readDefinition(sheet.getRow(0));
+
+			if (indexDefinition != null) {
+				List<IndexDefinition> indexDefinitions = new ArrayList<IndexDefinition>();
+				indexDefinitions.add(indexDefinition);
+
+				tableIndexDefinitions.put(indexDefinition.getTableName(), indexDefinitions);
+			}
+		} else {
+			int numberOfIndexes = sheet.getLastRowNum() - sheet.getFirstRowNum();
+
+			for (int rowNumber = sheet.getFirstRowNum(); rowNumber < numberOfIndexes; rowNumber++) {
+				IndexDefinition indexDefinition = readDefinition(sheet.getRow(rowNumber));
+
+				if (indexDefinition != null) {
+					List<IndexDefinition> indexDefinitions = null;
+
+					if (tableIndexDefinitions.containsKey(indexDefinition.getTableName())) {
+						indexDefinitions = tableIndexDefinitions.get(indexDefinition.getTableName());
+					} else {
+						indexDefinitions = new ArrayList<IndexDefinition>();
+						tableIndexDefinitions.put(indexDefinition.getTableName(), indexDefinitions);
+					}
+
+					indexDefinitions.add(indexDefinition);
+				}
+			}
+		}
+
+		return tableIndexDefinitions;
+	}
+
+	public IndexDefinition readDefinition(Row row) {
+
+		IndexDefinition indexDefinition = null;
+
+		String tableName = getValueForCell(row, CELL_TABLE_NAME);
+		String columns = getValueForCell(row, CELL_TABLE_COLUMNS);
+
+		String[] columnNames=  columns.split(",");
+
+		indexDefinition = new IndexDefinition("", tableName, columnNames, false);
+
+		return indexDefinition;
+	}
+
+	private String getValueForCell(Row row, int cellIndex) {
+		Cell cell = row.getCell(cellIndex);
+		return cell.getStringCellValue();
+	}
+}
+
+class TableDefinitionReader {
+
+	private DataFormatter dataFormatter;
+
+
+	TableDefinitionReader() {
+		super();
+		this.dataFormatter = new DataFormatter();
+	}
+
+	public TableDefinition read(Sheet sheet) {
+		return read(sheet, null);
+	}
+
+	public TableDefinition read(Sheet sheet, Map<String,List<IndexDefinition>> indexDefinitions) {
+
+		TableDefinition tableDefinition = null;
+
+		// Find header column
+		Row headerRow = sheet.getRow(sheet.getFirstRowNum());
+
+		String tableName = sheet.getSheetName();
+
+		// If we don't have any columns then there's nothing we can do
+		if (headerRow != null) {
+			Row dataRow = sheet.getRow(1 + sheet.getFirstRowNum());
+
+			List<ColumnDefinition> columns = new ArrayList<ColumnDefinition>();
+			for (int cellIndex = 0; cellIndex < headerRow.getLastCellNum(); cellIndex++) {
+				Cell headerRowCell = headerRow.getCell(cellIndex);
+				String cellName = headerRowCell.getStringCellValue();
+
+				Cell typedRowCell = null;
+				if (dataRow != null) {
+					typedRowCell = dataRow.getCell(cellIndex);
+				}
+
+				ColumnType columnType = ColumnType.STRING;
+
+				int cellType = Cell.CELL_TYPE_BLANK;
+				if (typedRowCell != null) {
+					cellType = typedRowCell.getCellType();
+				}
+
+				switch (cellType) {
+					case Cell.CELL_TYPE_BLANK:
+						if (cellName.endsWith(".id")) {
+							columnType = ColumnType.INTEGER_NUMBER;
+						} else {
+							columnType = ColumnType.STRING;
+						}
+						break;
+					case Cell.CELL_TYPE_BOOLEAN:
+					case Cell.CELL_TYPE_ERROR:
+					case Cell.CELL_TYPE_STRING:
+						columnType = ColumnType.STRING;
+						break;
+					case Cell.CELL_TYPE_FORMULA:
+					case Cell.CELL_TYPE_NUMERIC:
+						if (HSSFDateUtil.isCellDateFormatted(typedRowCell)) {
+							columnType = ColumnType.DATE;
+						} else {
+							String formattedValue = dataFormatter
+									.formatCellValue(typedRowCell);
+
+							if (formattedValue.contains(".")) {
+								columnType = ColumnType.DECIMAL_NUMBER;
+							} else {
+								columnType = ColumnType.INTEGER_NUMBER;
+							}
+						}
+						break;
+				}
+
+				columns.add(new ColumnDefinition(cellName, cellIndex, columnType));
+			}
+
+			if (indexDefinitions != null && indexDefinitions.containsKey(tableName)) {
+				tableDefinition = new TableDefinition(tableName, columns, indexDefinitions.get(tableName));
+			} else {
+				tableDefinition = new TableDefinition(tableName, columns);
+			}
+		}
+		return tableDefinition;
+	}
 }

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -129,5 +130,29 @@ public class XLSFileReaderTest {
 		assertEquals(cal.getTime(), dataRow.get("col2Date"));
 		assertEquals(new Integer("2"), dataRow.get("col3Integer"));
 		assertEquals(new Double("12.02"), dataRow.get("col4Decimal"));
+	}
+
+	@Test
+	public void testValidIndexes() throws Exception {
+		String path = getClass().getClassLoader().getResource("sheets_with_valid_indexes.xls")
+				.getPath();
+
+		PoiJoiMetaData metaData = reader.read(new File(path), true);
+
+		assertNotNull(metaData);
+		assertEquals(1, metaData.getTableDefinitions().size());
+
+		TableDefinition tableDefinition = metaData.getTableDefinition("simple_data");
+		assertNotNull(tableDefinition);
+		assertEquals(4, tableDefinition.getColumnCount());
+		assertEquals(true, tableDefinition.hasIndexDefinitions());
+		assertEquals(1, tableDefinition.getIndexDefinitions().size());
+
+		IndexDefinition indexDefinition = tableDefinition.getIndexDefinition(0);
+		assertNotNull(indexDefinition);
+		assertEquals("simple_data", indexDefinition.getTableName());
+		assertEquals(2, indexDefinition.getColumnNames().length);
+		assertEquals("col1String", indexDefinition.getColumnName(0));
+		assertEquals("col3Integer", indexDefinition.getColumnName(1));
 	}
 }
