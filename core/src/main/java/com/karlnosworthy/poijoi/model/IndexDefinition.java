@@ -33,19 +33,15 @@ public class IndexDefinition {
     }
 
     public String getColumnName(int columnIndex) {
-        if (columnNames != null && columnNames.length > 0) {
-            if (columnIndex >=0 && columnIndex < columnNames.length) {
-                return columnNames[columnIndex];
-            }
+        if (columnNames != null && columnNames.length > 0 && columnIndex >=0 && columnIndex < columnNames.length) {
+            return columnNames[columnIndex];
         }
         return null;
     }
 
     public boolean isComposite() {
-        if (columnNames != null) {
-            if (columnNames.length > 1) {
-                return true;
-            }
+        if (columnNames != null && columnNames.length > 1) {
+            return true;
         }
         return false;
     }
