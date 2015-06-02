@@ -1,5 +1,7 @@
 package com.karlnosworthy.poijoi.jdbc;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
 
@@ -17,10 +20,14 @@ public class SQLStatementCreator extends AbstractStatementCreator<String> {
 		return generateCreateTableSQL(tableDefinition);
 	}
 
+	public String buildCreateIndexStatement(IndexDefinition indexDefinition) {
+		return generateCreateIndexSQL(indexDefinition);
+	}
+
+
 	public String buildInsertTableStatement(TableDefinition tableDefinition, Map<String, Object> dataToImport) {
 
 		StringBuilder builder = new StringBuilder();
-
 
 		builder.append("INSERT INTO '");
 		builder.append(tableDefinition.getTableName());

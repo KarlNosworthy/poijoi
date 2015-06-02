@@ -161,9 +161,10 @@ public abstract class AbstractXLSReader<T> {
 
 class IndexDefinitionReader {
 
-	private final int CELL_TABLE_NAME = 0;
-	private final int CELL_TABLE_COLUMNS = 1;
-	private final int CELL_UNIQUE_FLAG = 2;
+	private final int CELL_INDEX_NAME = 0;
+	private final int CELL_TABLE_NAME = 1;
+	private final int CELL_TABLE_COLUMNS = 2;
+	private final int CELL_UNIQUE_FLAG = 3;
 
 
 	IndexDefinitionReader() {
@@ -231,12 +232,13 @@ class IndexDefinitionReader {
 
 		IndexDefinition indexDefinition = null;
 
+		String indexName = getValueForCell(row, CELL_INDEX_NAME);
 		String tableName = getValueForCell(row, CELL_TABLE_NAME);
 		String columns = getValueForCell(row, CELL_TABLE_COLUMNS);
 
 		String[] columnNames=  columns.split(",");
 
-		indexDefinition = new IndexDefinition("", tableName, columnNames, false);
+		indexDefinition = new IndexDefinition(indexName, tableName, columnNames, false);
 
 		return indexDefinition;
 	}

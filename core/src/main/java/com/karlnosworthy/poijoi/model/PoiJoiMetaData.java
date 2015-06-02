@@ -1,5 +1,6 @@
 package com.karlnosworthy.poijoi.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class PoiJoiMetaData {
 	private boolean readData;
 	private Map<String, TableDefinition> tableDefinitions;
 	private Map<String, List<HashMap<String, Object>>> tableData;
+
 
 	public PoiJoiMetaData(boolean readData,
 						  Map<String, TableDefinition> tableDefinitions,
@@ -77,6 +79,26 @@ public class PoiJoiMetaData {
 	 */
 	public List<HashMap<String, Object>> getTableData(String tableName) {
 		return tableData.get(tableName);
+	}
+
+
+	/**
+	 *
+	 * @return
+	 */
+	public List<IndexDefinition> getIndexDefinitions() {
+		List<IndexDefinition> indexDefinitions = new ArrayList<IndexDefinition>();
+
+		if (tableDefinitions != null && !tableDefinitions.isEmpty()) {
+			for (String tableName : tableDefinitions.keySet()) {
+
+				TableDefinition tableDefinition = tableDefinitions.get(tableName);
+				if (tableDefinition.hasIndexDefinitions()) {
+					indexDefinitions.addAll(tableDefinition.getIndexDefinitions());
+				}
+			}
+		}
+		return indexDefinitions;
 	}
 
 	/**

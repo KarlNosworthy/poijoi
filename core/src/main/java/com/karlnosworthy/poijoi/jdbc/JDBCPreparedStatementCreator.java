@@ -1,6 +1,7 @@
 package com.karlnosworthy.poijoi.jdbc;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 import java.sql.Connection;
@@ -31,6 +32,19 @@ public class JDBCPreparedStatementCreator extends AbstractStatementCreator<Prepa
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(createTableSQL);
+            return preparedStatement;
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            return null;
+        }
+    }
+
+    public PreparedStatement buildCreateIndexStatement(IndexDefinition indexDefinition) {
+
+        String createIndexSQL = generateCreateIndexSQL(indexDefinition);
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(createIndexSQL);
             return preparedStatement;
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();

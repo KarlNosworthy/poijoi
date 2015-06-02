@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +52,33 @@ public class JDBCDatabaseCreator {
 						numberOfTablesCreated++;
 					}
 					preparedStatement.close();
+
+					if (tableDefinition.hasIndexDefinitions()) {
+						PreparedStatement preparedIndexStatement = null;
+
+						for (IndexDefinition indexDefinition : tableDefinition.getIndexDefinitions()) {
+							preparedIndexStatement = preparedStatementCreator.buildCreateIndexStatement(indexDefinition);
+							preparedIndexStatement.execute();
+						}
+
+						if (preparedIndexStatement != null) {
+							preparedIndexStatement.close();
+						}
+					}
 				} else {
 					String sqlStatement = sqlStatementCreator.buildCreateTableStatement(tableDefinition);
 					Statement statement = connection.createStatement();
 					statement.execute(sqlStatement);
 					statement.close();
+
+					if (tableDefinition.hasIndexDefinitions()) {
+						for (IndexDefinition indexDefinition : tableDefinition.getIndexDefinitions()) {
+							String createIndexSQL = sqlStatementCreator.buildCreateIndexStatement(indexDefinition);
+							Statement createIndexStatement = connection.createStatement();
+							createIndexStatement.execute(createIndexSQL);
+							createIndexStatement.close();
+						}
+					}
 				}
 			}
 			

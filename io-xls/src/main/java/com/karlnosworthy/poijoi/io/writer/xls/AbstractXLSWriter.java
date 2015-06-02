@@ -5,10 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.karlnosworthy.poijoi.io.writer.Writer.WriteType;
@@ -62,6 +66,7 @@ public abstract class AbstractXLSWriter<T> {
 
 		Map<String, TableDefinition> tableDefinitions = metaData
 				.getTableDefinitions();
+
 		for (String tableName : tableDefinitions.keySet()) {
 			HSSFSheet sheet = wb.createSheet(tableName);
 			TableDefinition table = tableDefinitions.get(tableName);
@@ -105,8 +110,24 @@ public abstract class AbstractXLSWriter<T> {
 					}
 				}
 			}
-
 		}
+
+		List<IndexDefinition> indexDefinitions = metaData.getIndexDefinitions();
+		if (indexDefinitions != null && !indexDefinitions.isEmpty()) {
+			Sheet indexesSheet = wb.createSheet("indexes");
+
+			for (int rowNumber = 0; rowNumber < indexDefinitions.size(); rowNumber ++) {
+				IndexDefinition indexDefinition = indexDefinitions.get(rowNumber);
+				Row indexRow = indexesSheet.createRow(rowNumber);
+
+				Cell tableNameCell = indexRow.createCell(0, Cell.CELL_TYPE_STRING);
+				tableNameCell.setCellValue(indexDefinition.getTableName());
+
+				Cell indexColumnsCell = indexRow.createCell(1, Cell.CELL_TYPE_STRING);
+				indexColumnsCell.setCellValue(createStringFromArray(indexDefinition.getColumnNames()));
+			}
+		}
+
 		return write(output, wb);
 	}
 	
@@ -121,5 +142,21 @@ public abstract class AbstractXLSWriter<T> {
 			}
 		}
 		return true;
+	}
+
+
+	private String createStringFromArray(String[] values) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		int numOfValues = values.length;
+
+		for (int valueNumber = 0; valueNumber < numOfValues; valueNumber++) {
+			stringBuilder.append(values[valueNumber]);
+			if ( (1 + valueNumber) < numOfValues) {
+				stringBuilder.append(",");
+			}
+		}
+
+		return stringBuilder.toString();
 	}
 }

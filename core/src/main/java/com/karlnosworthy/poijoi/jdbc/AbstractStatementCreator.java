@@ -1,8 +1,10 @@
 package com.karlnosworthy.poijoi.jdbc;
 
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
+import java.sql.PreparedStatement;
 import java.util.Map;
 
 public abstract class AbstractStatementCreator<T> {
@@ -11,6 +13,34 @@ public abstract class AbstractStatementCreator<T> {
 
     public abstract T buildInsertTableStatement(TableDefinition tableDefinition, Map<String, Object> dataToInsert);
 
+    public abstract T buildCreateIndexStatement(IndexDefinition indexDefinition);
+
+
+
+    protected String generateCreateIndexSQL(IndexDefinition indexDefinition) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("CREATE INDEX ");
+        builder.append(indexDefinition.getIndexName());
+        builder.append(" ON ");
+        builder.append(indexDefinition.getTableName());
+        builder.append("(");
+
+        String[] indexColumnNames = indexDefinition.getColumnNames();
+        int numOfColumns = indexColumnNames.length;
+
+        for (int indexColumnNumber = 0; indexColumnNumber < numOfColumns; indexColumnNumber++) {
+            builder.append(indexColumnNames[indexColumnNumber]);
+
+            if ( (1+indexColumnNumber) < numOfColumns) {
+                builder.append(",");
+            }
+        }
+
+        builder.append(")");
+
+        return builder.toString();
+    }
 
     protected String generateCreateTableSQL(TableDefinition tableDefinition) {
 
