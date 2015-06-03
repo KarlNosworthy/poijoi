@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.karlnosworthy.poijoi.io.reader.spreadsheet.SpreadsheetIndexDefinitionReader;
+import com.karlnosworthy.poijoi.io.reader.spreadsheet.SpreadsheetTableDefinitionReader;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -28,7 +30,18 @@ import com.karlnosworthy.poijoi.model.TableDefinition;
  *            The source Type
  */
 public abstract class AbstractXLSReader<T> {
-	
+
+	protected SpreadsheetIndexDefinitionReader indexDefinitionReader;
+	protected SpreadsheetTableDefinitionReader tableDefinitionReader;
+
+
+	protected AbstractXLSReader() {
+		super();
+		this.indexDefinitionReader = new XLSXIndexDefinitionReader();
+//		this.tableDefinitionReader = new XLSTableDefinitionReader();
+	}
+
+
 	abstract boolean isValidInput(T input);
 
 	/**

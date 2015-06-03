@@ -12,6 +12,7 @@ import java.util.Map;
 import com.karlnosworthy.poijoi.UnsupportedMapping;
 import com.karlnosworthy.poijoi.model.ColumnDefinition;
 import com.karlnosworthy.poijoi.model.ColumnDefinition.ColumnType;
+import com.karlnosworthy.poijoi.model.IndexDefinition;
 import com.karlnosworthy.poijoi.model.TableDefinition;
 
 public class JDBCMetaDataReader {
@@ -27,6 +28,12 @@ public class JDBCMetaDataReader {
 	private static final String COLUMN_RESULT_COLUMN_NAME = "COLUMN_NAME";
 	private static final String COLUMN_RESULT_COLUMN_INDEX_NAME = "ORDINAL_POSITION";
 	private static final String COLUMN_RESULT_DATA_TYPE_NAME = "DATA_TYPE";
+
+	// Index result set constants
+	private static final String INDEX_RESULT_TABLE_NAME_COLUMN_NAME = "TABLE_NAME";
+	private static final String INDEX_RESULT_INDEX_NAME_COLUMN_NAME = "INDEX_NAME";
+	private static final String INDEX_RESULT_COLUMN_NAME_COLUMN_NAME = "COLUMN_NAME";
+
 
 	private DatabaseMetaData databaseMetaData;
 
@@ -99,6 +106,7 @@ public class JDBCMetaDataReader {
 		for (String tableName : tableNames) {
 
 			List<ColumnDefinition> columnDefinitions = new ArrayList<ColumnDefinition>();
+			List<IndexDefinition> indexDefinitions = new ArrayList<>();
 
 			ResultSet tableColumnsResultSet = null;
 
@@ -113,8 +121,15 @@ public class JDBCMetaDataReader {
 					columnDefinitions.add(columnDefinition);
 				}
 
-				tableDefinitions.put(tableName, new TableDefinition(tableName,
-						columnDefinitions));
+				ResultSet indicesResultSet = databaseMetaData.getIndexInfo(null,schemaName, tableName, false, false);
+				while (indicesResultSet.next()) {
+					IndexDefinition indexDefinition = getIndexDefinition(indicesResultSet, tableName);
+					if (indexDefinition != null) {
+						indexDefinitions.add(indexDefinition);
+					}
+				}
+
+				tableDefinitions.put(tableName, new TableDefinition(tableName, columnDefinitions, indexDefinitions));
 
 			} finally {
 				if (tableColumnsResultSet != null) {
@@ -128,6 +143,7 @@ public class JDBCMetaDataReader {
 
 	public ColumnDefinition getColumnDefinition(ResultSet tableColumnResetSet,
 			String tableName) throws SQLException, UnsupportedMapping {
+
 		String columnName = tableColumnResetSet
 				.getString(COLUMN_RESULT_COLUMN_NAME);
 		int columnIndex = tableColumnResetSet
@@ -161,5 +177,15 @@ public class JDBCMetaDataReader {
 			throw new UnsupportedMapping("Unsupported Data Type: " + dataType);
 		}
 		return new ColumnDefinition(columnName, columnIndex, columnType);
+	}
+
+	private IndexDefinition getIndexDefinition(ResultSet indicesResultSet, String tableName) throws SQLException {
+
+		System.out.println("Table Name="+indicesResultSet.getString(INDEX_RESULT_TABLE_NAME_COLUMN_NAME));
+		System.out.println("Index Name="+indicesResultSet.getString(INDEX_RESULT_INDEX_NAME_COLUMN_NAME));
+		System.out.println("Column Name="+indicesResultSet.getString(INDEX_RESULT_COLUMN_NAME_COLUMN_NAME));
+
+		// FIXME: Need to implement this...
+		return null;
 	}
 }

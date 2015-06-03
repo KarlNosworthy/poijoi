@@ -14,5 +14,4 @@ public abstract class SpreadsheetTableDefinitionReader<S> {
     public abstract TableDefinition read(S sheet);
 
     public abstract TableDefinition read(S sheet, Map<String,List<IndexDefinition>> indexDefinitions);
-
 }

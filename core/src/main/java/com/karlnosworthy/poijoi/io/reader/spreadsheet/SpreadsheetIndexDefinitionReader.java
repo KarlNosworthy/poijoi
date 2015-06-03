@@ -5,9 +5,7 @@ import com.karlnosworthy.poijoi.model.IndexDefinition;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by karlnosworthy on 02/06/15.
- */
+
 public abstract class SpreadsheetIndexDefinitionReader<W,S,R> {
 
     protected final int CELL_INDEX_NAME = 0;
@@ -21,7 +19,6 @@ public abstract class SpreadsheetIndexDefinitionReader<W,S,R> {
     public abstract Map<String, List<IndexDefinition>> readDefinitions(S sheet);
 
     public abstract IndexDefinition readDefinition(R row);
-
 
     public boolean isIndexSheet(String sheetName) {
         if (sheetName.equalsIgnoreCase("indexes") ||
