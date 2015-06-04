@@ -196,7 +196,7 @@ class IndexDefinitionReader {
 		Map<String, List<IndexDefinition>> tableIndexDefinitions = new HashMap<String, List<IndexDefinition>>();
 
 		if (sheet.getFirstRowNum() == sheet.getLastRowNum()) {
-			IndexDefinition indexDefinition = readDefinition(sheet.getRow(0));
+			IndexDefinition indexDefinition = readDefinition(sheet.getRow(sheet.getFirstRowNum()));
 
 			if (indexDefinition != null) {
 				List<IndexDefinition> indexDefinitions = new ArrayList<IndexDefinition>();
@@ -205,7 +205,7 @@ class IndexDefinitionReader {
 				tableIndexDefinitions.put(indexDefinition.getTableName(), indexDefinitions);
 			}
 		} else {
-			int numberOfIndexes = sheet.getLastRowNum() - sheet.getFirstRowNum();
+			int numberOfIndexes = 1 + (sheet.getLastRowNum() - sheet.getFirstRowNum());
 
 			for (int rowNumber = sheet.getFirstRowNum(); rowNumber < numberOfIndexes; rowNumber++) {
 				IndexDefinition indexDefinition = readDefinition(sheet.getRow(rowNumber));
